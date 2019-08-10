@@ -10,7 +10,7 @@ use std::io::Read;
 
 fn main() {
     // Lee el fichero ROM
-    let mut f = File::open("src/ROMS/DMG_ROMdeGameBoy.bin").unwrap();
+    let mut f = File::open("src/ROMS/ZXSpectrum48.rom").unwrap();
     let mut rom_file = Vec::<u8>::new();
     f.read_to_end(&mut rom_file).unwrap();
 
@@ -26,13 +26,14 @@ fn main() {
     //while input().read_char().unwrap() != 'x' {
 
     loop {
-        if cpu.pc == 0x000C { // BreakPoint
+        if cpu.pc == 0x11E2 { // BreakPoint
             cpu.establece_debug();
             while input().read_char().unwrap() != 'x' {
                 cpu.limpia_consola();
                 cpu.imprime_cpu();
                 cpu.imprime_stack();
-                cpu.imprime_memoria(0x0000);
+                cpu.imprime_ports();
+                cpu.imprime_memoria(0x3F20);
 
                 cpu.ejecuta_instruccion();
             }

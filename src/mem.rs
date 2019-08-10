@@ -23,6 +23,18 @@ impl MEM {
         self.ram[address as usize]
     }
 
+    pub fn escribe_2bytes_en_mem(&mut self, address: u16, value: u16) {
+        let lo = (0x00FF & value) as u8;
+        self.escribe_byte_en_mem(address, lo);
+        let hi = (0xFF00 & value) as u8;
+        self.escribe_byte_en_mem(address + 1, hi)
+    }
+
+    pub fn lee_2bytes_de_mem(&self, address: u16) -> u16 {
+        let lo = self.lee_byte_de_mem(address);
+        let hi = self.lee_byte_de_mem(address + 1);
+        ((hi as u16) << 8) | lo as u16
+    }
 
     pub fn escribe_byte_en_port(&mut self, address: u8, value: u8) {
         self.ports[address as usize] = value;

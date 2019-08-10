@@ -6,6 +6,7 @@ use crate::mem::MEM;
 
 use crate::instrucciones_normales::*;
 use crate::instrucciones_cb::*;
+use crate::instrucciones_ed::*;
 
 use std::fmt;
 
@@ -59,12 +60,12 @@ impl CPU {
         let funcionesED: [fn(&mut CPU); 256] = [nopED; 256];
         let funcionesED_txt: [fn(&mut CPU); 256] = [nopED_txt; 256];
 
-        let funcionesCB: [fn(&mut CPU); 256] = [nopED; 256];
-        let funcionesCB_txt: [fn(&mut CPU); 256] = [nopED_txt; 256];
+        let funcionesCB: [fn(&mut CPU); 256] = [nopCB; 256];
+        let funcionesCB_txt: [fn(&mut CPU); 256] = [nopCB_txt; 256];
 
         let mut cpu = CPU {
             // OJO Cambiar si se usa otro procesador!
-            procesador: PROCESADOR::SharpLr35902,
+            procesador: PROCESADOR::Z80,
             a: 0,
             b: 0,
             c: 0,
@@ -96,7 +97,7 @@ impl CPU {
         };
         mete_funciones_normales(&mut cpu);
         mete_funciones_cb(&mut cpu);
-        cpu.mete_funcionesED();
+        mete_funciones_ed(&mut cpu);
         cpu
     }
 
@@ -122,6 +123,9 @@ impl CPU {
     }
     pub fn get_c_flag(&self) -> bool {
         self.get_flag(0b0001_0000)
+    }
+    pub fn get_p_flag(&self) -> bool {
+        self.get_flag(0b0000_0100)
     }
 
     // Funciones SET de FLAGS
@@ -163,6 +167,9 @@ impl CPU {
     }
 
     // FUNCIONES ARITMETICAS **************************************
+    fn prueba_paridad_u8(&self, valor: u8) -> bool {
+        valor & 0x0000_0001 == 0
+    }
     /// Devuelve true si hay acarreo de medio byte entre bit 11 y 12 eun un u16 en suma
     fn calc_half_carry_on_u16_sum(&self, valor_a: u16, valor_b: u16) -> bool {
         ((valor_a & 0xFFF) + (valor_b & 0xFFF)) & 0x1000 == 0x1000
@@ -206,6 +213,27 @@ impl CPU {
         self.reset_n_flag();
         nuevo_valor
     }
+    pub fn resta_u16_menos_u16(&mut self, valor_a: u16, valor_b: u16) -> u16 {
+        // TODO: Faltan Flags (Flags afectados: C N P/V H Z S)
+        // TODO: Probar si hay acarreo de medio byte (flag H) no lo tengo claro con 16 bits
+
+//        if self.half_carry_en_resta_u8_sub(valor_a, valor_b) {
+//            self.set_h_flag();
+//        } else {
+//            self.reset_h_flag();
+//        }
+
+        let nuevo_valor = valor_a.wrapping_sub(valor_b);
+
+        // flag Z
+        if nuevo_valor == 0 {
+            self.set_z_flag();
+        } else {
+            self.reset_z_flag();
+        }
+
+        nuevo_valor
+    }
 
     pub fn suma_u8_mas_u8(&mut self, valor_a: u8, valor_b: u8) -> u8 {
         // Probar si hay acarreo de medio byte
@@ -215,41 +243,77 @@ impl CPU {
             self.reset_h_flag();
         }
 
-        let new_register_value_a = valor_a.wrapping_add(valor_b);
+        let resultado = valor_a.wrapping_add(valor_b);
 
         // Establece los flags
-        if new_register_value_a == 0 {
+        if resultado == 0 {
             self.set_z_flag();
         } else {
             self.reset_z_flag();
         }
         self.reset_n_flag();
-        new_register_value_a
+        resultado
     }
-    pub fn do_sub(&mut self, valor_a: u8, valor_b: u8) -> u8 {
+    pub fn suma_u16_mas_u16(&mut self, valor_a: u16, valor_b: u16) -> u16 {
+        // TODO: Probar si hay acarreo de medio byte (flag H) no lo tengo claro con 16 bits
+        // TODO: Faltan Flags (Flags afectados: C N P/V H Z S)
         // Probar si hay acarreo de medio byte
-        if self.calc_half_carry_on_u8_sub(valor_a, valor_b) {
-            self.set_h_flag();
-        } else {
-            self.reset_h_flag();
-        }
+//        if self.calc_half_carry_on_u8_sum(valor_a, valor_b) {
+//            self.set_h_flag();
+//        } else {
+//            self.reset_h_flag();
+//        }
 
-        let new_register_value_a = valor_a.wrapping_sub(valor_b);
+        let resultado = valor_a.wrapping_add(valor_b);
 
-        // set the flags
-        if new_register_value_a == 0 {
+        // Establece los flags
+        if resultado == 0 {
             self.set_z_flag();
         } else {
             self.reset_z_flag();
         }
-        self.reset_n_flag();
-        new_register_value_a
+
+        resultado
     }
+
+
+    pub fn and_u8_con_u8(&mut self, valor_a: u8, valor_b: u8) -> u8 {
+        self.reset_c_flag();
+        self.reset_n_flag();
+        self.set_h_flag();
+
+        let resultado = valor_a & valor_b;
+        if resultado == 0 {
+            self.set_z_flag();
+        } else {
+            self.reset_z_flag();
+        }
+
+        if self.prueba_paridad_u8(resultado) {
+            self.set_pv_flag();
+        } else {
+            self.reset_pv_flag();
+        }
+
+        resultado
+    }
+
     pub fn inc_8bits(&mut self, valor: u8) -> u8 {
         self.suma_u8_mas_u8(valor, 1)
     }
-    pub fn dec_8bits(&mut self, valor: u8) -> u8 { self.do_sub(valor, 1) }
+    pub fn inc_16bits(&mut self, valor: u16) -> u16 {
+        self.suma_u16_mas_u16(valor, 1)
+    }
+    pub fn dec_8bits(&mut self, valor: u8) -> u8 { self.resta_u8_menos_u8(valor, 1) }
 
+    pub fn concatena_dos_u8_en_un_u16(&mut self, hight: u8, low: u8) -> u16 {
+        ((hight as u16) << 8) | (low as u16)
+    }
+    pub fn desconcatena_un_u16_en_dos_u8(&mut self, valor: u16) -> (u8, u8) {
+        let hight = ((valor & 0b1111_1111_0000_0000) >> 8) as u8;
+        let low = (valor & 0b0000_0000_1111_1111) as u8;
+        (hight, low)
+    }
     // FUNCIONES DE STACK ********************************************************
     /// Pone en el stack un valor de 16 bits y modifica el puntero
     pub fn push(&mut self, addr: u16) {
@@ -286,33 +350,33 @@ impl CPU {
         self.set_h_flag();
     }
     // FUNCIONES DE ROTACION DE BITS *******************************************
-    pub fn do_rl_n(&mut self, register_value: u8) -> u8 {
-        let old_c_flag = self.get_c_flag();
-        let c_flag: bool = (0b1000_0000 & register_value) != 0;
-        if c_flag {
-            self.set_c_flag();
-        } else {
-            self.reset_c_flag();
-        }
-
-        // Rotación
-        let mut new_register_value = register_value << 1;
-        new_register_value = new_register_value & 0b1111_1110;
-        if old_c_flag {
-            new_register_value |= 0b0000_0001;
-        }
-
-        //maneja flags
-        if new_register_value == 0 {
-            self.set_z_flag();
-        } else {
-            self.reset_z_flag();
-        }
-        self.reset_n_flag();
-        self.reset_h_flag();
-
-        new_register_value
-    }
+//    pub fn do_rl_n(&mut self, register_value: u8) -> u8 {
+//        let old_c_flag = self.get_c_flag();
+//        let c_flag: bool = (0b1000_0000 & register_value) != 0;
+//        if c_flag {
+//            self.set_c_flag();
+//        } else {
+//            self.reset_c_flag();
+//        }
+//
+//        // Rotación
+//        let mut new_register_value = register_value << 1;
+//        new_register_value = new_register_value & 0b1111_1110;
+//        if old_c_flag {
+//            new_register_value |= 0b0000_0001;
+//        }
+//
+//        //maneja flags
+//        if new_register_value == 0 {
+//            self.set_z_flag();
+//        } else {
+//            self.reset_z_flag();
+//        }
+//        self.reset_n_flag();
+//        self.reset_h_flag();
+//
+//        new_register_value
+//    }
 
     // FUNCIONES DE DEBUG *******************************************
     pub fn establece_debug(&mut self) {
@@ -396,6 +460,29 @@ impl CPU {
         }
     }
 
+    pub fn imprime_ports(&mut self) {
+        if self.debug {
+            // Crea cursor
+            let mut cursor = cursor();
+
+            cursor.hide();
+
+            cursor.goto(1, 10);
+            print!("{}PORTS{}",
+                   Colored::Fg(Color::Blue),
+                   Colored::Fg(Color::White), );
+            for col in 0..=15 {
+                for lin in 0..=15 {
+                    cursor.goto(1, lin + 11);
+                    print!("{:04X}", lin * 16);
+                    cursor.goto(8 + 3 * col, lin + 11);
+
+                    print!("{:02X}  ", self.mem.lee_byte_de_port(((lin * 16) + (col)) as u8));
+                }
+            }
+            cursor.goto(100, 20);
+        }
+    }
     pub fn imprime_cpu(&mut self) {
         if self.debug {
             // Crea cursor
@@ -416,8 +503,8 @@ impl CPU {
             cursor.goto(1, 4);
             println!("HL = 0b{:08b} 0b{:08b} (0x{:02X}) (0x{:02X})", self.h, self.l, self.h, self.l);
 
-            cursor.goto(1, 5);
-            println!("SP = 0x{:04X}", self.sp);
+//            cursor.goto(1, 5);
+//            println!("SP = 0x{:04X}", self.sp);
 
             cursor.goto(15, 5);
             println!("I = 0x{:02X}", self.i);
@@ -443,37 +530,4 @@ impl CPU {
             cursor.goto(10, 10);
         }
     }
-
-
-    fn mete_funcionesED(&mut self) {
-        self.funciones_ed[0x47 as usize] = ld_i_a;
-        self.funciones_ed_txt[0x47 as usize] = ld_i_a_txt;
-    }
 }
-
-
-// 0x00
-fn nopED(cpu: &mut CPU) {
-    cpu.t += 4;
-    cpu.pc += 1;
-}
-
-fn nopED_txt(cpu: &mut CPU) {
-    let txt = format!("NOP");
-    cpu.texto(&txt);
-}
-
-// 0xED especial 0x47
-fn ld_i_a(cpu: &mut CPU) {
-    cpu.i = cpu.a;
-
-    cpu.t += 9;
-    cpu.pc += 2;
-}
-
-fn ld_i_a_txt(cpu: &mut CPU) {
-    let txt = format!("LD I,A");
-    cpu.texto(&txt);
-}
-
-// FIN EXTENSION ED -------------------------------------------------------------

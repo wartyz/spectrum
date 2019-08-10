@@ -48,6 +48,14 @@ pub fn mete_funciones_cb(cpu: &mut CPU) {
     // *************************** F ***********************************
 }
 
+// funcion metida por defecto en el arreglo de punteros a funciones cb
+pub fn nopCB(cpu: &mut CPU) {
+    panic!("Instrucción CB no implementada");
+}
+
+pub fn nopCB_txt(cpu: &mut CPU) {
+    panic!("Instrucción CB no implementada");
+}
 
 // O = ()  p = '
 // *************************** 0 ***********************************
@@ -106,10 +114,31 @@ pub fn rrc_a() {}
 // *************************** 1 ***********************************
 // 0xCB11     RL C
 pub fn rl_c(cpu: &mut CPU) {
-    cpu.c = cpu.do_rl_n(cpu.c);
+    let viejo_c_flag = cpu.get_c_flag();
+    let c_flag: bool = (0b1000_0000 & cpu.c) != 0;
+    if c_flag {
+        cpu.set_c_flag();
+    } else {
+        cpu.reset_c_flag();
+    }
+
+    // Rotación
+    let mut nuevo_valor = cpu.c << 1;
+    nuevo_valor = nuevo_valor & 0b1111_1110;
+    if viejo_c_flag {
+        nuevo_valor |= 0b0000_0001;
+    }
+
+    //maneja flags
+    if nuevo_valor == 0 {
+        cpu.set_z_flag();
+    } else {
+        cpu.reset_z_flag();
+    }
+    cpu.reset_n_flag();
+    cpu.reset_h_flag();
 
     cpu.pc += 2;
-
     cpu.t += 8;
 }
 
@@ -120,7 +149,29 @@ pub fn rl_c_txt(cpu: &mut CPU) {
 
 // 0xCB17     RL A
 pub fn rl_a(cpu: &mut CPU) {
-    cpu.a = cpu.do_rl_n(cpu.a);
+    let viejo_c_flag = cpu.get_c_flag();
+    let c_flag: bool = (0b1000_0000 & cpu.a) != 0;
+    if c_flag {
+        cpu.set_c_flag();
+    } else {
+        cpu.reset_c_flag();
+    }
+
+    // Rotación
+    let mut nuevo_valor = cpu.a << 1;
+    nuevo_valor = nuevo_valor & 0b1111_1110;
+    if viejo_c_flag {
+        nuevo_valor |= 0b0000_0001;
+    }
+
+    //maneja flags
+    if nuevo_valor == 0 {
+        cpu.set_z_flag();
+    } else {
+        cpu.reset_z_flag();
+    }
+    cpu.reset_n_flag();
+    cpu.reset_h_flag();
 
     cpu.pc += 2;
 
