@@ -25,6 +25,14 @@ pub struct CPU {
     pub f: u8,
     pub h: u8,
     pub l: u8,
+    pub ap: u8,
+    pub bp: u8,
+    pub cp: u8,
+    pub dp: u8,
+    pub ep: u8,
+    pub fp: u8,
+    pub hp: u8,
+    pub lp: u8,
     pub i: u8,
     pub pc: u16,
     pub sp: u16,
@@ -54,14 +62,14 @@ pub struct CPU {
 impl CPU {
     pub fn new(mem: MEM) -> CPU {
         // Rellenamos arreglo de funciones con funciones nop()
-        let funciones: [fn(&mut CPU); 256] = [nop; 256];
-        let funciones_txt: [fn(&mut CPU); 256] = [nop_txt; 256];
+        let funciones: [fn(&mut CPU); 256] = [funcion_no_implementada; 256];
+        let funciones_txt: [fn(&mut CPU); 256] = [funcion_no_implementada; 256];
 
-        let funcionesED: [fn(&mut CPU); 256] = [nopED; 256];
-        let funcionesED_txt: [fn(&mut CPU); 256] = [nopED_txt; 256];
+        let funcionesED: [fn(&mut CPU); 256] = [funcionED_no_implementada; 256];
+        let funcionesED_txt: [fn(&mut CPU); 256] = [funcionED_no_implementada; 256];
 
-        let funcionesCB: [fn(&mut CPU); 256] = [nopCB; 256];
-        let funcionesCB_txt: [fn(&mut CPU); 256] = [nopCB_txt; 256];
+        let funcionesCB: [fn(&mut CPU); 256] = [funcionCB_no_implementada; 256];
+        let funcionesCB_txt: [fn(&mut CPU); 256] = [funcionCB_no_implementada; 256];
 
         let mut cpu = CPU {
             // OJO Cambiar si se usa otro procesador!
@@ -74,7 +82,17 @@ impl CPU {
             f: 0,
             h: 0,
             l: 0,
+            ap: 0,
+            bp: 0,
+            cp: 0,
+            dp: 0,
+            ep: 0,
+            fp: 0,
+            hp: 0,
+            lp: 0,
+
             i: 0,
+
             pc: 0,
             sp: 0,
             t: 0,
@@ -305,6 +323,9 @@ impl CPU {
         self.suma_u16_mas_u16(valor, 1)
     }
     pub fn dec_8bits(&mut self, valor: u8) -> u8 { self.resta_u8_menos_u8(valor, 1) }
+    pub fn dec_16bits(&mut self, valor: u16) -> u16 {
+        self.resta_u16_menos_u16(valor, 1)
+    }
 
     pub fn concatena_dos_u8_en_un_u16(&mut self, hight: u8, low: u8) -> u16 {
         ((hight as u16) << 8) | (low as u16)
@@ -421,6 +442,20 @@ impl CPU {
             print!("{:04X}", self.pc);
             print!("|-> ");
             println!("{}", txt);
+        }
+    }
+
+    pub fn imprime_opcode(&mut self) {
+        if self.debug {
+            cursor().goto(62, 12);
+            print!("<-");
+
+
+            let empieza = self.pc - 4;
+            for lin in 0..=8 {
+                cursor().goto(60, lin + 8);
+                print!("{:02X}", self.mem.lee_byte_de_mem(empieza + lin));
+            }
         }
     }
 

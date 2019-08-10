@@ -26,11 +26,12 @@ fn main() {
     //while input().read_char().unwrap() != 'x' {
 
     loop {
-        if cpu.pc == 0x11E2 { // BreakPoint
+        if cpu.pc == 0xFFFF { // BreakPoint
             cpu.establece_debug();
             while input().read_char().unwrap() != 'x' {
                 cpu.limpia_consola();
                 cpu.imprime_cpu();
+                cpu.imprime_opcode();
                 cpu.imprime_stack();
                 cpu.imprime_ports();
                 cpu.imprime_memoria(0x3F20);

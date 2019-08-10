@@ -6,58 +6,69 @@ use crate::cpu::{CPU, PROCESADOR};
 pub fn mete_funciones_ed(cpu: &mut CPU) {
 
     // *************************** 4 ***********************************
+    cpu.funciones_ed[0x43 as usize] = ld_OnnO_bc;
+    cpu.funciones_ed_txt[0x43 as usize] = ld_OnnO_bc_txt;
     cpu.funciones_ed[0x47 as usize] = ld_i_a;
     cpu.funciones_ed_txt[0x47 as usize] = ld_i_a_txt;
     // *************************** 5 ***********************************
     cpu.funciones_ed[0x52 as usize] = sbc_hl_de;
     cpu.funciones_ed_txt[0x52 as usize] = sbc_hl_de_txt;
+    cpu.funciones_ed[0x53 as usize] = ld_OnnO_de;
+    cpu.funciones_ed_txt[0x53 as usize] = ld_OnnO_de_txt;
+    // *************************** 6 ***********************************
+    // *************************** 7 ***********************************
+    // *************************** A ***********************************
+    // *************************** B ***********************************
+    cpu.funciones_ed[0xB8 as usize] = lddr;
+    cpu.funciones_ed_txt[0xB8 as usize] = lddr_txt;
 }
 
-
-// funcion metida por defecto en el arreglo de punteros a funciones ed
-pub fn nopED(cpu: &mut CPU) {
-    panic!("Instrucción ED no implementada");
+pub fn funcionED_no_implementada(cpu: &mut CPU) {
+    panic!(format!("Funcion normal ED#{:02X} no implementada", cpu.r1));
 }
 
-pub fn nopED_txt(cpu: &mut CPU) {
-    panic!("Instrucción ED no implementada");
-}
 
 // *************************** 4 ***********************************
 // 0x40
-fn b_OcO() { panic!("0x40 funcion ED no implementada"); }
+fn b_OcO(cpu: &mut CPU) { panic!("0x40 funcion ED no implementada"); }
 
-fn b_OcO_txt() { panic!("0x40 funcion ED no implementada"); }
+fn b_OcO_txt(cpu: &mut CPU) { panic!("0x40 funcion ED no implementada"); }
 
 // 0x41
-fn out_OcO_b() { panic!("0x41 funcion ED no implementada"); }
+fn out_OcO_b(cpu: &mut CPU) { panic!("0x41 funcion ED no implementada"); }
 
-fn out_OcO_b_txt() { panic!("0x41 funcion ED no implementada"); }
+fn out_OcO_b_txt(cpu: &mut CPU) { panic!("0x41 funcion ED no implementada"); }
 
 // 0x42
-fn sbc_hl_bc() { panic!("0x42 funcion ED no implementada"); }
+fn sbc_hl_bc(cpu: &mut CPU) { panic!("0x42 funcion ED no implementada"); }
 
-fn sbc_hl_bc_txt() { panic!("0x42 funcion ED no implementada"); }
+fn sbc_hl_bc_txt(cpu: &mut CPU) { panic!("0x42 funcion ED no implementada"); }
 
 // 0x43
-fn ld_OnnO_bc() { panic!("0x43 funcion ED no implementada"); }
+fn ld_OnnO_bc(cpu: &mut CPU) {
+    cpu.mem.escribe_byte_en_mem(cpu.r2r3, cpu.c);
+    cpu.mem.escribe_byte_en_mem(cpu.r2r3 + 1, cpu.b);
 
-fn ld_OnnO_bc_txt() { panic!("0x43 funcion ED no implementada"); }
+    cpu.t += 20;
+    cpu.pc += 4;
+}
+
+fn ld_OnnO_bc_txt(cpu: &mut CPU) { cpu.texto(&format!("LD(#{:04X}),BC", cpu.r2r3)); }
 
 // 0x44
-fn neg() { panic!("0x44 funcion ED no implementada"); }
+fn neg(cpu: &mut CPU) { panic!("0x44 funcion ED no implementada"); }
 
-fn neg_txt() { panic!("0x44 funcion ED no implementada"); }
+fn neg_txt(cpu: &mut CPU) { panic!("0x44 funcion ED no implementada"); }
 
 // 0x45
-fn retn() { panic!("0x45 funcion ED no implementada"); }
+fn retn(cpu: &mut CPU) { panic!("0x45 funcion ED no implementada"); }
 
-fn retn_txt() { panic!("0x45 funcion ED no implementada"); }
+fn retn_txt(cpu: &mut CPU) { panic!("0x45 funcion ED no implementada"); }
 
 // 0x46
-fn im_0() { panic!("0x46 funcion ED no implementada"); }
+fn im_0(cpu: &mut CPU) { panic!("0x46 funcion ED no implementada"); }
 
-fn im_0_txt() { panic!("0x46 funcion ED no implementada"); }
+fn im_0_txt(cpu: &mut CPU) { panic!("0x46 funcion ED no implementada"); }
 
 // 0x47
 fn ld_i_a(cpu: &mut CPU) {
@@ -123,9 +134,15 @@ fn sbc_hl_de_txt(cpu: &mut CPU) {
 }
 
 // 0x53
-fn ld_OnnO_de() { panic!("0x53 funcion ED no implementada"); }
+fn ld_OnnO_de(cpu: &mut CPU) {
+    cpu.mem.escribe_byte_en_mem(cpu.r2r3, cpu.e);
+    cpu.mem.escribe_byte_en_mem(cpu.r2r3 + 1, cpu.d);
 
-fn ld_OnnO_de_txt() { panic!("0x53 funcion ED no implementada"); }
+    cpu.t += 20;
+    cpu.pc += 4;
+}
+
+fn ld_OnnO_de_txt(cpu: &mut CPU) { cpu.texto(&format!("LD(#{:04X}),DE", cpu.r2r3)); }
 
 // 0x54 REPETIDO
 // 0x55 REPETIDO
@@ -182,3 +199,52 @@ fn ld_a_r() { panic!("0x5F funcion ED no implementada"); }
 
 fn ld_a_r_txt() { panic!("0x5F funcion ED no implementada"); }
 
+// *************************** 6 ***********************************
+// *************************** 7 ***********************************
+// *************************** A ***********************************
+// *************************** B ***********************************
+// 0xB8
+fn lddr(cpu: &mut CPU) {
+    cpu.pc += 2;
+    let hldir = cpu.concatena_dos_u8_en_un_u16(cpu.h, cpu.l);
+    let origen = cpu.mem.lee_byte_de_mem(hldir);
+
+    let dedir = cpu.concatena_dos_u8_en_un_u16(cpu.d, cpu.e);
+    cpu.mem.escribe_byte_en_mem(dedir, origen);
+
+    let hl = cpu.concatena_dos_u8_en_un_u16(cpu.h, cpu.l);
+    let de = cpu.concatena_dos_u8_en_un_u16(cpu.d, cpu.e);
+    let bc = cpu.concatena_dos_u8_en_un_u16(cpu.b, cpu.c);
+
+    let hldec = cpu.dec_16bits(hl);
+    let dedec = cpu.dec_16bits(de);
+    let bcdec = cpu.dec_16bits(bc);
+
+    let hl = cpu.desconcatena_un_u16_en_dos_u8(hldec);
+    let de = cpu.desconcatena_un_u16_en_dos_u8(dedec);
+    let bc = cpu.desconcatena_un_u16_en_dos_u8(bcdec);
+
+    cpu.h = hl.0;
+    cpu.l = hl.1;
+    cpu.d = de.0;
+    cpu.e = de.1;
+    cpu.b = bc.0;
+    cpu.c = bc.1;
+
+
+    if (cpu.b == 0) & (cpu.c == 0) {
+        cpu.t += 16;
+    } else {
+        cpu.pc -= 2;
+        cpu.t += 21;
+    }
+
+
+    cpu.reset_n_flag();
+    cpu.reset_pv_flag();
+    cpu.reset_h_flag();
+}
+
+fn lddr_txt(cpu: &mut CPU) {
+    cpu.texto(&format!("LDDR"));
+}

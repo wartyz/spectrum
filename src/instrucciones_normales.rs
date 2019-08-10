@@ -235,51 +235,172 @@ pub fn mete_funciones_normales(cpu: &mut CPU) {
     cpu.funciones[0x4F as usize] = ld_c_a;
     cpu.funciones_txt[0x4F as usize] = ld_c_a_txt;
     // *************************** 5 ***********************************
-    cpu.funciones[0x50 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x50 as usize] = funcion_no_implementada;
-    cpu.funciones[0x51 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x51 as usize] = funcion_no_implementada;
-    cpu.funciones[0x52 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x52 as usize] = funcion_no_implementada;
-    cpu.funciones[0x53 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x53 as usize] = funcion_no_implementada;
-    cpu.funciones[0x54 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x54 as usize] = funcion_no_implementada;
-    cpu.funciones[0x55 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x55 as usize] = funcion_no_implementada;
-    cpu.funciones[0x56 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x56 as usize] = funcion_no_implementada;
-    cpu.funciones[0x57 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x57 as usize] = funcion_no_implementada;
-    cpu.funciones[0x58 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x58 as usize] = funcion_no_implementada;
-    cpu.funciones[0x59 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x59 as usize] = funcion_no_implementada;
-    cpu.funciones[0x5A as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x5A as usize] = funcion_no_implementada;
-    cpu.funciones[0x5B as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x5B as usize] = funcion_no_implementada;
-    cpu.funciones[0x5C as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x5C as usize] = funcion_no_implementada;
-    cpu.funciones[0x5D as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x5D as usize] = funcion_no_implementada;
-    cpu.funciones[0x5E as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x5E as usize] = funcion_no_implementada;
-    cpu.funciones[0x5F as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x5F as usize] = funcion_no_implementada;
+    cpu.funciones[0x50 as usize] = ld_d_b;
+    cpu.funciones_txt[0x50 as usize] = ld_d_b_txt;
+    cpu.funciones[0x51 as usize] = ld_d_c;
+    cpu.funciones_txt[0x51 as usize] = ld_d_c_txt;
+    cpu.funciones[0x52 as usize] = ld_d_d;
+    cpu.funciones_txt[0x52 as usize] = ld_d_d_txt;
+    cpu.funciones[0x53 as usize] = ld_d_e;
+    cpu.funciones_txt[0x53 as usize] = ld_d_e_txt;
+    cpu.funciones[0x54 as usize] = ld_d_h;
+    cpu.funciones_txt[0x54 as usize] = ld_d_h_txt;
+    cpu.funciones[0x55 as usize] = ld_d_l;
+    cpu.funciones_txt[0x55 as usize] = ld_d_l_txt;
+    cpu.funciones[0x56 as usize] = ld_d_OhlO;
+    cpu.funciones_txt[0x56 as usize] = ld_d_OhlO_txt;
+    cpu.funciones[0x57 as usize] = ld_d_a;
+    cpu.funciones_txt[0x57 as usize] = ld_d_a_txt;
+    cpu.funciones[0x58 as usize] = ld_e_b;
+    cpu.funciones_txt[0x58 as usize] = ld_e_b_txt;
+    cpu.funciones[0x59 as usize] = ld_e_c;
+    cpu.funciones_txt[0x59 as usize] = ld_e_c_txt;
+    cpu.funciones[0x5A as usize] = ld_e_d;
+    cpu.funciones_txt[0x5A as usize] = ld_e_d_txt;
+    cpu.funciones[0x5B as usize] = ld_e_e;
+    cpu.funciones_txt[0x5B as usize] = ld_e_e_txt;
+    cpu.funciones[0x5C as usize] = ld_e_h;
+    cpu.funciones_txt[0x5C as usize] = ld_e_h_txt;
+    cpu.funciones[0x5D as usize] = ld_e_l;
+    cpu.funciones_txt[0x5D as usize] = ld_e_l_txt;
+    cpu.funciones[0x5E as usize] = ld_e_OhlO;
+    cpu.funciones_txt[0x5E as usize] = ld_eOhlO_txt;
+    cpu.funciones[0x5F as usize] = ld_e_a;
+    cpu.funciones_txt[0x5F as usize] = ld_e_a_txt;
 
     // *************************** 6 ***********************************
+    cpu.funciones[0x60 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x60 as usize] = funcion_no_implementada;
+    cpu.funciones[0x61 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x61 as usize] = funcion_no_implementada;
     cpu.funciones[0x62 as usize] = ld_h_d;
     cpu.funciones_txt[0x62 as usize] = ld_h_d_txt;
+    cpu.funciones[0x63 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x63 as usize] = funcion_no_implementada;
+    cpu.funciones[0x64 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x64 as usize] = funcion_no_implementada;
+    cpu.funciones[0x65 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x65 as usize] = funcion_no_implementada;
+    cpu.funciones[0x66 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x66 as usize] = funcion_no_implementada;
+    cpu.funciones[0x67 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x67 as usize] = funcion_no_implementada;
+    cpu.funciones[0x68 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x68 as usize] = funcion_no_implementada;
+    cpu.funciones[0x69 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x69 as usize] = funcion_no_implementada;
+    cpu.funciones[0x6A as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x6A as usize] = funcion_no_implementada;
     cpu.funciones[0x6B as usize] = ld_l_e;
     cpu.funciones_txt[0x6B as usize] = ld_l_e_txt;
+    cpu.funciones[0x6C as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x6C as usize] = funcion_no_implementada;
+    cpu.funciones[0x6D as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x6D as usize] = funcion_no_implementada;
+    cpu.funciones[0x6E as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x6E as usize] = funcion_no_implementada;
+    cpu.funciones[0x6F as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x6F as usize] = funcion_no_implementada;
     // *************************** 7 ***********************************
+    cpu.funciones[0x70 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x70 as usize] = funcion_no_implementada;
+    cpu.funciones[0x71 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x71 as usize] = funcion_no_implementada;
+    cpu.funciones[0x72 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x72 as usize] = funcion_no_implementada;
+    cpu.funciones[0x73 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x73 as usize] = funcion_no_implementada;
+    cpu.funciones[0x74 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x74 as usize] = funcion_no_implementada;
+    cpu.funciones[0x75 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x75 as usize] = funcion_no_implementada;
+    cpu.funciones[0x76 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x76 as usize] = funcion_no_implementada;
     cpu.funciones[0x77 as usize] = ldOhlO_a;
     cpu.funciones_txt[0x77 as usize] = ldOhlO_a_txt;
+    cpu.funciones[0x78 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x78 as usize] = funcion_no_implementada;
+    cpu.funciones[0x79 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x79 as usize] = funcion_no_implementada;
+    cpu.funciones[0x7A as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x7A as usize] = funcion_no_implementada;
     cpu.funciones[0x7B as usize] = ld_a_e;
     cpu.funciones_txt[0x7B as usize] = ld_a_e_txt;
+    cpu.funciones[0x7C as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x7C as usize] = funcion_no_implementada;
+    cpu.funciones[0x7D as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x7D as usize] = funcion_no_implementada;
+    cpu.funciones[0x7E as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x7E as usize] = funcion_no_implementada;
+    cpu.funciones[0x7F as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x7F as usize] = funcion_no_implementada;
+
     // *************************** 8 ***********************************
+    cpu.funciones[0x80 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x80 as usize] = funcion_no_implementada;
+    cpu.funciones[0x81 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x81 as usize] = funcion_no_implementada;
+    cpu.funciones[0x82 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x82 as usize] = funcion_no_implementada;
+    cpu.funciones[0x83 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x83 as usize] = funcion_no_implementada;
+    cpu.funciones[0x84 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x84 as usize] = funcion_no_implementada;
+    cpu.funciones[0x85 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x85 as usize] = funcion_no_implementada;
+    cpu.funciones[0x86 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x86 as usize] = funcion_no_implementada;
+    cpu.funciones[0x87 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x87 as usize] = funcion_no_implementada;
+    cpu.funciones[0x88 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x88 as usize] = funcion_no_implementada;
+    cpu.funciones[0x89 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x89 as usize] = funcion_no_implementada;
+    cpu.funciones[0x8A as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x8A as usize] = funcion_no_implementada;
+    cpu.funciones[0x8B as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x8B as usize] = funcion_no_implementada;
+    cpu.funciones[0x8C as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x8C as usize] = funcion_no_implementada;
+    cpu.funciones[0x8D as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x8D as usize] = funcion_no_implementada;
+    cpu.funciones[0x8E as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x8E as usize] = funcion_no_implementada;
+    cpu.funciones[0x8F as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x8F as usize] = funcion_no_implementada;
     // *************************** 9 ***********************************
+    cpu.funciones[0x90 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x90 as usize] = funcion_no_implementada;
+    cpu.funciones[0x91 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x91 as usize] = funcion_no_implementada;
+    cpu.funciones[0x92 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x92 as usize] = funcion_no_implementada;
+    cpu.funciones[0x93 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x93 as usize] = funcion_no_implementada;
+    cpu.funciones[0x94 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x94 as usize] = funcion_no_implementada;
+    cpu.funciones[0x95 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x95 as usize] = funcion_no_implementada;
+    cpu.funciones[0x96 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x96 as usize] = funcion_no_implementada;
+    cpu.funciones[0x97 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x97 as usize] = funcion_no_implementada;
+    cpu.funciones[0x98 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x98 as usize] = funcion_no_implementada;
+    cpu.funciones[0x99 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x99 as usize] = funcion_no_implementada;
+    cpu.funciones[0x9A as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x9A as usize] = funcion_no_implementada;
+    cpu.funciones[0x9B as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x9B as usize] = funcion_no_implementada;
+    cpu.funciones[0x9C as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x9C as usize] = funcion_no_implementada;
+    cpu.funciones[0x9D as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x9D as usize] = funcion_no_implementada;
+    cpu.funciones[0x9E as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x9E as usize] = funcion_no_implementada;
+    cpu.funciones[0x9F as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0x9F as usize] = funcion_no_implementada;
     // *************************** A ***********************************
     cpu.funciones[0xA0 as usize] = and_b;
     cpu.funciones_txt[0xA0 as usize] = and_b_txt;
@@ -314,24 +435,119 @@ pub fn mete_funciones_normales(cpu: &mut CPU) {
     cpu.funciones[0xAF as usize] = xor_a;
     cpu.funciones_txt[0xAF as usize] = xor_a_txt;
     // *************************** B ***********************************
+    cpu.funciones[0xB0 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xB0 as usize] = funcion_no_implementada;
+    cpu.funciones[0xB1 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xB1 as usize] = funcion_no_implementada;
+    cpu.funciones[0xB2 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xB2 as usize] = funcion_no_implementada;
+    cpu.funciones[0xB3 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xB3 as usize] = funcion_no_implementada;
+    cpu.funciones[0xB4 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xB4 as usize] = funcion_no_implementada;
+    cpu.funciones[0xB5 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xB5 as usize] = funcion_no_implementada;
+    cpu.funciones[0xB6 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xB6 as usize] = funcion_no_implementada;
+    cpu.funciones[0xB7 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xB7 as usize] = funcion_no_implementada;
+    cpu.funciones[0xB8 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xB8 as usize] = funcion_no_implementada;
+    cpu.funciones[0xB9 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xB9 as usize] = funcion_no_implementada;
+    cpu.funciones[0xBA as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xBA as usize] = funcion_no_implementada;
+    cpu.funciones[0xBB as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xBB as usize] = funcion_no_implementada;
     cpu.funciones[0xBC as usize] = cp_h;
-    cpu.funciones_txt[0xBc as usize] = cp_h_txt;
+    cpu.funciones_txt[0xBC as usize] = cp_h_txt;
+    cpu.funciones[0xBD as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xBD as usize] = funcion_no_implementada;
+    cpu.funciones[0xBE as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xBE as usize] = funcion_no_implementada;
+    cpu.funciones[0xBF as usize] = cp_h;
+    cpu.funciones_txt[0xBF as usize] = cp_h_txt;
+
     // *************************** C ***********************************
+    cpu.funciones[0xC0 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xC0 as usize] = funcion_no_implementada;
     cpu.funciones[0xC1 as usize] = pop_bc;
     cpu.funciones_txt[0xC1 as usize] = pop_bc_txt;
+    cpu.funciones[0xC2 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xC2 as usize] = funcion_no_implementada;
     cpu.funciones[0xC3 as usize] = jp_nn;
     cpu.funciones_txt[0xC3 as usize] = jp_nn_txt;
+    cpu.funciones[0xC4 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xC4 as usize] = funcion_no_implementada;
     cpu.funciones[0xC5 as usize] = push_bc;
     cpu.funciones_txt[0xC5 as usize] = push_bc_txt;
+    cpu.funciones[0xC6 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xC6 as usize] = funcion_no_implementada;
+    cpu.funciones[0xC7 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xC7 as usize] = funcion_no_implementada;
+    cpu.funciones[0xC8 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xC8 as usize] = funcion_no_implementada;
     cpu.funciones[0xC9 as usize] = ret;
     cpu.funciones_txt[0xC9 as usize] = ret_txt;
+    cpu.funciones[0xCA as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xCA as usize] = funcion_no_implementada;
     cpu.funciones[0xCB as usize] = CB; // Extensión
     cpu.funciones_txt[0xCB as usize] = CB_txt;
+    cpu.funciones[0xCC as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xCC as usize] = funcion_no_implementada;
     cpu.funciones[0xCD as usize] = call_nn;
     cpu.funciones_txt[0xCD as usize] = call_nn_txt;
+    cpu.funciones[0xCE as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xCE as usize] = funcion_no_implementada;
+    cpu.funciones[0xCF as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xCF as usize] = funcion_no_implementada;
     // *************************** D ***********************************
+    cpu.funciones[0xD0 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xD0 as usize] = funcion_no_implementada;
+    cpu.funciones[0xD1 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xD1 as usize] = funcion_no_implementada;
+    cpu.funciones[0xD2 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xD2 as usize] = funcion_no_implementada;
     cpu.funciones[0xD3 as usize] = out_OnO_a;
     cpu.funciones_txt[0xD3 as usize] = out_OnO_a_txt;
+    cpu.funciones[0xD4 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xD4 as usize] = funcion_no_implementada;
+    cpu.funciones[0xD5 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xD5 as usize] = funcion_no_implementada;
+    cpu.funciones[0xD6 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xD6 as usize] = funcion_no_implementada;
+    cpu.funciones[0xD7 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xD7 as usize] = funcion_no_implementada;
+    cpu.funciones[0xD8 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xD8 as usize] = funcion_no_implementada;
+
+
+    // D9 LR35902->RETI        Z-80->EXX
+    match cpu.procesador {
+        PROCESADOR::SharpLr35902 => {
+            cpu.funciones[0xD9 as usize] = retiGB;
+            cpu.funciones_txt[0xD9 as usize] = retiGB_txt;
+        }
+        PROCESADOR::Z80 => {
+            cpu.funciones[0xD9 as usize] = exx;
+            cpu.funciones_txt[0xD9 as usize] = exx_txt;
+        }
+    };
+
+    cpu.funciones[0xDA as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xDA as usize] = funcion_no_implementada;
+    cpu.funciones[0xDB as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xDB as usize] = funcion_no_implementada;
+    cpu.funciones[0xDC as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xDC as usize] = funcion_no_implementada;
+    cpu.funciones[0xDD as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xDD as usize] = funcion_no_implementada;
+    cpu.funciones[0xDE as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xDE as usize] = funcion_no_implementada;
+    cpu.funciones[0xDF as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xDF as usize] = funcion_no_implementada;
+
+
     // *************************** E ***********************************
     // LR35902->LD (FF00+u8),A         Z-80->RET NV
     match cpu.procesador {
@@ -344,9 +560,8 @@ pub fn mete_funciones_normales(cpu: &mut CPU) {
             cpu.funciones_txt[0xE0 as usize] = ret_po_txt;
         }
     }
-    cpu.funciones[0xED as usize] = ED; // Extensión
-    cpu.funciones_txt[0xED as usize] = ED_txt;
-
+    cpu.funciones[0xE1 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xE1 as usize] = funcion_no_implementada;
     // LR35902->LD(C),A         Z-80->JP NV,nn
     match cpu.procesador {
         PROCESADOR::SharpLr35902 => {
@@ -358,6 +573,20 @@ pub fn mete_funciones_normales(cpu: &mut CPU) {
             cpu.funciones_txt[0xE2 as usize] = jp_po_nn_txt;
         }
     }
+    cpu.funciones[0xE3 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xE3 as usize] = funcion_no_implementada;
+    cpu.funciones[0xE4 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xE4 as usize] = funcion_no_implementada;
+    cpu.funciones[0xE5 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xE5 as usize] = funcion_no_implementada;
+    cpu.funciones[0xE6 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xE6 as usize] = funcion_no_implementada;
+    cpu.funciones[0xE7 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xE7 as usize] = funcion_no_implementada;
+    cpu.funciones[0xE8 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xE8 as usize] = funcion_no_implementada;
+    cpu.funciones[0xE9 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xE9 as usize] = funcion_no_implementada;
     // LR35902->LD (nn),A         Z80->JP  V,nn
     match cpu.procesador {
         PROCESADOR::SharpLr35902 => {
@@ -369,6 +598,12 @@ pub fn mete_funciones_normales(cpu: &mut CPU) {
             cpu.funciones_txt[0xEA as usize] = jp_pe_nn_txt;
         }
     }
+    cpu.funciones[0xEB as usize] = ex_de_hl;
+    cpu.funciones_txt[0xEB as usize] = ex_de_hl_txt;
+    cpu.funciones[0xEC as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xEC as usize] = funcion_no_implementada;
+    cpu.funciones[0xED as usize] = ED; // Extensión
+    cpu.funciones_txt[0xED as usize] = ED_txt;
 
 
     // *************************** F ***********************************
@@ -383,14 +618,42 @@ pub fn mete_funciones_normales(cpu: &mut CPU) {
             cpu.funciones_txt[0xF0 as usize] = ret_p_txt;
         }
     }
+    cpu.funciones[0xF1 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xF1 as usize] = funcion_no_implementada;
+    cpu.funciones[0xF2 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xF2 as usize] = funcion_no_implementada;
     cpu.funciones[0xF3 as usize] = di;
     cpu.funciones_txt[0xF3 as usize] = di_txt;
+    cpu.funciones[0xF4 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xF4 as usize] = funcion_no_implementada;
+    cpu.funciones[0xF5 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xF5 as usize] = funcion_no_implementada;
+    cpu.funciones[0xF6 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xF6 as usize] = funcion_no_implementada;
+    cpu.funciones[0xF7 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xF7 as usize] = funcion_no_implementada;
+    cpu.funciones[0xF8 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xF8 as usize] = funcion_no_implementada;
+    cpu.funciones[0xF9 as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xF9 as usize] = funcion_no_implementada;
+    cpu.funciones[0xFA as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xFA as usize] = funcion_no_implementada;
+    cpu.funciones[0xFB as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xFB as usize] = funcion_no_implementada;
+    cpu.funciones[0xFC as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xFC as usize] = funcion_no_implementada;
+    cpu.funciones[0xFD as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xFD as usize] = funcion_no_implementada;
     cpu.funciones[0xFE as usize] = cp_n;
     cpu.funciones_txt[0xFE as usize] = cp_n_txt;
+    cpu.funciones[0xFF as usize] = funcion_no_implementada;
+    cpu.funciones_txt[0xFF as usize] = funcion_no_implementada;
 }
 
 pub fn funcion_no_implementada(cpu: &mut CPU) {
-    panic!(format!("Funcion normal #{:02X} no implementada", cpu.r0));
+    panic!(format!("Funcion normal no implementada\n PC=#{:04X} r0=#{:02X},r1=#{:02X},r2#{:02X},\
+    r3=#{:02X}\n",
+                   cpu.pc, cpu.r0, cpu.r1, cpu.r2, cpu.r3));
 }
 
 // O = ()     p = '    m = +       n = valor hex de 8 bits
@@ -406,9 +669,15 @@ pub fn nop_txt(cpu: &mut CPU) {
 }
 
 // 0x01 NN NN
-pub fn ld_bc_nn(cpu: &mut CPU) { panic!("0x01 ld_bc_nn: funcion no implementada"); }
+pub fn ld_bc_nn(cpu: &mut CPU) {
+    cpu.c = cpu.r1;
+    cpu.b = cpu.r2;
 
-pub fn ld_bc_nn_txt(cpu: &mut CPU) { panic!("0x01 ld_bc_nn_txt: funcion no implementada"); }
+    cpu.t += 10;
+    cpu.pc += 3;
+}
+
+pub fn ld_bc_nn_txt(cpu: &mut CPU) { cpu.texto(&format!("LD BC,#{:04X}", cpu.r1r2)); }
 
 // 0x02
 pub fn ldObcO_a(cpu: &mut CPU) {
@@ -755,9 +1024,17 @@ pub fn ldiOhlO_aGB(cpu: &mut CPU) {
 pub fn ldiOhlO_aGB_txt(cpu: &mut CPU) { cpu.texto(&format!("LDI(HL),A")); }
 
 // 0x22 Difiere según procesador (Z80->LD  (nn),HL)
-pub fn ldOnnO_hl(cpu: &mut CPU) {}
+pub fn ldOnnO_hl(cpu: &mut CPU) {
+    cpu.mem.escribe_byte_en_mem(cpu.r1r2, cpu.l);
+    cpu.mem.escribe_byte_en_mem(cpu.r1r2 + 1, cpu.h);
 
-pub fn ldOnnO_hl_txt(cpu: &mut CPU) {}
+    cpu.pc += 3;
+    cpu.t += 16;
+}
+
+pub fn ldOnnO_hl_txt(cpu: &mut CPU) {
+    cpu.texto(&format!("LD(#{:04X}),HL", cpu.r1r2));
+}
 
 // 0x23
 pub fn inc_hl(cpu: &mut CPU) {
@@ -807,7 +1084,8 @@ pub fn jr_z_n(cpu: &mut CPU) {
 }
 
 pub fn jr_z_n_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("JR Z#{:02X})", cpu.r1));
+    let salto = cpu.pc.wrapping_add(2);
+    cpu.texto(&format!("JR Z#{:02X})", salto.wrapping_add((cpu.r1 as i8) as u16)));
 }
 
 // 0x29
@@ -1277,6 +1555,96 @@ pub fn ld_c_a_txt(cpu: &mut CPU) {
 }
 
 // *************************** 5 ***********************************
+// 0x50
+pub fn ld_d_b(cpu: &mut CPU) { panic!("0x50 funcion no implementada"); }
+
+pub fn ld_d_b_txt(cpu: &mut CPU) { panic!("0x50 funcion no implementada"); }
+
+// 0x51
+pub fn ld_d_c(cpu: &mut CPU) { panic!("0x51 funcion no implementada"); }
+
+pub fn ld_d_c_txt(cpu: &mut CPU) { panic!("0x51 funcion no implementada"); }
+
+// 0x52
+pub fn ld_d_d(cpu: &mut CPU) { panic!("0x52 funcion no implementada"); }
+
+pub fn ld_d_d_txt(cpu: &mut CPU) { panic!("0x52 funcion no implementada"); }
+
+// 0x53
+pub fn ld_d_e(cpu: &mut CPU) {
+    cpu.d = cpu.e;
+
+    cpu.t += 4;
+    cpu.pc += 1;
+}
+
+pub fn ld_d_e_txt(cpu: &mut CPU) { cpu.texto(&format!("LD D,E")); }
+
+// 0x54
+pub fn ld_d_h(cpu: &mut CPU) { panic!("0x54 funcion no implementada"); }
+
+pub fn ld_d_h_txt(cpu: &mut CPU) { panic!("0x54 funcion no implementada"); }
+
+// 0x55
+pub fn ld_d_l(cpu: &mut CPU) { panic!("0x55 funcion no implementada"); }
+
+pub fn ld_d_l_txt(cpu: &mut CPU) { panic!("0x55 funcion no implementada"); }
+
+// 0x56
+pub fn ld_d_OhlO(cpu: &mut CPU) { panic!("0x56 funcion no implementada"); }
+
+pub fn ld_d_OhlO_txt(cpu: &mut CPU) { panic!("0x56 funcion no implementada"); }
+
+// 0x57
+pub fn ld_d_a(cpu: &mut CPU) { panic!("0x57 funcion no implementada"); }
+
+pub fn ld_d_a_txt(cpu: &mut CPU) { panic!("0x57 funcion no implementada"); }
+
+// 0x58
+pub fn ld_e_b(cpu: &mut CPU) { panic!("0x58 funcion no implementada"); }
+
+pub fn ld_e_b_txt(cpu: &mut CPU) { panic!("0x58 funcion no implementada"); }
+
+// 0x59
+pub fn ld_e_c(cpu: &mut CPU) { panic!("0x59 funcion no implementada"); }
+
+pub fn ld_e_c_txt(cpu: &mut CPU) { panic!("0x59 funcion no implementada"); }
+
+// 0x5A
+pub fn ld_e_d(cpu: &mut CPU) { panic!("0x5A funcion no implementada"); }
+
+pub fn ld_e_d_txt(cpu: &mut CPU) { panic!("0x5A funcion no implementada"); }
+
+// 0x5B
+pub fn ld_e_e(cpu: &mut CPU) { panic!("0x5B funcion no implementada"); }
+
+pub fn ld_e_e_txt(cpu: &mut CPU) { panic!("0x5B funcion no implementada"); }
+
+// 0x5C
+pub fn ld_e_h(cpu: &mut CPU) {
+    cpu.e = cpu.h;
+
+    cpu.t += 4;
+    cpu.pc += 1;
+}
+
+pub fn ld_e_h_txt(cpu: &mut CPU) { cpu.texto(&format!("LD E,H")); }
+
+// 0x5D
+pub fn ld_e_l(cpu: &mut CPU) { panic!("0x5D funcion no implementada"); }
+
+pub fn ld_e_l_txt(cpu: &mut CPU) { panic!("0x5D funcion no implementada"); }
+
+// 0x5E
+pub fn ld_e_OhlO(cpu: &mut CPU) { panic!("0x5E funcion no implementada"); }
+
+pub fn ld_eOhlO_txt(cpu: &mut CPU) { panic!("0x5E funcion no implementada"); }
+
+// 0x5F
+pub fn ld_e_a(cpu: &mut CPU) { panic!("0x5F funcion no implementada"); }
+
+pub fn ld_e_a_txt(cpu: &mut CPU) { panic!("0x5F funcion no implementada"); }
+
 // *************************** 6 ***********************************
 // 0x62
 pub fn ld_h_d(cpu: &mut CPU) {
@@ -1523,6 +1891,40 @@ pub fn out_OnO_a_txt(cpu: &mut CPU) {
     cpu.texto(&format!("OUT(#{:02X}),A", cpu.r1));
 }
 
+// 0xD9 Difiere según procesador (LR35902->RETI)
+pub fn retiGB(cpu: &mut CPU) { panic!("0xD9: funcion no implementada"); }
+
+pub fn retiGB_txt(cpu: &mut CPU) { panic!("0xD9: funcion no implementada"); }
+
+// 0xD9 Difiere según procesador (Z80->EXX)
+pub fn exx(cpu: &mut CPU) {
+    let btemp = cpu.b;
+    let ctemp = cpu.c;
+    let dtemp = cpu.d;
+    let etemp = cpu.e;
+    let htemp = cpu.h;
+    let ltemp = cpu.l;
+
+    cpu.b = cpu.bp;
+    cpu.c = cpu.cp;
+    cpu.d = cpu.dp;
+    cpu.e = cpu.ep;
+    cpu.h = cpu.hp;
+    cpu.l = cpu.lp;
+
+    cpu.bp = btemp;
+    cpu.cp = ctemp;
+    cpu.dp = dtemp;
+    cpu.ep = etemp;
+    cpu.hp = htemp;
+    cpu.lp = ltemp;
+
+    cpu.pc += 1;
+    cpu.t += 4;
+}
+
+pub fn exx_txt(cpu: &mut CPU) { cpu.texto(&format!("EXX")); }
+
 // *************************** E ***********************************
 // 0xE0 Difiere según procesador (LR35902->LD(#FF00+N),A)
 pub fn ldOff00_m_nO_aGB(cpu: &mut CPU) {
@@ -1587,6 +1989,23 @@ pub fn jp_pe_nn(cpu: &mut CPU) {
 
 pub fn jp_pe_nn_txt(cpu: &mut CPU) {
     panic!("0xEA jp_pe_nn_txt: funcion no implementada");
+}
+
+// 0xEB
+pub fn ex_de_hl(cpu: &mut CPU) {
+    let dtemp = cpu.d;
+    let etemp = cpu.e;
+    cpu.d = cpu.h;
+    cpu.e = cpu.l;
+    cpu.h = dtemp;
+    cpu.l = etemp;
+
+    cpu.pc += 1;
+    cpu.t += 4;
+}
+
+pub fn ex_de_hl_txt(cpu: &mut CPU) {
+    cpu.texto(&format!("EX DE,HL"));
 }
 
 // 0xED   -----EXTENSION--------------------------------------------------------
