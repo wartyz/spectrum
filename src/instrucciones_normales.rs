@@ -634,8 +634,8 @@ pub fn mete_funciones_normales(cpu: &mut CPU) {
     cpu.funciones_txt[0xF7 as usize] = funcion_no_implementada;
     cpu.funciones[0xF8 as usize] = funcion_no_implementada;
     cpu.funciones_txt[0xF8 as usize] = funcion_no_implementada;
-    cpu.funciones[0xF9 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xF9 as usize] = funcion_no_implementada;
+    cpu.funciones[0xF9 as usize] = ld_sp_hl;
+    cpu.funciones_txt[0xF9 as usize] = ld_sp_hl_txt;
     cpu.funciones[0xFA as usize] = funcion_no_implementada;
     cpu.funciones_txt[0xFA as usize] = funcion_no_implementada;
     cpu.funciones[0xFB as usize] = funcion_no_implementada;
@@ -651,8 +651,9 @@ pub fn mete_funciones_normales(cpu: &mut CPU) {
 }
 
 pub fn funcion_no_implementada(cpu: &mut CPU) {
-    panic!(format!("Funcion normal no implementada\n PC=#{:04X} r0=#{:02X},r1=#{:02X},r2#{:02X},\
-    r3=#{:02X}\n",
+    panic!(format!("Funcion normal no implementada\n\
+    PC = #{:04X}  r0 = #{:02X}  r1 = #{:02X}  r2 = #{:02X}  \
+    r3 = #{:02X}\n",
                    cpu.pc, cpu.r0, cpu.r1, cpu.r2, cpu.r3));
 }
 
@@ -2056,6 +2057,19 @@ pub fn di(cpu: &mut CPU) {
 
 pub fn di_txt(cpu: &mut CPU) {
     cpu.texto(&format!("DI"));
+}
+
+// 0xF9
+pub fn ld_sp_hl(cpu: &mut CPU) {
+    let hl = cpu.concatena_dos_u8_en_un_u16(cpu.h, cpu.l);
+    cpu.sp = hl;
+
+    cpu.t += 6;
+    cpu.pc += 1;
+}
+
+pub fn ld_sp_hl_txt(cpu: &mut CPU) {
+    cpu.texto(&format!("LD SP,HL"));
 }
 
 // 0xFE
