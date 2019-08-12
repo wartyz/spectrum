@@ -6,21 +6,21 @@ use crate::cpu::{CPU, PROCESADOR};
 pub fn mete_funciones_ed(cpu: &mut CPU) {
 
     // *************************** 4 ***********************************
-    cpu.funciones_ed[0x43 as usize] = ld_OnnO_bc;
-    cpu.funciones_ed_txt[0x43 as usize] = ld_OnnO_bc_txt;
-    cpu.funciones_ed[0x47 as usize] = ld_i_a;
-    cpu.funciones_ed_txt[0x47 as usize] = ld_i_a_txt;
+    cpu.funciones_ed[0x43 as usize].set_punteros_y_valores_a_funcion(ld_OnnO_bc, ld_OnnO_bc_txt, 4, 20);
+    //cpu.funciones_ed_txt[0x43 as usize].set_puntero_a_funcion(ld_OnnO_bc_txt);
+    cpu.funciones_ed[0x47 as usize].set_punteros_y_valores_a_funcion(ld_i_a, ld_i_a_txt, 2, 9);
+    //cpu.funciones_ed_txt[0x47 as usize].set_puntero_a_funcion(ld_i_a_txt);
     // *************************** 5 ***********************************
-    cpu.funciones_ed[0x52 as usize] = sbc_hl_de;
-    cpu.funciones_ed_txt[0x52 as usize] = sbc_hl_de_txt;
-    cpu.funciones_ed[0x53 as usize] = ld_OnnO_de;
-    cpu.funciones_ed_txt[0x53 as usize] = ld_OnnO_de_txt;
+    cpu.funciones_ed[0x52 as usize].set_punteros_y_valores_a_funcion(sbc_hl_de, sbc_hl_de_txt, 2, 15);
+    //cpu.funciones_ed_txt[0x52 as usize].set_puntero_a_funcion(sbc_hl_de_txt);
+    cpu.funciones_ed[0x53 as usize].set_punteros_y_valores_a_funcion(ld_OnnO_de, ld_OnnO_de_txt, 4, 20);
+    //cpu.funciones_ed_txt[0x53 as usize].set_puntero_a_funcion(ld_OnnO_de_txt);
     // *************************** 6 ***********************************
     // *************************** 7 ***********************************
     // *************************** A ***********************************
     // *************************** B ***********************************
-    cpu.funciones_ed[0xB8 as usize] = lddr;
-    cpu.funciones_ed_txt[0xB8 as usize] = lddr_txt;
+    cpu.funciones_ed[0xB8 as usize].set_punteros_y_valores_a_funcion(lddr, lddr_txt, 2, 20);
+    //cpu.funciones_ed_txt[0xB8 as usize].set_puntero_a_funcion(lddr_txt);
 }
 
 pub fn funcionED_no_implementada(cpu: &mut CPU) {
@@ -78,10 +78,7 @@ fn ld_i_a(cpu: &mut CPU) {
     cpu.pc += 2;
 }
 
-fn ld_i_a_txt(cpu: &mut CPU) {
-    let txt = format!("LD I,A");
-    cpu.texto(&txt);
-}
+fn ld_i_a_txt(cpu: &mut CPU) { cpu.texto(&format!("LD I,A")); }
 
 
 fn in_c_OcO() { panic!("0x48 funcion ED no implementada"); }

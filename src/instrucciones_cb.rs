@@ -62,8 +62,8 @@ pub fn mete_funciones_cb(cpu: &mut CPU) {
     // *************************** 1 ***********************************
 //    cpu.funciones_cb[0x10 as usize] = funcionCB_no_implementada;
 //    cpu.funciones_cb_txt[0x10 as usize] = funcionCB_no_implementada;
-    cpu.funciones_cb[0x11 as usize] = rl_c;
-    cpu.funciones_cb_txt[0x11 as usize] = rl_c_txt;
+    cpu.funciones_cb[0x11 as usize].set_punteros_y_valores_a_funcion(rl_c, rl_c_txt, 2, 8);
+    //cpu.funciones_cb_txt[0x11 as usize].set_puntero_a_funcion(rl_c_txt);
 //    cpu.funciones_cb[0x12 as usize] = funcionCB_no_implementada;
 //    cpu.funciones_cb_txt[0x12 as usize] = funcionCB_no_implementada;
 //    cpu.funciones_cb[0x13 as usize] = funcionCB_no_implementada;
@@ -282,8 +282,8 @@ pub fn mete_funciones_cb(cpu: &mut CPU) {
 //    cpu.funciones_cb_txt[0x7A as usize] = funcionCB_no_implementada;
 //    cpu.funciones_cb[0x7B as usize] = funcionCB_no_implementada;
 //    cpu.funciones_cb_txt[0x7B as usize] = funcionCB_no_implementada;
-    cpu.funciones_cb[0x7C as usize] = bit7h;
-    cpu.funciones_cb_txt[0x7C as usize] = bit7h_txt;
+    cpu.funciones_cb[0x7C as usize].set_punteros_y_valores_a_funcion(bit7h, bit7h_txt, 2, 8);
+    //cpu.funciones_cb_txt[0x7C as usize].set_puntero_a_funcion(bit7h_txt);
 //    cpu.funciones_cb[0x7D as usize] = funcionCB_no_implementada;
 //    cpu.funciones_cb_txt[0x7D as usize] = funcionCB_no_implementada;
 //    cpu.funciones_cb[0x7E as usize] = funcionCB_no_implementada;

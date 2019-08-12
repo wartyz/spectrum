@@ -23,634 +23,491 @@ D9      RETI               EXX
 
 
 */
-use crate::cpu::{CPU, PROCESADOR};
+use crate::cpu::{CPU, PROCESADOR, Funcion};
+
+
+pub fn mete_valores_normales() -> [[i16; 2]; 256] {
+    // bytes, time   datos sacados de fichero:
+    // https://github.com/malandrin/gbe/blob/master/gbe/opcodes_info.cpp
+    [
+        // 0-8     1-9     2-A    3-B     4-C     5-D      6-E     7-F
+        [1, 4], [3, 12], [1, 8], [1, 8], [1, 4], [1, 4], [2, 8], [1, 4],//0
+        [3, 20], [1, 8], [1, 8], [1, 8], [1, 4], [1, 4], [2, 8], [1, 41],//0
+
+        [1308, 2], [10, 3], [7, 1], [6, 1], [4, 1], [4, 1], [7, 2], [4, 1],//1
+        [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],//1
+
+        [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],//2
+        [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],//2
+
+        [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],//3
+        [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],//3
+
+        [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],//4
+        [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],//4
+        [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],//5
+        [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],//5
+        [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],//6
+        [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],//6
+        [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],//7
+        [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],//7
+        [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],//8
+        [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],//8
+        [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],//9
+        [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],//9
+        [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],//A
+        [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],//A
+        [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],//B
+        [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],//B
+        [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],//C
+        [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],//C
+        [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],//D
+        [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],//D
+        [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],//E
+        [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],//E
+        [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],//F
+        [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],//F
+    ]
+}
 
 
 pub fn mete_funciones_normales(cpu: &mut CPU) {
     // *************************** 0 ***********************************
-    cpu.funciones[0x00 as usize] = nop;
-    cpu.funciones_txt[0x00 as usize] = nop_txt;
-    cpu.funciones[0x01 as usize] = ld_bc_nn;
-    cpu.funciones_txt[0x01 as usize] = ld_bc_nn_txt;
-    cpu.funciones[0x02 as usize] = ldObcO_a;
-    cpu.funciones_txt[0x02 as usize] = ldObcO_a_txt;
-    cpu.funciones[0x03 as usize] = inc_bc;
-    cpu.funciones_txt[0x03 as usize] = inc_bc_txt;
-    cpu.funciones[0x04 as usize] = inc_b;
-    cpu.funciones_txt[0x04 as usize] = inc_b_txt;
-    cpu.funciones[0x05 as usize] = dec_b;
-    cpu.funciones_txt[0x05 as usize] = dec_b_txt;
-    cpu.funciones[0x06 as usize] = ld_b_n;
-    cpu.funciones_txt[0x06 as usize] = ld_b_n_txt;
-    cpu.funciones[0x07 as usize] = rlca;
-    cpu.funciones_txt[0x07 as usize] = rlca_txt;
+    cpu.funciones[0x00 as usize].set_punteros_y_valores_a_funcion(nop, nop_txt, 1, 4);
+    cpu.funciones[0x01 as usize].set_punteros_y_valores_a_funcion(ld_bc_nn, ld_bc_nn_txt, 3, 12);
+    cpu.funciones[0x02 as usize].set_punteros_y_valores_a_funcion(ldObcO_a, ldObcO_a_txt, 1, 8);
+    cpu.funciones[0x03 as usize].set_punteros_y_valores_a_funcion(inc_bc, inc_bc_txt, 1, 8);
+    cpu.funciones[0x04 as usize].set_punteros_y_valores_a_funcion(inc_b, inc_b_txt, 1, 4);
+    cpu.funciones[0x05 as usize].set_punteros_y_valores_a_funcion(dec_b, dec_b_txt, 1, 4);
+    cpu.funciones[0x06 as usize].set_punteros_y_valores_a_funcion(ld_b_n, ld_b_n_txt, 2, 8);
+    cpu.funciones[0x07 as usize].set_punteros_y_valores_a_funcion(rlca, rlca_txt, 1, 4);
+
     // 08 LR35902->LD   (nn),SP         Z-80->EX  AF,AF'
     match cpu.procesador {
         PROCESADOR::SharpLr35902 => {
-            cpu.funciones[0x08 as usize] = ldOnnO_spGB;
-            cpu.funciones_txt[0x08 as usize] = ldOnnO_spGB_txt;
+            cpu.funciones[0x08 as usize].set_punteros_y_valores_a_funcion(ldOnnO_spGB,
+                                                                          ldOnnO_spGB_txt, 3, 20);
         }
         PROCESADOR::Z80 => {
-            cpu.funciones[0x08 as usize] = ex_af_afp;
-            cpu.funciones_txt[0x08 as usize] = ex_af_afp_txt;
+            cpu.funciones[0x08 as usize].set_punteros_y_valores_a_funcion(ex_af_afp,
+                                                                          ex_af_afp_txt, 1, 4);
         }
     };
-    cpu.funciones[0x09 as usize] = add_hl_bc;
-    cpu.funciones_txt[0x09 as usize] = add_hl_bc_txt;
-    cpu.funciones[0x0A as usize] = ld_aObcO;
-    cpu.funciones_txt[0x0A as usize] = ld_aObcO_txt;
-    cpu.funciones[0x0B as usize] = dec_bc;
-    cpu.funciones_txt[0x0B as usize] = dec_bc_txt;
-    cpu.funciones[0x0C as usize] = inc_c;
-    cpu.funciones_txt[0x0C as usize] = inc_c_txt;
-    cpu.funciones[0x0D as usize] = dec_c;
-    cpu.funciones_txt[0x0D as usize] = dec_c_txt;
-    cpu.funciones[0x0E as usize] = ld_c_n;
-    cpu.funciones_txt[0x0E as usize] = ld_c_n_txt;
-    cpu.funciones[0x0F as usize] = rrca;
-    cpu.funciones_txt[0x0F as usize] = rrca_txt;
+    cpu.funciones[0x09 as usize].set_punteros_y_valores_a_funcion(add_hl_bc, add_hl_bc_txt, 1, 8);
+    cpu.funciones[0x0A as usize].set_punteros_y_valores_a_funcion(ld_aObcO, ld_aObcO_txt, 1, 8);
+    cpu.funciones[0x0B as usize].set_punteros_y_valores_a_funcion(dec_bc, dec_bc_txt, 1, 8);
+    cpu.funciones[0x0C as usize].set_punteros_y_valores_a_funcion(inc_c, inc_c_txt, 1, 4);
+    cpu.funciones[0x0D as usize].set_punteros_y_valores_a_funcion(dec_c, dec_c_txt, 1, 4);
+    cpu.funciones[0x0E as usize].set_punteros_y_valores_a_funcion(ld_c_n, ld_c_n_txt, 2, 8);
+    cpu.funciones[0x0F as usize].set_punteros_y_valores_a_funcion(rrca, rrca_txt, 1, 4);
+
     // *************************** 1 ***********************************
-    cpu.funciones[0x10 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x10 as usize] = funcion_no_implementada;
-    cpu.funciones[0x11 as usize] = ld_de_nn;
-    cpu.funciones_txt[0x11 as usize] = ld_de_nn_txt;
-    cpu.funciones[0x12 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x12 as usize] = funcion_no_implementada;
-    cpu.funciones[0x13 as usize] = inc_de;
-    cpu.funciones_txt[0x13 as usize] = inc_de_txt;
-    cpu.funciones[0x14 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x14 as usize] = funcion_no_implementada;
-    cpu.funciones[0x15 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x15 as usize] = funcion_no_implementada;
-    cpu.funciones[0x16 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x16 as usize] = funcion_no_implementada;
-    cpu.funciones[0x17 as usize] = rla;
-    cpu.funciones_txt[0x17 as usize] = rla_txt;
-    cpu.funciones[0x18 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x18 as usize] = funcion_no_implementada;
-    cpu.funciones[0x19 as usize] = add_hl_de;
-    cpu.funciones_txt[0x19 as usize] = add_hl_de_txt;
-    cpu.funciones[0x1A as usize] = ld_aOdeO;
-    cpu.funciones_txt[0x1A as usize] = ld_aOdeO_txt;
-    cpu.funciones[0x1B as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x1B as usize] = funcion_no_implementada;
-    cpu.funciones[0x1C as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x1C as usize] = funcion_no_implementada;
-    cpu.funciones[0x1D as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x1D as usize] = funcion_no_implementada;
-    cpu.funciones[0x1E as usize] = ld_d_n;
-    cpu.funciones_txt[0x1E as usize] = ld_d_n_txt;
-    cpu.funciones[0x1F as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x1F as usize] = funcion_no_implementada;
+    // LR35902-> STOP               Z80->DJNZ
+    match cpu.procesador {
+        PROCESADOR::SharpLr35902 => {
+            cpu.funciones[0x10 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 2, 4);
+        }
+        PROCESADOR::Z80 => {
+            cpu.funciones[0x10 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 2, 10);
+        }
+    };
+
+    cpu.funciones[0x11 as usize].set_punteros_y_valores_a_funcion(ld_de_nn, ld_de_nn_txt, 3, 12);
+    cpu.funciones[0x12 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 8);
+    cpu.funciones[0x13 as usize].set_punteros_y_valores_a_funcion(inc_de, inc_de_txt, 1, 8);
+    cpu.funciones[0x14 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 0);
+    cpu.funciones[0x15 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x16 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 2, 8);
+    cpu.funciones[0x17 as usize].set_punteros_y_valores_a_funcion(rla, rla_txt, 1, 4);
+    cpu.funciones[0x18 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 2, 12);
+    cpu.funciones[0x19 as usize].set_punteros_y_valores_a_funcion(add_hl_de, add_hl_de_txt, 1, 8);
+    cpu.funciones[0x1A as usize].set_punteros_y_valores_a_funcion(ld_aOdeO, ld_aOdeO_txt, 1, 8);
+    cpu.funciones[0x1B as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 8);
+    cpu.funciones[0x1C as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x1D as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x1E as usize].set_punteros_y_valores_a_funcion(ld_d_n, ld_d_n_txt, 2, 8);
+    cpu.funciones[0x1F as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+
+
     // *************************** 2 ***********************************
-    cpu.funciones[0x20 as usize] = jr_nz_n;
-    cpu.funciones_txt[0x20 as usize] = jr_nz_n_txt;
-    cpu.funciones[0x21 as usize] = ld_hl_nn;
-    cpu.funciones_txt[0x21 as usize] = ld_hl_nn_txt;
+    cpu.funciones[0x20 as usize].set_punteros_y_valores_a_funcion(jr_nz_n, jr_nz_n_txt, 2, 8);
+    cpu.funciones[0x21 as usize].set_punteros_y_valores_a_funcion(ld_hl_nn, ld_hl_nn_txt, 3, 12);
+
     // LR35902->LDI  (HL),A        Z-80->LD  (nn),HL
     match cpu.procesador {
         PROCESADOR::SharpLr35902 => {
-            cpu.funciones[0x22 as usize] = ldiOhlO_aGB;
-            cpu.funciones_txt[0x22 as usize] = ldiOhlO_aGB_txt;
+            cpu.funciones[0x22 as usize].set_punteros_y_valores_a_funcion(ldiOhlO_aGB, ldiOhlO_aGB_txt, 1, 8);
         }
         PROCESADOR::Z80 => {
-            cpu.funciones[0x22 as usize] = ldOnnO_hl;
-            cpu.funciones_txt[0x22 as usize] = ldOnnO_hl_txt;
+            cpu.funciones[0x22 as usize].set_punteros_y_valores_a_funcion(ldOnnO_hl, ldOnnO_hl_txt, 3, 16);
         }
     };
-    cpu.funciones[0x23 as usize] = inc_hl;
-    cpu.funciones_txt[0x23 as usize] = inc_hl_txt;
-    cpu.funciones[0x24 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x24 as usize] = funcion_no_implementada;
-    cpu.funciones[0x25 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x25 as usize] = funcion_no_implementada;
-    cpu.funciones[0x26 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x26 as usize] = funcion_no_implementada;
-    cpu.funciones[0x27 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x27 as usize] = funcion_no_implementada;
-    cpu.funciones[0x28 as usize] = jr_z_n;
-    cpu.funciones_txt[0x28 as usize] = jr_z_n_txt;
-    cpu.funciones[0x29 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x29 as usize] = funcion_no_implementada;
-    cpu.funciones[0x2A as usize] = ld_hlOnnO;
-    cpu.funciones_txt[0x2A as usize] = ld_hlOnnO_txt;
-    cpu.funciones[0x2B as usize] = dec_hl;
-    cpu.funciones_txt[0x2B as usize] = dec_hl_txt;
-    cpu.funciones[0x2C as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x2C as usize] = funcion_no_implementada;
-    cpu.funciones[0x2D as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x2D as usize] = funcion_no_implementada;
-    cpu.funciones[0x2E as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x2E as usize] = funcion_no_implementada;
-    cpu.funciones[0x2F as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x2F as usize] = funcion_no_implementada;
+    cpu.funciones[0x23 as usize].set_punteros_y_valores_a_funcion(inc_hl, inc_hl_txt, 1, 8);
+    cpu.funciones[0x24 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x25 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 0);
+    cpu.funciones[0x26 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 2, 8);
+    cpu.funciones[0x27 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x28 as usize].set_punteros_y_valores_a_funcion(jr_z_n, jr_z_n_txt, 2, 8);
+    cpu.funciones[0x29 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 8);
+
+    // LR35902->LDI  A,(HL)        Z-80->LD  HL,(nn)
+    match cpu.procesador {
+        PROCESADOR::SharpLr35902 => {
+            cpu.funciones[0x2A as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 8);
+        }
+        PROCESADOR::Z80 => {
+            cpu.funciones[0x2A as usize].set_punteros_y_valores_a_funcion(ld_hlOnnO, ld_hlOnnO_txt, 1, 8);
+        }
+    };
+
+    cpu.funciones[0x2B as usize].set_punteros_y_valores_a_funcion(dec_hl, dec_hl_txt, 1, 8);
+    cpu.funciones[0x2C as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x2D as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x2E as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 2, 8);
+    cpu.funciones[0x2F as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+
     // *************************** 3 ***********************************
 
-    cpu.funciones[0x30 as usize] = jr_nc_n;
-    cpu.funciones_txt[0x30 as usize] = jr_nc_n_txt;
-    cpu.funciones[0x31 as usize] = ld_sp_nn;
-    cpu.funciones_txt[0x31 as usize] = ld_sp_nn_txt;
+    cpu.funciones[0x30 as usize].set_punteros_y_valores_a_funcion(jr_nc_n, jr_nc_n_txt, 1, 8);
+
+    cpu.funciones[0x31 as usize].set_punteros_y_valores_a_funcion(ld_sp_nn, ld_sp_nn_txt, 3, 12);
+
     // LR35902->LDD  (HL),A    Z-80->LD  (nn),A
     match cpu.procesador {
         PROCESADOR::SharpLr35902 => {
-            cpu.funciones[0x32 as usize] = lddOhlO_aGB;
-            cpu.funciones_txt[0x32 as usize] = lddOhlO_aGB_txt;
+            cpu.funciones[0x32 as usize].set_punteros_y_valores_a_funcion(lddOhlO_aGB, lddOhlO_aGB_txt, 1, 8);
         }
         PROCESADOR::Z80 => {
-            cpu.funciones[0x32 as usize] = ldOnnO_a;
-            cpu.funciones_txt[0x32 as usize] = ldOnnO_a_txt;
+            cpu.funciones[0x32 as usize].set_punteros_y_valores_a_funcion(ldOnnO_a, ldOnnO_a_txt, 3, 13);
         }
     };
 
+    cpu.funciones[0x33 as usize].set_punteros_y_valores_a_funcion(inc_sp, inc_sp_txt, 1, 8);
 
-    cpu.funciones[0x33 as usize] = inc_sp;
-    cpu.funciones_txt[0x33 as usize] = inc_sp_txt;
-    cpu.funciones[0x34 as usize] = inc_OhlO;
-    cpu.funciones_txt[0x34 as usize] = inc_OhlO_txt;
-    cpu.funciones[0x35 as usize] = dec_OhlO;
-    cpu.funciones_txt[0x35 as usize] = dec_OhlO_txt;
-    cpu.funciones[0x36 as usize] = ld_OhlO_n;
-    cpu.funciones_txt[0x36 as usize] = ld_OhlO_n_txt;
-    cpu.funciones[0x37 as usize] = scf;
-    cpu.funciones_txt[0x37 as usize] = scf_txt;
-    cpu.funciones[0x38 as usize] = jr_c_n;
-    cpu.funciones_txt[0x38 as usize] = jr_c_n_txt;
-    cpu.funciones[0x39 as usize] = add_hl_sp;
-    cpu.funciones_txt[0x39 as usize] = add_hl_sp_txt;
+    cpu.funciones[0x34 as usize].set_punteros_y_valores_a_funcion(inc_OhlO, inc_OhlO_txt, 1, 12);
+
+    cpu.funciones[0x35 as usize].set_punteros_y_valores_a_funcion(dec_OhlO, dec_OhlO_txt, 1, 12);
+
+    cpu.funciones[0x36 as usize].set_punteros_y_valores_a_funcion(ld_OhlO_n, ld_OhlO_n_txt, 2, 12);
+
+    cpu.funciones[0x37 as usize].set_punteros_y_valores_a_funcion(scf, scf_txt, 1, 4);
+
+    cpu.funciones[0x38 as usize].set_punteros_y_valores_a_funcion(jr_c_n, jr_c_n_txt, 1, 8);
+
+    cpu.funciones[0x39 as usize].set_punteros_y_valores_a_funcion(add_hl_sp, add_hl_sp_txt, 1, 0);
+    //cpu.funciones_txt[0x39 as usize].set_punteros_y_valores_a_funcion(add_hl_sp_txt);
 
     // LR35902->LDD  A,(HL)     Z-80->LD  A,(nn)
     match cpu.procesador {
         PROCESADOR::SharpLr35902 => {
-            cpu.funciones[0x3A as usize] = ldd_a_OhlOGB;
-            cpu.funciones_txt[0x3A as usize] = ldd_a_OhlOGB_txt;
+            cpu.funciones[0x3A as usize].set_punteros_y_valores_a_funcion(ldd_a_OhlOGB, ldd_a_OhlOGB_txt, 1, 8);
         }
         PROCESADOR::Z80 => {
-            cpu.funciones[0x3A as usize] = ld_a_OnnO;
-            cpu.funciones_txt[0x3A as usize] = ld_a_OnnO_txt;
+            cpu.funciones[0x3A as usize].set_punteros_y_valores_a_funcion(ld_a_OnnO, ld_a_OnnO_txt, 3, 13);
         }
     };
 
-    cpu.funciones[0x3B as usize] = dec_sp;
-    cpu.funciones_txt[0x3B as usize] = dec_sp_txt;
-    cpu.funciones[0x3C as usize] = inc_a;
-    cpu.funciones_txt[0x3C as usize] = inc_a_txt;
-    cpu.funciones[0x3D as usize] = dec_a;
-    cpu.funciones_txt[0x3D as usize] = dec_a_txt;
-    cpu.funciones[0x3E as usize] = ld_a_n;
-    cpu.funciones_txt[0x3E as usize] = ld_a_n_txt;
-    cpu.funciones[0x3F as usize] = ccf;
-    cpu.funciones_txt[0x3F as usize] = ccf_txt;
+    cpu.funciones[0x3B as usize].set_punteros_y_valores_a_funcion(dec_sp, dec_sp_txt, 1, 0);
+    cpu.funciones[0x3C as usize].set_punteros_y_valores_a_funcion(inc_a, inc_a_txt, 1, 4);
+    cpu.funciones[0x3D as usize].set_punteros_y_valores_a_funcion(dec_a, dec_a_txt, 1, 4);
+    cpu.funciones[0x3E as usize].set_punteros_y_valores_a_funcion(ld_a_n, ld_a_n_txt, 2, 8);
+    cpu.funciones[0x3F as usize].set_punteros_y_valores_a_funcion(ccf, ccf_txt, 1, 4);
 
     // *************************** 4 ***********************************
-    cpu.funciones[0x40 as usize] = ld_b_b;
-    cpu.funciones_txt[0x40 as usize] = ld_b_b_txt;
-    cpu.funciones[0x41 as usize] = ld_b_c;
-    cpu.funciones_txt[0x41 as usize] = ld_b_c_txt;
-    cpu.funciones[0x42 as usize] = ld_b_d;
-    cpu.funciones_txt[0x42 as usize] = ld_b_d_txt;
-    cpu.funciones[0x43 as usize] = ld_b_e;
-    cpu.funciones_txt[0x43 as usize] = ld_b_e_txt;
-    cpu.funciones[0x44 as usize] = ld_b_h;
-    cpu.funciones_txt[0x44 as usize] = ld_b_h_txt;
-    cpu.funciones[0x45 as usize] = ld_b_l;
-    cpu.funciones_txt[0x45 as usize] = ld_b_l_txt;
-    cpu.funciones[0x46 as usize] = ld_b_OhlO;
-    cpu.funciones_txt[0x46 as usize] = ld_b_OhlO_txt;
-    cpu.funciones[0x47 as usize] = ld_b_a;
-    cpu.funciones_txt[0x47 as usize] = ld_b_a_txt;
-    cpu.funciones[0x48 as usize] = ld_c_b;
-    cpu.funciones_txt[0x48 as usize] = ld_c_b_txt;
-    cpu.funciones[0x49 as usize] = ld_c_c;
-    cpu.funciones_txt[0x49 as usize] = ld_c_c_txt;
-    cpu.funciones[0x4A as usize] = ld_c_d;
-    cpu.funciones_txt[0x4A as usize] = ld_c_d_txt;
-    cpu.funciones[0x4B as usize] = ld_c_e;
-    cpu.funciones_txt[0x4B as usize] = ld_c_e_txt;
-    cpu.funciones[0x4C as usize] = ld_c_h;
-    cpu.funciones_txt[0x4C as usize] = ld_c_h_txt;
-    cpu.funciones[0x4D as usize] = ld_c_l;
-    cpu.funciones_txt[0x4D as usize] = ld_c_l_txt;
-    cpu.funciones[0x4E as usize] = ld_c_OhlO;
-    cpu.funciones_txt[0x4E as usize] = ld_c_OhlO_txt;
-    cpu.funciones[0x4F as usize] = ld_c_a;
-    cpu.funciones_txt[0x4F as usize] = ld_c_a_txt;
+    cpu.funciones[0x40 as usize].set_punteros_y_valores_a_funcion(ld_b_b, ld_b_b_txt, 1, 4);
+    cpu.funciones[0x41 as usize].set_punteros_y_valores_a_funcion(ld_b_c, ld_b_c_txt, 1, 4);
+    cpu.funciones[0x42 as usize].set_punteros_y_valores_a_funcion(ld_b_d, ld_b_d_txt, 1, 4);
+    cpu.funciones[0x43 as usize].set_punteros_y_valores_a_funcion(ld_b_e, ld_b_e_txt, 1, 4);
+    cpu.funciones[0x44 as usize].set_punteros_y_valores_a_funcion(ld_b_h, ld_b_h_txt, 1, 4);
+    cpu.funciones[0x45 as usize].set_punteros_y_valores_a_funcion(ld_b_l, ld_b_l_txt, 1, 4);
+    cpu.funciones[0x46 as usize].set_punteros_y_valores_a_funcion(ld_b_OhlO, ld_b_OhlO_txt, 1, 8);
+    cpu.funciones[0x47 as usize].set_punteros_y_valores_a_funcion(ld_b_a, ld_b_a_txt, 1, 4);
+    cpu.funciones[0x48 as usize].set_punteros_y_valores_a_funcion(ld_c_b, ld_c_b_txt, 1, 4);
+    cpu.funciones[0x49 as usize].set_punteros_y_valores_a_funcion(ld_c_c, ld_c_c_txt, 1, 4);
+    cpu.funciones[0x4A as usize].set_punteros_y_valores_a_funcion(ld_c_d, ld_c_d_txt, 1, 4);
+    cpu.funciones[0x4B as usize].set_punteros_y_valores_a_funcion(ld_c_e, ld_c_e_txt, 1, 4);
+    cpu.funciones[0x4C as usize].set_punteros_y_valores_a_funcion(ld_c_h, ld_c_h_txt, 1, 4);
+    cpu.funciones[0x4D as usize].set_punteros_y_valores_a_funcion(ld_c_l, ld_c_l_txt, 1, 4);
+    cpu.funciones[0x4E as usize].set_punteros_y_valores_a_funcion(ld_c_OhlO, ld_c_OhlO_txt, 1, 8);
+    cpu.funciones[0x4F as usize].set_punteros_y_valores_a_funcion(ld_c_a, ld_c_a_txt, 1, 4);
     // *************************** 5 ***********************************
-    cpu.funciones[0x50 as usize] = ld_d_b;
-    cpu.funciones_txt[0x50 as usize] = ld_d_b_txt;
-    cpu.funciones[0x51 as usize] = ld_d_c;
-    cpu.funciones_txt[0x51 as usize] = ld_d_c_txt;
-    cpu.funciones[0x52 as usize] = ld_d_d;
-    cpu.funciones_txt[0x52 as usize] = ld_d_d_txt;
-    cpu.funciones[0x53 as usize] = ld_d_e;
-    cpu.funciones_txt[0x53 as usize] = ld_d_e_txt;
-    cpu.funciones[0x54 as usize] = ld_d_h;
-    cpu.funciones_txt[0x54 as usize] = ld_d_h_txt;
-    cpu.funciones[0x55 as usize] = ld_d_l;
-    cpu.funciones_txt[0x55 as usize] = ld_d_l_txt;
-    cpu.funciones[0x56 as usize] = ld_d_OhlO;
-    cpu.funciones_txt[0x56 as usize] = ld_d_OhlO_txt;
-    cpu.funciones[0x57 as usize] = ld_d_a;
-    cpu.funciones_txt[0x57 as usize] = ld_d_a_txt;
-    cpu.funciones[0x58 as usize] = ld_e_b;
-    cpu.funciones_txt[0x58 as usize] = ld_e_b_txt;
-    cpu.funciones[0x59 as usize] = ld_e_c;
-    cpu.funciones_txt[0x59 as usize] = ld_e_c_txt;
-    cpu.funciones[0x5A as usize] = ld_e_d;
-    cpu.funciones_txt[0x5A as usize] = ld_e_d_txt;
-    cpu.funciones[0x5B as usize] = ld_e_e;
-    cpu.funciones_txt[0x5B as usize] = ld_e_e_txt;
-    cpu.funciones[0x5C as usize] = ld_e_h;
-    cpu.funciones_txt[0x5C as usize] = ld_e_h_txt;
-    cpu.funciones[0x5D as usize] = ld_e_l;
-    cpu.funciones_txt[0x5D as usize] = ld_e_l_txt;
-    cpu.funciones[0x5E as usize] = ld_e_OhlO;
-    cpu.funciones_txt[0x5E as usize] = ld_eOhlO_txt;
-    cpu.funciones[0x5F as usize] = ld_e_a;
-    cpu.funciones_txt[0x5F as usize] = ld_e_a_txt;
+    cpu.funciones[0x50 as usize].set_punteros_y_valores_a_funcion(ld_d_b, ld_d_b_txt, 1, 4);
+    cpu.funciones[0x51 as usize].set_punteros_y_valores_a_funcion(ld_d_c, ld_d_c_txt, 1, 4);
+    cpu.funciones[0x52 as usize].set_punteros_y_valores_a_funcion(ld_d_d, ld_d_d_txt, 1, 4);
+    cpu.funciones[0x53 as usize].set_punteros_y_valores_a_funcion(ld_d_e, ld_d_e_txt, 1, 4);
+    cpu.funciones[0x54 as usize].set_punteros_y_valores_a_funcion(ld_d_h, ld_d_h_txt, 1, 4);
+    cpu.funciones[0x55 as usize].set_punteros_y_valores_a_funcion(ld_d_l, ld_d_l_txt, 1, 4);
+    cpu.funciones[0x56 as usize].set_punteros_y_valores_a_funcion(ld_d_OhlO, ld_d_OhlO_txt, 1, 8);
+    cpu.funciones[0x57 as usize].set_punteros_y_valores_a_funcion(ld_d_a, ld_d_a_txt, 1, 4);
+    cpu.funciones[0x58 as usize].set_punteros_y_valores_a_funcion(ld_e_b, ld_e_b_txt, 1, 4);
+    cpu.funciones[0x59 as usize].set_punteros_y_valores_a_funcion(ld_e_c, ld_e_c_txt, 1, 4);
+    cpu.funciones[0x5A as usize].set_punteros_y_valores_a_funcion(ld_e_d, ld_e_d_txt, 1, 4);
+    cpu.funciones[0x5B as usize].set_punteros_y_valores_a_funcion(ld_e_e, ld_e_e_txt, 1, 4);
+    cpu.funciones[0x5C as usize].set_punteros_y_valores_a_funcion(ld_e_h, ld_e_h_txt, 1, 4);
+    cpu.funciones[0x5D as usize].set_punteros_y_valores_a_funcion(ld_e_l, ld_e_l_txt, 1, 4);
+    cpu.funciones[0x5E as usize].set_punteros_y_valores_a_funcion(ld_e_OhlO, ld_eOhlO_txt, 1, 8);
+    cpu.funciones[0x5F as usize].set_punteros_y_valores_a_funcion(ld_e_a, ld_e_a_txt, 1, 4);
 
     // *************************** 6 ***********************************
-    cpu.funciones[0x60 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x60 as usize] = funcion_no_implementada;
-    cpu.funciones[0x61 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x61 as usize] = funcion_no_implementada;
-    cpu.funciones[0x62 as usize] = ld_h_d;
-    cpu.funciones_txt[0x62 as usize] = ld_h_d_txt;
-    cpu.funciones[0x63 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x63 as usize] = funcion_no_implementada;
-    cpu.funciones[0x64 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x64 as usize] = funcion_no_implementada;
-    cpu.funciones[0x65 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x65 as usize] = funcion_no_implementada;
-    cpu.funciones[0x66 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x66 as usize] = funcion_no_implementada;
-    cpu.funciones[0x67 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x67 as usize] = funcion_no_implementada;
-    cpu.funciones[0x68 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x68 as usize] = funcion_no_implementada;
-    cpu.funciones[0x69 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x69 as usize] = funcion_no_implementada;
-    cpu.funciones[0x6A as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x6A as usize] = funcion_no_implementada;
-    cpu.funciones[0x6B as usize] = ld_l_e;
-    cpu.funciones_txt[0x6B as usize] = ld_l_e_txt;
-    cpu.funciones[0x6C as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x6C as usize] = funcion_no_implementada;
-    cpu.funciones[0x6D as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x6D as usize] = funcion_no_implementada;
-    cpu.funciones[0x6E as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x6E as usize] = funcion_no_implementada;
-    cpu.funciones[0x6F as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x6F as usize] = funcion_no_implementada;
+    cpu.funciones[0x60 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x61 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x62 as usize].set_punteros_y_valores_a_funcion(ld_h_d, ld_h_d_txt, 1, 4);
+    cpu.funciones[0x63 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x64 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x65 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x66 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 8);
+    cpu.funciones[0x67 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x68 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x69 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x6A as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x6B as usize].set_punteros_y_valores_a_funcion(ld_l_e, ld_l_e_txt, 1, 4);
+    cpu.funciones[0x6C as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x6D as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x6E as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 8);
+    cpu.funciones[0x6F as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
     // *************************** 7 ***********************************
-    cpu.funciones[0x70 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x70 as usize] = funcion_no_implementada;
-    cpu.funciones[0x71 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x71 as usize] = funcion_no_implementada;
-    cpu.funciones[0x72 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x72 as usize] = funcion_no_implementada;
-    cpu.funciones[0x73 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x73 as usize] = funcion_no_implementada;
-    cpu.funciones[0x74 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x74 as usize] = funcion_no_implementada;
-    cpu.funciones[0x75 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x75 as usize] = funcion_no_implementada;
-    cpu.funciones[0x76 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x76 as usize] = funcion_no_implementada;
-    cpu.funciones[0x77 as usize] = ldOhlO_a;
-    cpu.funciones_txt[0x77 as usize] = ldOhlO_a_txt;
-    cpu.funciones[0x78 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x78 as usize] = funcion_no_implementada;
-    cpu.funciones[0x79 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x79 as usize] = funcion_no_implementada;
-    cpu.funciones[0x7A as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x7A as usize] = funcion_no_implementada;
-    cpu.funciones[0x7B as usize] = ld_a_e;
-    cpu.funciones_txt[0x7B as usize] = ld_a_e_txt;
-    cpu.funciones[0x7C as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x7C as usize] = funcion_no_implementada;
-    cpu.funciones[0x7D as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x7D as usize] = funcion_no_implementada;
-    cpu.funciones[0x7E as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x7E as usize] = funcion_no_implementada;
-    cpu.funciones[0x7F as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x7F as usize] = funcion_no_implementada;
+    cpu.funciones[0x70 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 8);
+    cpu.funciones[0x71 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 8);
+    cpu.funciones[0x72 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 8);
+    cpu.funciones[0x73 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 8);
+    cpu.funciones[0x74 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 8);
+    cpu.funciones[0x75 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 8);
+    cpu.funciones[0x76 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x77 as usize].set_punteros_y_valores_a_funcion(ldOhlO_a, ldOhlO_a_txt, 1, 8);
+    cpu.funciones[0x78 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x79 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x7A as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x7B as usize].set_punteros_y_valores_a_funcion(ld_a_e, ld_a_e_txt, 1, 4);
+    cpu.funciones[0x7C as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x7D as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x7E as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 8);
+    cpu.funciones[0x7F as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
 
     // *************************** 8 ***********************************
-    cpu.funciones[0x80 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x80 as usize] = funcion_no_implementada;
-    cpu.funciones[0x81 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x81 as usize] = funcion_no_implementada;
-    cpu.funciones[0x82 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x82 as usize] = funcion_no_implementada;
-    cpu.funciones[0x83 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x83 as usize] = funcion_no_implementada;
-    cpu.funciones[0x84 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x84 as usize] = funcion_no_implementada;
-    cpu.funciones[0x85 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x85 as usize] = funcion_no_implementada;
-    cpu.funciones[0x86 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x86 as usize] = funcion_no_implementada;
-    cpu.funciones[0x87 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x87 as usize] = funcion_no_implementada;
-    cpu.funciones[0x88 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x88 as usize] = funcion_no_implementada;
-    cpu.funciones[0x89 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x89 as usize] = funcion_no_implementada;
-    cpu.funciones[0x8A as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x8A as usize] = funcion_no_implementada;
-    cpu.funciones[0x8B as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x8B as usize] = funcion_no_implementada;
-    cpu.funciones[0x8C as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x8C as usize] = funcion_no_implementada;
-    cpu.funciones[0x8D as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x8D as usize] = funcion_no_implementada;
-    cpu.funciones[0x8E as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x8E as usize] = funcion_no_implementada;
-    cpu.funciones[0x8F as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x8F as usize] = funcion_no_implementada;
+    cpu.funciones[0x80 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x81 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x82 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x83 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x84 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x85 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x86 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 8);
+    cpu.funciones[0x87 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x88 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x89 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x8A as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x8B as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x8C as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x8D as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x8E as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 8);
+    cpu.funciones[0x8F as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
     // *************************** 9 ***********************************
-    cpu.funciones[0x90 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x90 as usize] = funcion_no_implementada;
-    cpu.funciones[0x91 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x91 as usize] = funcion_no_implementada;
-    cpu.funciones[0x92 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x92 as usize] = funcion_no_implementada;
-    cpu.funciones[0x93 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x93 as usize] = funcion_no_implementada;
-    cpu.funciones[0x94 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x94 as usize] = funcion_no_implementada;
-    cpu.funciones[0x95 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x95 as usize] = funcion_no_implementada;
-    cpu.funciones[0x96 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x96 as usize] = funcion_no_implementada;
-    cpu.funciones[0x97 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x97 as usize] = funcion_no_implementada;
-    cpu.funciones[0x98 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x98 as usize] = funcion_no_implementada;
-    cpu.funciones[0x99 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x99 as usize] = funcion_no_implementada;
-    cpu.funciones[0x9A as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x9A as usize] = funcion_no_implementada;
-    cpu.funciones[0x9B as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x9B as usize] = funcion_no_implementada;
-    cpu.funciones[0x9C as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x9C as usize] = funcion_no_implementada;
-    cpu.funciones[0x9D as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x9D as usize] = funcion_no_implementada;
-    cpu.funciones[0x9E as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x9E as usize] = funcion_no_implementada;
-    cpu.funciones[0x9F as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0x9F as usize] = funcion_no_implementada;
+    cpu.funciones[0x90 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x91 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x92 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x93 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x94 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x95 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x96 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 8);
+    cpu.funciones[0x97 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x98 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x99 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x9A as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x9B as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x9C as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x9D as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0x9E as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 8);
+    cpu.funciones[0x9F as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
     // *************************** A ***********************************
-    cpu.funciones[0xA0 as usize] = and_b;
-    cpu.funciones_txt[0xA0 as usize] = and_b_txt;
-    cpu.funciones[0xA1 as usize] = and_c;
-    cpu.funciones_txt[0xA1 as usize] = and_c_txt;
-    cpu.funciones[0xA2 as usize] = and_d;
-    cpu.funciones_txt[0xA2 as usize] = and_d_txt;
-    cpu.funciones[0xA3 as usize] = and_e;
-    cpu.funciones_txt[0xA3 as usize] = and_e_txt;
-    cpu.funciones[0xA4 as usize] = and_h;
-    cpu.funciones_txt[0xA4 as usize] = and_h_txt;
-    cpu.funciones[0xA5 as usize] = and_l;
-    cpu.funciones_txt[0xA5 as usize] = and_l_txt;
-    cpu.funciones[0xA6 as usize] = and_OhlO;
-    cpu.funciones_txt[0xA6 as usize] = and_OhlO_txt;
-    cpu.funciones[0xA7 as usize] = and_a;
-    cpu.funciones_txt[0xA7 as usize] = and_a_txt;
-    cpu.funciones[0xA8 as usize] = xor_b;
-    cpu.funciones_txt[0xA8 as usize] = xor_b_txt;
-    cpu.funciones[0xA9 as usize] = xor_c;
-    cpu.funciones_txt[0xA9 as usize] = xor_c_txt;
-    cpu.funciones[0xAA as usize] = xor_d;
-    cpu.funciones_txt[0xAA as usize] = xor_d_txt;
-    cpu.funciones[0xAB as usize] = xor_e;
-    cpu.funciones_txt[0xAB as usize] = xor_e_txt;
-    cpu.funciones[0xAC as usize] = xor_h;
-    cpu.funciones_txt[0xAC as usize] = xor_h_txt;
-    cpu.funciones[0xAD as usize] = xor_l;
-    cpu.funciones_txt[0xAD as usize] = xor_l_txt;
-    cpu.funciones[0xAE as usize] = xor_OhlO;
-    cpu.funciones_txt[0xAE as usize] = xor_OhlO_txt;
-    cpu.funciones[0xAF as usize] = xor_a;
-    cpu.funciones_txt[0xAF as usize] = xor_a_txt;
+    cpu.funciones[0xA0 as usize].set_punteros_y_valores_a_funcion(and_b, and_b_txt, 1, 4);
+    cpu.funciones[0xA1 as usize].set_punteros_y_valores_a_funcion(and_c, and_c_txt, 1, 4);
+    cpu.funciones[0xA2 as usize].set_punteros_y_valores_a_funcion(and_d, and_d_txt, 1, 4);
+    cpu.funciones[0xA3 as usize].set_punteros_y_valores_a_funcion(and_e, and_e_txt, 1, 4);
+    cpu.funciones[0xA4 as usize].set_punteros_y_valores_a_funcion(and_h, and_h_txt, 1, 4);
+    cpu.funciones[0xA5 as usize].set_punteros_y_valores_a_funcion(and_l, and_l_txt, 1, 4);
+    cpu.funciones[0xA6 as usize].set_punteros_y_valores_a_funcion(and_OhlO, and_OhlO_txt, 1, 8);
+    cpu.funciones[0xA7 as usize].set_punteros_y_valores_a_funcion(and_a, and_a_txt, 1, 4);
+    cpu.funciones[0xA8 as usize].set_punteros_y_valores_a_funcion(xor_b, xor_b_txt, 1, 4);
+    cpu.funciones[0xA9 as usize].set_punteros_y_valores_a_funcion(xor_c, xor_c_txt, 1, 4);
+    cpu.funciones[0xAA as usize].set_punteros_y_valores_a_funcion(xor_d, xor_d_txt, 1, 4);
+    cpu.funciones[0xAB as usize].set_punteros_y_valores_a_funcion(xor_e, xor_e_txt, 1, 4);
+    cpu.funciones[0xAC as usize].set_punteros_y_valores_a_funcion(xor_h, xor_h_txt, 1, 4);
+    cpu.funciones[0xAD as usize].set_punteros_y_valores_a_funcion(xor_l, xor_l_txt, 1, 4);
+    cpu.funciones[0xAE as usize].set_punteros_y_valores_a_funcion(xor_OhlO, xor_OhlO_txt, 1, 8);
+    cpu.funciones[0xAF as usize].set_punteros_y_valores_a_funcion(xor_a, xor_a_txt, 1, 4);
     // *************************** B ***********************************
-    cpu.funciones[0xB0 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xB0 as usize] = funcion_no_implementada;
-    cpu.funciones[0xB1 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xB1 as usize] = funcion_no_implementada;
-    cpu.funciones[0xB2 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xB2 as usize] = funcion_no_implementada;
-    cpu.funciones[0xB3 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xB3 as usize] = funcion_no_implementada;
-    cpu.funciones[0xB4 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xB4 as usize] = funcion_no_implementada;
-    cpu.funciones[0xB5 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xB5 as usize] = funcion_no_implementada;
-    cpu.funciones[0xB6 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xB6 as usize] = funcion_no_implementada;
-    cpu.funciones[0xB7 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xB7 as usize] = funcion_no_implementada;
-    cpu.funciones[0xB8 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xB8 as usize] = funcion_no_implementada;
-    cpu.funciones[0xB9 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xB9 as usize] = funcion_no_implementada;
-    cpu.funciones[0xBA as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xBA as usize] = funcion_no_implementada;
-    cpu.funciones[0xBB as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xBB as usize] = funcion_no_implementada;
-    cpu.funciones[0xBC as usize] = cp_h;
-    cpu.funciones_txt[0xBC as usize] = cp_h_txt;
-    cpu.funciones[0xBD as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xBD as usize] = funcion_no_implementada;
-    cpu.funciones[0xBE as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xBE as usize] = funcion_no_implementada;
-    cpu.funciones[0xBF as usize] = cp_h;
-    cpu.funciones_txt[0xBF as usize] = cp_h_txt;
+    cpu.funciones[0xB0 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0xB1 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0xB2 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0xB3 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0xB4 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0xB5 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0xB6 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 8);
+    cpu.funciones[0xB7 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0xB8 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0xB9 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0xBA as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0xBB as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0xBC as usize].set_punteros_y_valores_a_funcion(cp_h, cp_h_txt, 1, 4);
+    cpu.funciones[0xBD as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0xBE as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 8);
+    cpu.funciones[0xBF as usize].set_punteros_y_valores_a_funcion(cp_h, cp_h_txt, 1, 4);
 
     // *************************** C ***********************************
-    cpu.funciones[0xC0 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xC0 as usize] = funcion_no_implementada;
-    cpu.funciones[0xC1 as usize] = pop_bc;
-    cpu.funciones_txt[0xC1 as usize] = pop_bc_txt;
-    cpu.funciones[0xC2 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xC2 as usize] = funcion_no_implementada;
-    cpu.funciones[0xC3 as usize] = jp_nn;
-    cpu.funciones_txt[0xC3 as usize] = jp_nn_txt;
-    cpu.funciones[0xC4 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xC4 as usize] = funcion_no_implementada;
-    cpu.funciones[0xC5 as usize] = push_bc;
-    cpu.funciones_txt[0xC5 as usize] = push_bc_txt;
-    cpu.funciones[0xC6 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xC6 as usize] = funcion_no_implementada;
-    cpu.funciones[0xC7 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xC7 as usize] = funcion_no_implementada;
-    cpu.funciones[0xC8 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xC8 as usize] = funcion_no_implementada;
-    cpu.funciones[0xC9 as usize] = ret;
-    cpu.funciones_txt[0xC9 as usize] = ret_txt;
-    cpu.funciones[0xCA as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xCA as usize] = funcion_no_implementada;
-    cpu.funciones[0xCB as usize] = CB; // Extensión
-    cpu.funciones_txt[0xCB as usize] = CB_txt;
-    cpu.funciones[0xCC as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xCC as usize] = funcion_no_implementada;
-    cpu.funciones[0xCD as usize] = call_nn;
-    cpu.funciones_txt[0xCD as usize] = call_nn_txt;
-    cpu.funciones[0xCE as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xCE as usize] = funcion_no_implementada;
-    cpu.funciones[0xCF as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xCF as usize] = funcion_no_implementada;
+    cpu.funciones[0xC0 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 8);
+    cpu.funciones[0xC1 as usize].set_punteros_y_valores_a_funcion(pop_bc, pop_bc_txt, 1, 12);
+    cpu.funciones[0xC2 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 3, 12);
+    cpu.funciones[0xC3 as usize].set_punteros_y_valores_a_funcion(jp_nn, jp_nn_txt, 3, 16);
+    cpu.funciones[0xC4 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 3, 12);
+    cpu.funciones[0xC5 as usize].set_punteros_y_valores_a_funcion(push_bc, push_bc_txt, 1, 16);
+    cpu.funciones[0xC6 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 2, 8);
+    cpu.funciones[0xC7 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 16);
+    cpu.funciones[0xC8 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 8);
+    cpu.funciones[0xC9 as usize].set_punteros_y_valores_a_funcion(ret, ret_txt, 1, 16);
+    cpu.funciones[0xCA as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 3, 12);
+    cpu.funciones[0xCB as usize].set_punteros_y_valores_a_funcion(CB, CB_txt, 0, 0); // Extensión
+    cpu.funciones[0xCC as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 3, 12);
+    cpu.funciones[0xCD as usize].set_punteros_y_valores_a_funcion(call_nn, call_nn_txt, 3, 14);
+    cpu.funciones[0xCE as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 8);
+    cpu.funciones[0xCF as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 16);
     // *************************** D ***********************************
-    cpu.funciones[0xD0 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xD0 as usize] = funcion_no_implementada;
-    cpu.funciones[0xD1 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xD1 as usize] = funcion_no_implementada;
-    cpu.funciones[0xD2 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xD2 as usize] = funcion_no_implementada;
-    cpu.funciones[0xD3 as usize] = out_OnO_a;
-    cpu.funciones_txt[0xD3 as usize] = out_OnO_a_txt;
-    cpu.funciones[0xD4 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xD4 as usize] = funcion_no_implementada;
-    cpu.funciones[0xD5 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xD5 as usize] = funcion_no_implementada;
-    cpu.funciones[0xD6 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xD6 as usize] = funcion_no_implementada;
-    cpu.funciones[0xD7 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xD7 as usize] = funcion_no_implementada;
-    cpu.funciones[0xD8 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xD8 as usize] = funcion_no_implementada;
-
+    cpu.funciones[0xD0 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 8);
+    cpu.funciones[0xD1 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 12);
+    cpu.funciones[0xD2 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 3, 12);
+    cpu.funciones[0xD3 as usize].set_punteros_y_valores_a_funcion(out_OnO_a, out_OnO_a_txt, 1, 0);
+    cpu.funciones[0xD4 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 3, 12);
+    cpu.funciones[0xD5 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 16);
+    cpu.funciones[0xD6 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 2, 8);
+    cpu.funciones[0xD7 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 16);
+    cpu.funciones[0xD8 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 8);
 
     // D9 LR35902->RETI        Z-80->EXX
     match cpu.procesador {
         PROCESADOR::SharpLr35902 => {
-            cpu.funciones[0xD9 as usize] = retiGB;
-            cpu.funciones_txt[0xD9 as usize] = retiGB_txt;
+            cpu.funciones[0xD9 as usize].set_punteros_y_valores_a_funcion(retiGB, retiGB_txt, 1, 16);
         }
         PROCESADOR::Z80 => {
-            cpu.funciones[0xD9 as usize] = exx;
-            cpu.funciones_txt[0xD9 as usize] = exx_txt;
+            cpu.funciones[0xD9 as usize].set_punteros_y_valores_a_funcion(exx, exx_txt, 1, 4);
         }
     };
 
-    cpu.funciones[0xDA as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xDA as usize] = funcion_no_implementada;
-    cpu.funciones[0xDB as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xDB as usize] = funcion_no_implementada;
-    cpu.funciones[0xDC as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xDC as usize] = funcion_no_implementada;
-    cpu.funciones[0xDD as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xDD as usize] = funcion_no_implementada;
-    cpu.funciones[0xDE as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xDE as usize] = funcion_no_implementada;
-    cpu.funciones[0xDF as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xDF as usize] = funcion_no_implementada;
-
+    cpu.funciones[0xDA as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 3, 12);
+    cpu.funciones[0xDB as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 0);
+    cpu.funciones[0xDC as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 3, 12);
+    cpu.funciones[0xDD as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 0);
+    cpu.funciones[0xDE as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 2, 8);
+    cpu.funciones[0xDF as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 16);
 
     // *************************** E ***********************************
     // LR35902->LD (FF00+u8),A         Z-80->RET NV
     match cpu.procesador {
         PROCESADOR::SharpLr35902 => {
-            cpu.funciones[0xE0 as usize] = ldOff00_m_nO_aGB;
-            cpu.funciones_txt[0xE0 as usize] = ldOff00_m_nO_aGB_txt;
+            cpu.funciones[0xE0 as usize].set_punteros_y_valores_a_funcion(ldOff00_m_nO_aGB, ldOff00_m_nO_aGB_txt, 2, 12);
         }
         PROCESADOR::Z80 => {
-            cpu.funciones[0xE0 as usize] = ret_po;
-            cpu.funciones_txt[0xE0 as usize] = ret_po_txt;
+            cpu.funciones[0xE0 as usize].set_punteros_y_valores_a_funcion(ret_po, ret_po_txt, 1, 10);
         }
     }
-    cpu.funciones[0xE1 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xE1 as usize] = funcion_no_implementada;
+    cpu.funciones[0xE1 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 12);
     // LR35902->LD(C),A         Z-80->JP NV,nn
     match cpu.procesador {
         PROCESADOR::SharpLr35902 => {
-            cpu.funciones[0xE2 as usize] = ldOff00_m_cO_aGB;
-            cpu.funciones_txt[0xE2 as usize] = ldOff00_m_cO_aGB_txt;
+            cpu.funciones[0xE2 as usize].set_punteros_y_valores_a_funcion(ldOff00_m_cO_aGB, ldOff00_m_cO_aGB_txt, 1, 8);
         }
         PROCESADOR::Z80 => {
-            cpu.funciones[0xE2 as usize] = jp_po_nn;
-            cpu.funciones_txt[0xE2 as usize] = jp_po_nn_txt;
+            cpu.funciones[0xE2 as usize].set_punteros_y_valores_a_funcion(jp_po_nn, jp_po_nn_txt, 3, 10);
         }
     }
-    cpu.funciones[0xE3 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xE3 as usize] = funcion_no_implementada;
-    cpu.funciones[0xE4 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xE4 as usize] = funcion_no_implementada;
-    cpu.funciones[0xE5 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xE5 as usize] = funcion_no_implementada;
-    cpu.funciones[0xE6 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xE6 as usize] = funcion_no_implementada;
-    cpu.funciones[0xE7 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xE7 as usize] = funcion_no_implementada;
-    cpu.funciones[0xE8 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xE8 as usize] = funcion_no_implementada;
-    cpu.funciones[0xE9 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xE9 as usize] = funcion_no_implementada;
+    cpu.funciones[0xE3 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 0);
+    cpu.funciones[0xE4 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 0);
+    cpu.funciones[0xE5 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 16);
+    cpu.funciones[0xE6 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 2, 8);
+    cpu.funciones[0xE7 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 16);
+    // LR35902->ADD  SP,e          Z80->RET V
+    match cpu.procesador {
+        PROCESADOR::SharpLr35902 => {
+            cpu.funciones[0xE8 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 2, 16);
+        }
+        PROCESADOR::Z80 => {
+            cpu.funciones[0xE8 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 2, 16);
+        }
+    }
+
+    cpu.funciones[0xE9 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
     // LR35902->LD (nn),A         Z80->JP  V,nn
     match cpu.procesador {
         PROCESADOR::SharpLr35902 => {
-            cpu.funciones[0xEA as usize] = ldOnnO_aGB;
-            cpu.funciones_txt[0xEA as usize] = ldOnnO_aGB_txt;
+            cpu.funciones[0xEA as usize].set_punteros_y_valores_a_funcion(ldOnnO_aGB, ldOnnO_aGB_txt, 3, 16);
         }
         PROCESADOR::Z80 => {
-            cpu.funciones[0xEA as usize] = jp_pe_nn;
-            cpu.funciones_txt[0xEA as usize] = jp_pe_nn_txt;
+            cpu.funciones[0xEA as usize].set_punteros_y_valores_a_funcion(jp_pe_nn, jp_pe_nn_txt, 3, 10);
         }
     }
-    cpu.funciones[0xEB as usize] = ex_de_hl;
-    cpu.funciones_txt[0xEB as usize] = ex_de_hl_txt;
-    cpu.funciones[0xEC as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xEC as usize] = funcion_no_implementada;
-    cpu.funciones[0xED as usize] = ED; // Extensión
-    cpu.funciones_txt[0xED as usize] = ED_txt;
-
+    cpu.funciones[0xEB as usize].set_punteros_y_valores_a_funcion(ex_de_hl, ex_de_hl_txt, 1, 0);
+    cpu.funciones[0xEC as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 0);
+    cpu.funciones[0xED as usize].set_punteros_y_valores_a_funcion(ED, ED_txt, 0, 0); // Extensión
+    cpu.funciones[0xEE as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 2, 8);
+    cpu.funciones[0xEF as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 16);
 
     // *************************** F ***********************************
     // LR35902->LDH  A,(n)           Z-80->RET P
     match cpu.procesador {
         PROCESADOR::SharpLr35902 => {
-            cpu.funciones[0xF0 as usize] = ld_a_Off00_m_nOGB;
-            cpu.funciones_txt[0xF0 as usize] = ld_a_Off00_m_nOGB_txt;
+            cpu.funciones[0xF0 as usize].set_punteros_y_valores_a_funcion(ld_a_Off00_m_nOGB, ld_a_Off00_m_nOGB_txt, 2, 12);
         }
         PROCESADOR::Z80 => {
-            cpu.funciones[0xF0 as usize] = ret_p;
-            cpu.funciones_txt[0xF0 as usize] = ret_p_txt;
+            cpu.funciones[0xF0 as usize].set_punteros_y_valores_a_funcion(ret_p, ret_p_txt, 1, 10);
         }
     }
-    cpu.funciones[0xF1 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xF1 as usize] = funcion_no_implementada;
-    cpu.funciones[0xF2 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xF2 as usize] = funcion_no_implementada;
-    cpu.funciones[0xF3 as usize] = di;
-    cpu.funciones_txt[0xF3 as usize] = di_txt;
-    cpu.funciones[0xF4 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xF4 as usize] = funcion_no_implementada;
-    cpu.funciones[0xF5 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xF5 as usize] = funcion_no_implementada;
-    cpu.funciones[0xF6 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xF6 as usize] = funcion_no_implementada;
-    cpu.funciones[0xF7 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xF7 as usize] = funcion_no_implementada;
-    cpu.funciones[0xF8 as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xF8 as usize] = funcion_no_implementada;
-    cpu.funciones[0xF9 as usize] = ld_sp_hl;
-    cpu.funciones_txt[0xF9 as usize] = ld_sp_hl_txt;
-    cpu.funciones[0xFA as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xFA as usize] = funcion_no_implementada;
-    cpu.funciones[0xFB as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xFB as usize] = funcion_no_implementada;
-    cpu.funciones[0xFC as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xFC as usize] = funcion_no_implementada;
-    cpu.funciones[0xFD as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xFD as usize] = funcion_no_implementada;
-    cpu.funciones[0xFE as usize] = cp_n;
-    cpu.funciones_txt[0xFE as usize] = cp_n_txt;
-    cpu.funciones[0xFF as usize] = funcion_no_implementada;
-    cpu.funciones_txt[0xFF as usize] = funcion_no_implementada;
+    cpu.funciones[0xF1 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 12);
+
+
+    // LR35902->LD   A,(C)         Z-80->JP  P,nn
+    match cpu.procesador {
+        PROCESADOR::SharpLr35902 => {
+            cpu.funciones[0xF2 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 8);
+        }
+        PROCESADOR::Z80 => {
+            cpu.funciones[0xF2 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 3, 10);
+        }
+    }
+
+    cpu.funciones[0xF3 as usize].set_punteros_y_valores_a_funcion(di, di_txt, 1, 4);
+    cpu.funciones[0xF4 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 0);
+    cpu.funciones[0xF5 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 16);
+    cpu.funciones[0xF6 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 2, 8);
+    cpu.funciones[0xF7 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 16);
+
+    // LR35902->LD   HL,(SP+e)     Z80->RET M
+    match cpu.procesador {
+        PROCESADOR::SharpLr35902 => {
+            cpu.funciones[0xF8 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 2, 12);
+        }
+        PROCESADOR::Z80 => {
+            cpu.funciones[0xF8 as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 6);
+        }
+    }
+
+    cpu.funciones[0xF9 as usize].set_punteros_y_valores_a_funcion(ld_sp_hl, ld_sp_hl_txt, 1, 8);
+
+    // LR35902->LD   A,(nn)        Z-80->JP  M,nn
+    match cpu.procesador {
+        PROCESADOR::SharpLr35902 => {
+            cpu.funciones[0xFA as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 3, 16);
+        }
+        PROCESADOR::Z80 => {
+            cpu.funciones[0xFA as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 3, 10);
+        }
+    }
+
+
+    cpu.funciones[0xFB as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 4);
+    cpu.funciones[0xFC as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 0);
+    cpu.funciones[0xFD as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 0);
+    cpu.funciones[0xFE as usize].set_punteros_y_valores_a_funcion(cp_n, cp_n_txt, 2, 8);
+    cpu.funciones[0xFF as usize].set_punteros_y_valores_a_funcion(fn_no_impl, fn_no_impl, 1, 16);
 }
 
-pub fn funcion_no_implementada(cpu: &mut CPU) {
+pub fn fn_no_impl(cpu: &mut CPU) {
     panic!(format!("Funcion normal no implementada\n\
     PC = #{:04X}  r0 = #{:02X}  r1 = #{:02X}  r2 = #{:02X}  \
     r3 = #{:02X}\n",
@@ -1856,13 +1713,31 @@ pub fn ret_txt(cpu: &mut CPU) {
 
 // 0xCB   -----EXTENSION--------------------------------------------------------
 pub fn CB(cpu: &mut CPU) {
+    /*
+     self.obtiene_intruccion_y_bytes_posteriores();
+
+        // Ejecuta instruccion
+        //self.funciones[self.r0 as usize](self);
+        let f: Funcion = self.funciones[self.r0 as usize];
+        let ff = f.get_puntero_a_funcion();
+        ff(self);
+        //self.funciones[self.r0 as usize](self);
+    */
     // Ejecuta instruccion
-    cpu.funciones_cb[cpu.r1 as usize](cpu);
+    let f: Funcion = cpu.funciones_cb[cpu.r1 as usize];
+    let ff = f.get_puntero_a_funcion();
+    ff(cpu);
+    //cpu.funciones_cb[cpu.r1 as usize](cpu);
 }
 
 pub fn CB_txt(cpu: &mut CPU) {
     // Ejecuta instruccion
-    cpu.funciones_cb_txt[cpu.r1 as usize](cpu);
+    let f: Funcion = cpu.funciones[cpu.r0 as usize];
+    let ff = f.get_puntero_txt_a_funcion();
+    ff(cpu);
+
+
+    //cpu.funciones_cb_txt[cpu.r1 as usize](cpu);
 }
 
 
@@ -2011,13 +1886,32 @@ pub fn ex_de_hl_txt(cpu: &mut CPU) {
 
 // 0xED   -----EXTENSION--------------------------------------------------------
 pub fn ED(cpu: &mut CPU) {
+    /*
+     self.obtiene_intruccion_y_bytes_posteriores();
+
+        // Ejecuta instruccion
+        //self.funciones[self.r0 as usize](self);
+        let f: Funcion = self.funciones[self.r0 as usize];
+        let ff = f.get_puntero_a_funcion();
+        ff(self);
+        //self.funciones[self.r0 as usize](self);
+    */
 // Ejecuta instruccion
-    cpu.funciones_ed[cpu.r1 as usize](cpu);
+    let f: Funcion = cpu.funciones_ed[cpu.r1 as usize]; //TODO: OJOOOOOOOOOOOOOO
+
+    let ff = f.get_puntero_a_funcion();
+    ff(cpu);
+
+
+    //cpu.funciones_ed[cpu.r1 as usize](cpu);
 }
 
 pub fn ED_txt(cpu: &mut CPU) {
+    let f: Funcion = cpu.funciones[cpu.r0 as usize];
+    let ff = f.get_puntero_txt_a_funcion();
+    ff(cpu);
 // Ejecuta instruccion
-    cpu.funciones_ed_txt[cpu.r1 as usize](cpu);
+    //cpu.funciones_ed_txt[cpu.r1 as usize](cpu);
 }
 
 // *************************** F ***********************************

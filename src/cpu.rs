@@ -15,6 +15,51 @@ pub enum PROCESADOR {
     SharpLr35902,
 }
 
+#[derive(Copy, Clone)]
+pub struct Funcion {
+    pub puntero_a_funcion: fn(&mut CPU),
+    pub puntero_a_funcion_txt: fn(&mut CPU),
+    pub bytes: u16,
+    pub t: usize,
+
+    // TODO: Flags afectados
+}
+
+impl Funcion {
+    pub fn new() -> Funcion {
+        let mut f = Funcion {
+            puntero_a_funcion: fn_no_impl,
+            puntero_a_funcion_txt: fn_no_impl,
+            bytes: 0,
+            t: 0,
+        };
+        f
+    }
+
+    pub fn get_puntero_a_funcion(&self) -> fn(&mut CPU) {
+        self.puntero_a_funcion
+    }
+    pub fn get_puntero_txt_a_funcion(&self) -> fn(&mut CPU) {
+        self.puntero_a_funcion_txt
+    }
+
+    // Habra que quitarla
+//    pub fn set_puntero_a_funcion(&mut self, puntero_a_funcion: fn(&mut CPU)) {
+//        self.puntero_a_funcion = puntero_a_funcion;
+//    }
+    pub fn set_punteros_y_valores_a_funcion(
+        &mut self,
+        puntero_a_funcion: fn(&mut CPU),
+        puntero_a_funcion_txt: fn(&mut CPU),
+        bytes: u16,
+        t: usize) {
+        self.puntero_a_funcion = puntero_a_funcion;
+        self.puntero_a_funcion_txt = puntero_a_funcion_txt;
+        self.bytes = bytes;
+        self.t = t;
+    }
+}
+
 pub struct CPU {
     pub procesador: PROCESADOR,
     pub a: u8,
@@ -39,14 +84,24 @@ pub struct CPU {
     //t -> time cycles
     pub t: usize,
 
-    pub funciones: [fn(&mut CPU); 256],
-    pub funciones_txt: [fn(&mut CPU); 256],
+    //    pub funciones: [fn(&mut CPU); 256],
+//    pub funciones_txt: [fn(&mut CPU); 256],
+//
+//    pub funciones_ed: [fn(&mut CPU); 256],
+//    pub funciones_ed_txt: [fn(&mut CPU); 256],
+//
+//    pub funciones_cb: [fn(&mut CPU); 256],
+//    pub funciones_cb_txt: [fn(&mut CPU); 256],
 
-    pub funciones_ed: [fn(&mut CPU); 256],
-    pub funciones_ed_txt: [fn(&mut CPU); 256],
+    pub funciones: [Funcion; 256],
+    //pub funciones_txt: [Funcion; 256],
 
-    pub funciones_cb: [fn(&mut CPU); 256],
-    pub funciones_cb_txt: [fn(&mut CPU); 256],
+    pub funciones_ed: [Funcion; 256],
+    //pub funciones_ed_txt: [Funcion; 256],
+
+    pub funciones_cb: [Funcion; 256],
+    //pub funciones_cb_txt: [Funcion; 256],
+
     // Bytes leidos de memoria:
     pub r0: u8,
     pub r1: u8,
@@ -62,14 +117,26 @@ pub struct CPU {
 impl CPU {
     pub fn new(mem: MEM) -> CPU {
         // Rellenamos arreglo de funciones con funciones nop()
-        let funciones: [fn(&mut CPU); 256] = [funcion_no_implementada; 256];
-        let funciones_txt: [fn(&mut CPU); 256] = [funcion_no_implementada; 256];
+//        let funciones: [fn(&mut CPU); 256] = [funcion_no_implementada; 256];
+//        let funciones_txt: [fn(&mut CPU); 256] = [funcion_no_implementada; 256];
+//
+//        let funcionesED: [fn(&mut CPU); 256] = [funcionED_no_implementada; 256];
+//        let funcionesED_txt: [fn(&mut CPU); 256] = [funcionED_no_implementada; 256];
+//
+//        let funcionesCB: [fn(&mut CPU); 256] = [funcionCB_no_implementada; 256];
+//        let funcionesCB_txt: [fn(&mut CPU); 256] = [funcionCB_no_implementada; 256];
 
-        let funcionesED: [fn(&mut CPU); 256] = [funcionED_no_implementada; 256];
-        let funcionesED_txt: [fn(&mut CPU); 256] = [funcionED_no_implementada; 256];
+        //let funcion = Funcion::new();
 
-        let funcionesCB: [fn(&mut CPU); 256] = [funcionCB_no_implementada; 256];
-        let funcionesCB_txt: [fn(&mut CPU); 256] = [funcionCB_no_implementada; 256];
+        let funciones: [Funcion; 256] = [Funcion::new(); 256];
+        //let funciones_txt: [Funcion; 256] = [Funcion::new(); 256];
+
+
+        let funcionesED: [Funcion; 256] = [Funcion::new(); 256];
+        //let funcionesED_txt: [Funcion; 256] = [Funcion::new(); 256];
+
+        let funcionesCB: [Funcion; 256] = [Funcion::new(); 256];
+        //let funcionesCB_txt: [Funcion; 256] = [Funcion::new(); 256];
 
         let mut cpu = CPU {
             // OJO Cambiar si se usa otro procesador!
@@ -98,11 +165,12 @@ impl CPU {
             t: 0,
 
             funciones: funciones,
-            funciones_txt: funciones_txt,
-            funciones_ed: funciones,
-            funciones_ed_txt: funciones_txt,
-            funciones_cb: funciones,
-            funciones_cb_txt: funciones_txt,
+            //funciones_txt: funciones_txt,
+
+            funciones_ed: funcionesED,
+            //funciones_ed_txt: funciones_txt,
+            funciones_cb: funcionesCB,
+            //funciones_cb_txt: funciones_txt,
             r0: 0,
             r1: 0,
             r2: 0,
@@ -221,6 +289,7 @@ impl CPU {
         }
 
         let nuevo_valor = valor_a.wrapping_sub(valor_b);
+
 
         // flags Z y N
         if nuevo_valor == 0 {
@@ -412,7 +481,11 @@ impl CPU {
         self.obtiene_intruccion_y_bytes_posteriores();
 
         // Ejecuta instruccion
-        self.funciones[self.r0 as usize](self);
+        //self.funciones[self.r0 as usize](self);
+        let f: Funcion = self.funciones[self.r0 as usize];
+        let ff = f.get_puntero_a_funcion();
+        ff(self);
+        //self.funciones[self.r0 as usize](self);
     }
     /// Lee de memoria el opcode y los bytes posteriores
     pub fn obtiene_intruccion_y_bytes_posteriores(&mut self) {
@@ -447,14 +520,14 @@ impl CPU {
 
     pub fn imprime_opcode(&mut self) {
         if self.debug {
-            cursor().goto(62, 12);
+            cursor().goto(62, 8);
             print!("<-");
 
 
-            let empieza = self.pc - 4;
-            for lin in 0..=8 {
+            //let empieza = self.pc - 4;
+            for lin in 0..=4 {
                 cursor().goto(60, lin + 8);
-                print!("{:02X}", self.mem.lee_byte_de_mem(empieza + lin));
+                print!("{:02X}", self.mem.lee_byte_de_mem(self.pc + lin));
             }
         }
     }
@@ -558,8 +631,40 @@ impl CPU {
                      self.get_h_flag(),
                      self.get_c_flag());
 
+
+            /*
             self.obtiene_intruccion_y_bytes_posteriores();
-            self.funciones_txt[self.r0 as usize](self);
+
+        // Ejecuta instruccion
+        //self.funciones[self.r0 as usize](self);
+        let f: Funcion = self.funciones[self.r0 as usize];
+        let ff = f.get_puntero_a_funcion();
+        ff(self);
+        //self.funciones[self.r0 as usize](self);
+            */
+
+            self.obtiene_intruccion_y_bytes_posteriores();
+            // Ejecuta instruccion
+            match self.r0 {
+                0xED => {
+                    let f: Funcion = self.funciones_ed[self.r1 as usize];
+                    let ff = f.get_puntero_txt_a_funcion();
+                    ff(self);
+                }
+                0xCB => {
+                    let f: Funcion = self.funciones_cb[self.r1 as usize];
+                    let ff = f.get_puntero_txt_a_funcion();
+                    ff(self);
+                }
+                _ => {
+                    let f: Funcion = self.funciones[self.r0 as usize];
+                    let ff = f.get_puntero_txt_a_funcion();
+                    ff(self);
+                }
+            }
+
+
+            //self.funciones_txt[self.r0 as usize](self);
 
 
             cursor.goto(10, 10);
