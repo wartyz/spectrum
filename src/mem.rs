@@ -1,4 +1,4 @@
-use crossterm::*;
+//use crossterm::*;
 
 pub struct MEM {
     ram: [u8; 65_536],

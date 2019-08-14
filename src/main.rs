@@ -26,7 +26,7 @@ fn main() {
     //while input().read_char().unwrap() != 'x' {
 
     loop {
-        if cpu.pc == 0x0000 { // BreakPoint
+        if cpu.pc == 0x0EEB { // BreakPoint
             cpu.establece_debug();
             while input().read_char().unwrap() != 'x' {
                 cpu.limpia_consola();
@@ -34,7 +34,7 @@ fn main() {
                 cpu.imprime_opcode();
                 cpu.imprime_stack();
                 cpu.imprime_ports();
-                cpu.imprime_memoria(0x3F20);
+                cpu.imprime_memoria(0xFF00);
 
                 cpu.ejecuta_instruccion();
             }
