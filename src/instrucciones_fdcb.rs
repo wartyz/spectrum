@@ -101,22 +101,22 @@ pub fn mete_funciones_fdcb(cpu: &mut CPU) {
     cpu.funciones_fdcb[0x3E as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
     cpu.funciones_fdcb[0x3F as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
     // *************************** 4 ***********************************
-    cpu.funciones_fdcb[0x40 as usize].set_punt_y_val_a_fn(bit_0OiymnO, bit_0OiymnO_txt, 4, 20);
-    cpu.funciones_fdcb[0x41 as usize].set_punt_y_val_a_fn(bit_0OiymnO, bit_0OiymnO_txt, 4, 20);
-    cpu.funciones_fdcb[0x42 as usize].set_punt_y_val_a_fn(bit_0OiymnO, bit_0OiymnO_txt, 4, 20);
-    cpu.funciones_fdcb[0x43 as usize].set_punt_y_val_a_fn(bit_0OiymnO, bit_0OiymnO_txt, 4, 20);
-    cpu.funciones_fdcb[0x44 as usize].set_punt_y_val_a_fn(bit_0OiymnO, bit_0OiymnO_txt, 4, 20);
-    cpu.funciones_fdcb[0x45 as usize].set_punt_y_val_a_fn(bit_0OiymnO, bit_0OiymnO_txt, 4, 20);
-    cpu.funciones_fdcb[0x46 as usize].set_punt_y_val_a_fn(bit_0OiymnO, bit_0OiymnO_txt, 4, 20);
-    cpu.funciones_fdcb[0x47 as usize].set_punt_y_val_a_fn(bit_0OiymnO, bit_0OiymnO_txt, 4, 20);
-    cpu.funciones_fdcb[0x48 as usize].set_punt_y_val_a_fn(bit_1OiymnO, bit_1OiymnO_txt, 4, 20);
-    cpu.funciones_fdcb[0x49 as usize].set_punt_y_val_a_fn(bit_1OiymnO, bit_1OiymnO_txt, 4, 20);
-    cpu.funciones_fdcb[0x4A as usize].set_punt_y_val_a_fn(bit_1OiymnO, bit_1OiymnO_txt, 4, 20);
-    cpu.funciones_fdcb[0x4B as usize].set_punt_y_val_a_fn(bit_1OiymnO, bit_1OiymnO_txt, 4, 20);
-    cpu.funciones_fdcb[0x4C as usize].set_punt_y_val_a_fn(bit_1OiymnO, bit_1OiymnO_txt, 4, 20);
-    cpu.funciones_fdcb[0x4D as usize].set_punt_y_val_a_fn(bit_1OiymnO, bit_1OiymnO_txt, 4, 20);
-    cpu.funciones_fdcb[0x4E as usize].set_punt_y_val_a_fn(bit_1OiymnO, bit_1OiymnO_txt, 4, 20);
-    cpu.funciones_fdcb[0x4F as usize].set_punt_y_val_a_fn(bit_1OiymnO, bit_1OiymnO_txt, 4, 20);
+    cpu.funciones_fdcb[0x40 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 4, 20);
+    cpu.funciones_fdcb[0x41 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 4, 20);
+    cpu.funciones_fdcb[0x42 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 4, 20);
+    cpu.funciones_fdcb[0x43 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 4, 20);
+    cpu.funciones_fdcb[0x44 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 4, 20);
+    cpu.funciones_fdcb[0x45 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 4, 20);
+    cpu.funciones_fdcb[0x46 as usize].set_punt_y_val_a_fn(bit_0_OiymnO, bit_0_OiymnO_txt, 4, 20);
+    cpu.funciones_fdcb[0x47 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 4, 20);
+    cpu.funciones_fdcb[0x48 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 4, 20);
+    cpu.funciones_fdcb[0x49 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 4, 20);
+    cpu.funciones_fdcb[0x4A as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 4, 20);
+    cpu.funciones_fdcb[0x4B as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 4, 20);
+    cpu.funciones_fdcb[0x4C as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 4, 20);
+    cpu.funciones_fdcb[0x4D as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 4, 20);
+    cpu.funciones_fdcb[0x4E as usize].set_punt_y_val_a_fn(bit_1_OiymnO, bit_1_OiymnO_txt, 4, 20);
+    cpu.funciones_fdcb[0x4F as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 4, 20);
     // *************************** 5 ***********************************
     cpu.funciones_fdcb[0x50 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
     cpu.funciones_fdcb[0x51 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
@@ -152,6 +152,7 @@ pub fn mete_funciones_fdcb(cpu: &mut CPU) {
     cpu.funciones_fdcb[0x6E as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
     cpu.funciones_fdcb[0x6F as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
     // *************************** 7 ***********************************
+
     cpu.funciones_fdcb[0x70 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
     cpu.funciones_fdcb[0x71 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
     cpu.funciones_fdcb[0x72 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
@@ -170,22 +171,22 @@ pub fn mete_funciones_fdcb(cpu: &mut CPU) {
     cpu.funciones_fdcb[0x7F as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
 
     // *************************** 8 ***********************************
-    cpu.funciones_fdcb[0x80 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
-    cpu.funciones_fdcb[0x81 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
-    cpu.funciones_fdcb[0x82 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
-    cpu.funciones_fdcb[0x83 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
-    cpu.funciones_fdcb[0x84 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
-    cpu.funciones_fdcb[0x85 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
-    cpu.funciones_fdcb[0x86 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
-    cpu.funciones_fdcb[0x87 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
-    cpu.funciones_fdcb[0x88 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
-    cpu.funciones_fdcb[0x89 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
-    cpu.funciones_fdcb[0x8A as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
-    cpu.funciones_fdcb[0x8B as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
-    cpu.funciones_fdcb[0x8C as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
-    cpu.funciones_fdcb[0x8D as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
-    cpu.funciones_fdcb[0x8E as usize].set_punt_y_val_a_fn(res_1OiymnO, res_1OiymnO_txt, 4, 23);
-    cpu.funciones_fdcb[0x8F as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
+    cpu.funciones_fdcb[0x80 as usize].set_punt_y_val_a_fn(res_0_OiymnO_b, res_0_OiymnO_b_txt, 4, 23);
+    cpu.funciones_fdcb[0x81 as usize].set_punt_y_val_a_fn(res_0_OiymnO_c, res_0_OiymnO_c_txt, 4, 23);
+    cpu.funciones_fdcb[0x82 as usize].set_punt_y_val_a_fn(res_0_OiymnO_d, res_0_OiymnO_d_txt, 4, 23);
+    cpu.funciones_fdcb[0x83 as usize].set_punt_y_val_a_fn(res_0_OiymnO_e, res_0_OiymnO_e_txt, 4, 23);
+    cpu.funciones_fdcb[0x84 as usize].set_punt_y_val_a_fn(res_0_OiymnO_h, res_0_OiymnO_h_txt, 4, 23);
+    cpu.funciones_fdcb[0x85 as usize].set_punt_y_val_a_fn(res_0_OiymnO_l, res_0_OiymnO_l_txt, 4, 23);
+    cpu.funciones_fdcb[0x86 as usize].set_punt_y_val_a_fn(res_0_OiymnO, res_0_OiymnO_txt, 4, 23);
+    cpu.funciones_fdcb[0x87 as usize].set_punt_y_val_a_fn(res_0_OiymnO_a, res_0_OiymnO_a_txt, 4, 23);
+    cpu.funciones_fdcb[0x88 as usize].set_punt_y_val_a_fn(res_1_OiymnO_b, res_1_OiymnO_b_txt, 4, 23);
+    cpu.funciones_fdcb[0x89 as usize].set_punt_y_val_a_fn(res_1_OiymnO_c, res_1_OiymnO_c_txt, 4, 23);
+    cpu.funciones_fdcb[0x8A as usize].set_punt_y_val_a_fn(res_1_OiymnO_d, res_1_OiymnO_d_txt, 4, 23);
+    cpu.funciones_fdcb[0x8B as usize].set_punt_y_val_a_fn(res_1_OiymnO_e, res_1_OiymnO_e_txt, 4, 23);
+    cpu.funciones_fdcb[0x8C as usize].set_punt_y_val_a_fn(res_1_OiymnO_h, res_1_OiymnO_h_txt, 4, 23);
+    cpu.funciones_fdcb[0x8D as usize].set_punt_y_val_a_fn(res_1_OiymnO_l, res_1_OiymnO_l_txt, 4, 23);
+    cpu.funciones_fdcb[0x8E as usize].set_punt_y_val_a_fn(res_1_OiymnO, res_1_OiymnO_txt, 4, 23);
+    cpu.funciones_fdcb[0x8F as usize].set_punt_y_val_a_fn(res_1_OiymnO_a, res_1_OiymnO_a_txt, 4, 23);
     // *************************** 9 ***********************************
     cpu.funciones_fdcb[0x90 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
     cpu.funciones_fdcb[0x91 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
@@ -210,7 +211,7 @@ pub fn mete_funciones_fdcb(cpu: &mut CPU) {
     cpu.funciones_fdcb[0xA3 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
     cpu.funciones_fdcb[0xA4 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
     cpu.funciones_fdcb[0xA5 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
-    cpu.funciones_fdcb[0xA6 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
+    cpu.funciones_fdcb[0xA6 as usize].set_punt_y_val_a_fn(res_4_OiymnO, res_4_OiymnO_txt, 4, 23);
     cpu.funciones_fdcb[0xA7 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
     cpu.funciones_fdcb[0xA8 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
     cpu.funciones_fdcb[0xA9 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
@@ -218,7 +219,7 @@ pub fn mete_funciones_fdcb(cpu: &mut CPU) {
     cpu.funciones_fdcb[0xAB as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
     cpu.funciones_fdcb[0xAC as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
     cpu.funciones_fdcb[0xAD as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
-    cpu.funciones_fdcb[0xAE as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
+    cpu.funciones_fdcb[0xAE as usize].set_punt_y_val_a_fn(res_5_OiymnO, res_5_OiymnO, 4, 23);
     cpu.funciones_fdcb[0xAF as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
     // *************************** B ***********************************
     cpu.funciones_fdcb[0xB0 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
@@ -244,7 +245,7 @@ pub fn mete_funciones_fdcb(cpu: &mut CPU) {
     cpu.funciones_fdcb[0xC3 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
     cpu.funciones_fdcb[0xC4 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
     cpu.funciones_fdcb[0xC5 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
-    cpu.funciones_fdcb[0xC6 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
+    cpu.funciones_fdcb[0xC6 as usize].set_punt_y_val_a_fn(set0_OiymnO, set0_OiymnO_txt, 4, 23);
     cpu.funciones_fdcb[0xC7 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
     cpu.funciones_fdcb[0xC8 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
     cpu.funciones_fdcb[0xC9 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
@@ -278,7 +279,7 @@ pub fn mete_funciones_fdcb(cpu: &mut CPU) {
     cpu.funciones_fdcb[0xE3 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
     cpu.funciones_fdcb[0xE4 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
     cpu.funciones_fdcb[0xE5 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
-    cpu.funciones_fdcb[0xE6 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
+    cpu.funciones_fdcb[0xE6 as usize].set_punt_y_val_a_fn(set4_OiymnO, set4_OiymnO_txt, 4, 23);
     cpu.funciones_fdcb[0xE7 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
     cpu.funciones_fdcb[0xE8 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
     cpu.funciones_fdcb[0xE9 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
@@ -286,7 +287,7 @@ pub fn mete_funciones_fdcb(cpu: &mut CPU) {
     cpu.funciones_fdcb[0xEB as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
     cpu.funciones_fdcb[0xEC as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
     cpu.funciones_fdcb[0xED as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
-    cpu.funciones_fdcb[0xEE as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
+    cpu.funciones_fdcb[0xEE as usize].set_punt_y_val_a_fn(set5_OiymnO, set5_OiymnO, 4, 23);
     cpu.funciones_fdcb[0xEF as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
     // *************************** F ***********************************
     cpu.funciones_fdcb[0xF0 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
@@ -317,10 +318,13 @@ pub fn fnFDCB_no_impl(cpu: &mut CPU) {
 // *************************** 2 ***********************************
 // *************************** 3 ***********************************
 // *************************** 4 ***********************************
-// 0xFDCBNN40 al 0xFDCBNN47
-pub fn bit_0OiymnO(cpu: &mut CPU) {
+
+
+// 0xFDCBNN46  TODO:hacer una funcion global
+pub fn bit_0_OiymnO(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
     let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+
     let dato = cpu.mem.lee_byte_de_mem(direccion);
 
     if cpu.get_bitu8(dato, 0) {
@@ -332,16 +336,18 @@ pub fn bit_0OiymnO(cpu: &mut CPU) {
     cpu.set_h_flag();
     cpu.reset_n_flag();
 
-    cpu.pc += cpu.get_bytes_instruccion();
     cpu.t += cpu.get_t_instruccion();
+    cpu.pc += cpu.get_bytes_instruccion();
 }
 
-pub fn bit_0OiymnO_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 0(IY+#{:02X})", cpu.r2)); }
+pub fn bit_0_OiymnO_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 0,(IY+#{:02X})", cpu.r2)); }
 
-// 0xFDCBNN48 al 0xFDCBNN4F
-pub fn bit_1OiymnO(cpu: &mut CPU) {
+
+// 0xFDCBNN4E  TODO:hacer una funcion global
+pub fn bit_1_OiymnO(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
     let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+
     let dato = cpu.mem.lee_byte_de_mem(direccion);
 
     if cpu.get_bitu8(dato, 1) {
@@ -353,18 +359,102 @@ pub fn bit_1OiymnO(cpu: &mut CPU) {
     cpu.set_h_flag();
     cpu.reset_n_flag();
 
-    cpu.pc += cpu.get_bytes_instruccion();
     cpu.t += cpu.get_t_instruccion();
+    cpu.pc += cpu.get_bytes_instruccion();
 }
 
-pub fn bit_1OiymnO_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 1(IY+#{:02X})", cpu.r2)); }
+pub fn bit_1_OiymnO_txt(cpu: &mut CPU) { cpu.texto(&format!("Bit 1,(IY+#{:02X})", cpu.r2)); }
 
 // *************************** 5 ***********************************
 // *************************** 6 ***********************************
 // *************************** 7 ***********************************
+
+
 // *************************** 8 ***********************************
-// 0xFDCBNN8E
-pub fn res_1OiymnO(cpu: &mut CPU) {
+// 0xFDCBNN80
+pub fn res_0_OiymnO_b(cpu: &mut CPU) { fnFDCB_no_impl(cpu); }
+
+pub fn res_0_OiymnO_b_txt(cpu: &mut CPU) { fnFDCB_no_impl(cpu); }
+
+// 0xFDCBNN81
+pub fn res_0_OiymnO_c(cpu: &mut CPU) { fnFDCB_no_impl(cpu); }
+
+pub fn res_0_OiymnO_c_txt(cpu: &mut CPU) { fnFDCB_no_impl(cpu); }
+
+// 0xFDCBNN82
+pub fn res_0_OiymnO_d(cpu: &mut CPU) { fnFDCB_no_impl(cpu); }
+
+pub fn res_0_OiymnO_d_txt(cpu: &mut CPU) { fnFDCB_no_impl(cpu); }
+
+// 0xFDCBNN83
+pub fn res_0_OiymnO_e(cpu: &mut CPU) { fnFDCB_no_impl(cpu); }
+
+pub fn res_0_OiymnO_e_txt(cpu: &mut CPU) { fnFDCB_no_impl(cpu); }
+
+// 0xFDCBNN84
+pub fn res_0_OiymnO_h(cpu: &mut CPU) { fnFDCB_no_impl(cpu); }
+
+pub fn res_0_OiymnO_h_txt(cpu: &mut CPU) { fnFDCB_no_impl(cpu); }
+
+// 0xFDCBNN85
+pub fn res_0_OiymnO_l(cpu: &mut CPU) { fnFDCB_no_impl(cpu); }
+
+pub fn res_0_OiymnO_l_txt(cpu: &mut CPU) { fnFDCB_no_impl(cpu); }
+
+// 0xFDCBNN86  TODO:hacer una funcion global
+pub fn res_0_OiymnO(cpu: &mut CPU) {
+    let iy = cpu.lee_iy();
+    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+
+    let dato = cpu.mem.lee_byte_de_mem(direccion);
+
+    let dato = cpu.reset_bitu8(dato, 0);
+    cpu.mem.escribe_byte_en_mem(direccion, dato);
+
+    cpu.t += cpu.get_t_instruccion();
+    cpu.pc += cpu.get_bytes_instruccion();
+}
+
+pub fn res_0_OiymnO_txt(cpu: &mut CPU) { cpu.texto(&format!("RES 0,(IY+#{:02X})", cpu.r2)); }
+
+// 0xFDCBNN87
+pub fn res_0_OiymnO_a(cpu: &mut CPU) { fnFDCB_no_impl(cpu); }
+
+pub fn res_0_OiymnO_a_txt(cpu: &mut CPU) { fnFDCB_no_impl(cpu); }
+
+// 0xFDCBNN88
+pub fn res_1_OiymnO_b(cpu: &mut CPU) { fnFDCB_no_impl(cpu); }
+
+pub fn res_1_OiymnO_b_txt(cpu: &mut CPU) { fnFDCB_no_impl(cpu); }
+
+// 0xFDCBNN89
+pub fn res_1_OiymnO_c(cpu: &mut CPU) { fnFDCB_no_impl(cpu); }
+
+pub fn res_1_OiymnO_c_txt(cpu: &mut CPU) { fnFDCB_no_impl(cpu); }
+
+// 0xFDCBNN8A
+pub fn res_1_OiymnO_d(cpu: &mut CPU) { fnFDCB_no_impl(cpu); }
+
+pub fn res_1_OiymnO_d_txt(cpu: &mut CPU) { fnFDCB_no_impl(cpu); }
+
+// 0xFDCBNN8B
+pub fn res_1_OiymnO_e(cpu: &mut CPU) { fnFDCB_no_impl(cpu); }
+
+pub fn res_1_OiymnO_e_txt(cpu: &mut CPU) { fnFDCB_no_impl(cpu); }
+
+// 0xFDCBNN8C
+pub fn res_1_OiymnO_h(cpu: &mut CPU) { fnFDCB_no_impl(cpu); }
+
+pub fn res_1_OiymnO_h_txt(cpu: &mut CPU) { fnFDCB_no_impl(cpu); }
+
+// 0xFDCBNN8D
+pub fn res_1_OiymnO_l(cpu: &mut CPU) { fnFDCB_no_impl(cpu); }
+
+pub fn res_1_OiymnO_l_txt(cpu: &mut CPU) { fnFDCB_no_impl(cpu); }
+
+
+// 0xFDCBNN8E  TODO:hacer una funcion global
+pub fn res_1_OiymnO(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
     let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
 
@@ -376,13 +466,98 @@ pub fn res_1OiymnO(cpu: &mut CPU) {
     cpu.t += cpu.get_t_instruccion();
 }
 
-pub fn res_1OiymnO_txt(cpu: &mut CPU) { cpu.texto(&format!("RESET 1(IY+#{:02X})", cpu.r2)); }
+pub fn res_1_OiymnO_txt(cpu: &mut CPU) { cpu.texto(&format!("RESET 1(IY+#{:02X})", cpu.r2)); }
+
+// 0xFDCBNN8F
+pub fn res_1_OiymnO_a(cpu: &mut CPU) {}
+
+pub fn res_1_OiymnO_a_txt(cpu: &mut CPU) {}
 
 // *************************** 9 ***********************************
 // *************************** A ***********************************
+//0xFDCBNNA6   TODO:hacer una funcion global
+pub fn res_4_OiymnO(cpu: &mut CPU) {
+    let iy = cpu.lee_iy();
+    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+
+    let dato = cpu.mem.lee_byte_de_mem(direccion);
+
+    let dato = cpu.reset_bitu8(dato, 4);
+    cpu.mem.escribe_byte_en_mem(direccion, dato);
+
+    cpu.t += cpu.get_t_instruccion();
+    cpu.pc += cpu.get_bytes_instruccion();
+}
+
+pub fn res_4_OiymnO_txt(cpu: &mut CPU) { cpu.texto(&format!("RESET 4(IY+#{:02X})", cpu.r2)); }
+
+//0xFDCBNNAE   TODO:hacer una funcion global
+pub fn res_5_OiymnO(cpu: &mut CPU) {
+    let iy = cpu.lee_iy();
+    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+
+    let dato = cpu.mem.lee_byte_de_mem(direccion);
+
+    let dato = cpu.reset_bitu8(dato, 5);
+    cpu.mem.escribe_byte_en_mem(direccion, dato);
+
+    cpu.t += cpu.get_t_instruccion();
+    cpu.pc += cpu.get_bytes_instruccion();
+}
+
+pub fn res_5_OiymnO_txt(cpu: &mut CPU) { cpu.texto(&format!("RESET 5(IY+#{:02X})", cpu.r2)); }
+
 // *************************** B ***********************************
+//0xFDCBNNB6   TODO:hacer una funcion global
+pub fn res_6_OiymnO(cpu: &mut CPU) {
+    let iy = cpu.lee_iy();
+    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+
+    let dato = cpu.mem.lee_byte_de_mem(direccion);
+
+    let dato = cpu.reset_bitu8(dato, 6);
+    cpu.mem.escribe_byte_en_mem(direccion, dato);
+
+    cpu.t += cpu.get_t_instruccion();
+    cpu.pc += cpu.get_bytes_instruccion();
+}
+
+pub fn res_6_OiymnO_txt(cpu: &mut CPU) { cpu.texto(&format!("RESET 6(IY+#{:02X})", cpu.r2)); }
+
+//0xFDCBNNBE   TODO:hacer una funcion global
+pub fn res_7_OiymnO(cpu: &mut CPU) {
+    let iy = cpu.lee_iy();
+    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+
+    let dato = cpu.mem.lee_byte_de_mem(direccion);
+
+    let dato = cpu.reset_bitu8(dato, 7);
+    cpu.mem.escribe_byte_en_mem(direccion, dato);
+
+    cpu.t += cpu.get_t_instruccion();
+    cpu.pc += cpu.get_bytes_instruccion();
+}
+
+pub fn res_7_OiymnO_txt(cpu: &mut CPU) { cpu.texto(&format!("RESET 7(IY+#{:02X})", cpu.r2)); }
+
 // *************************** C ***********************************
-// 0xFDCBNNCE
+// 0xFDCBNNC6 TODO:hacer una funcion global
+pub fn set0_OiymnO(cpu: &mut CPU) {
+    let iy = cpu.lee_iy();
+    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+    let mut dato = cpu.mem.lee_byte_de_mem(direccion);
+    dato = cpu.set_bitu8(dato, 0);
+    cpu.mem.escribe_byte_en_mem(direccion, dato);
+
+    cpu.pc += cpu.get_bytes_instruccion();
+    cpu.t += cpu.get_t_instruccion();
+}
+
+pub fn set0_OiymnO_txt(cpu: &mut CPU) {
+    cpu.texto(&format!("SET 0(IY+#{:02X})", cpu.r2));
+}
+
+// 0xFDCBNNCE  TODO:hacer una funcion global
 pub fn set1_OiymnO(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
     let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
@@ -397,7 +572,70 @@ pub fn set1_OiymnO(cpu: &mut CPU) {
 pub fn set1_OiymnO_txt(cpu: &mut CPU) {
     cpu.texto(&format!("SET 1(IY+#{:02X})", cpu.r2));
 }
+
 // *************************** D ***********************************
 // *************************** E ***********************************
-// *************************** F ***********************************
+// 0xFDCBNNE6 TODO:hacer una funcion global
+pub fn set4_OiymnO(cpu: &mut CPU) {
+    let iy = cpu.lee_iy();
+    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+    let mut dato = cpu.mem.lee_byte_de_mem(direccion);
+    dato = cpu.set_bitu8(dato, 4);
+    cpu.mem.escribe_byte_en_mem(direccion, dato);
 
+    cpu.pc += cpu.get_bytes_instruccion();
+    cpu.t += cpu.get_t_instruccion();
+}
+
+pub fn set4_OiymnO_txt(cpu: &mut CPU) {
+    cpu.texto(&format!("SET 4(IY+#{:02X})", cpu.r2));
+}
+
+// 0xFDCBNNCE  TODO:hacer una funcion global
+pub fn set5_OiymnO(cpu: &mut CPU) {
+    let iy = cpu.lee_iy();
+    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+    let mut dato = cpu.mem.lee_byte_de_mem(direccion);
+    dato = cpu.set_bitu8(dato, 5);
+    cpu.mem.escribe_byte_en_mem(direccion, dato);
+
+    cpu.pc += cpu.get_bytes_instruccion();
+    cpu.t += cpu.get_t_instruccion();
+}
+
+pub fn set5_OiymnO_txt(cpu: &mut CPU) {
+    cpu.texto(&format!("SET 5(IY+#{:02X})", cpu.r2));
+}
+
+// *************************** F ***********************************
+// 0xFDCBNNF6 TODO:hacer una funcion global
+pub fn set6_OiymnO(cpu: &mut CPU) {
+    let iy = cpu.lee_iy();
+    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+    let mut dato = cpu.mem.lee_byte_de_mem(direccion);
+    dato = cpu.set_bitu8(dato, 6);
+    cpu.mem.escribe_byte_en_mem(direccion, dato);
+
+    cpu.pc += cpu.get_bytes_instruccion();
+    cpu.t += cpu.get_t_instruccion();
+}
+
+pub fn set6_OiymnO_txt(cpu: &mut CPU) {
+    cpu.texto(&format!("SET 6(IY+#{:02X})", cpu.r2));
+}
+
+// 0xFDCBNNFE  TODO:hacer una funcion global
+pub fn set7_OiymnO(cpu: &mut CPU) {
+    let iy = cpu.lee_iy();
+    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+    let mut dato = cpu.mem.lee_byte_de_mem(direccion);
+    dato = cpu.set_bitu8(dato, 7);
+    cpu.mem.escribe_byte_en_mem(direccion, dato);
+
+    cpu.pc += cpu.get_bytes_instruccion();
+    cpu.t += cpu.get_t_instruccion();
+}
+
+pub fn set7_OiymnO_txt(cpu: &mut CPU) {
+    cpu.texto(&format!("SET 7(IY+#{:02X})", cpu.r2));
+}

@@ -351,23 +351,34 @@ impl CPU {
         resultado
     }
     pub fn suma_u16_mas_u16(&mut self, valor_a: u16, valor_b: u16) -> u16 {
-        // TODO: Probar si hay acarreo de medio byte (flag H) no lo tengo claro con 16 bits
-        // TODO: Faltan Flags (Flags afectados: C N P/V H Z S)
-        // Probar si hay acarreo de medio byte
-//        if self.calc_half_carry_on_u8_sum(valor_a, valor_b) {
-//            self.set_h_flag();
-//        } else {
-//            self.reset_h_flag();
-//        }
+        let valor_a32 = valor_a as u32;
+        let valor_b32 = valor_b as u32;
+
+        let resultado32 = valor_a32 + valor_b32;   // C
+        if (0b1_0000_0000_0000_0000 & resultado32) != 0 {
+            self.set_c_flag();
+        } else {
+            self.reset_c_flag();
+        }
+
+        self.reset_n_flag(); // N  TODO: Comprobar que pasa en todos los casos
+
+        // Probar si hay acarreo de medio byte (bit 11 en 16 bits)
+        if ((valor_a & 0x0FFF) + (valor_b & 0x0FFF)) & 0b0001_0000_0000_0000 != 0 {
+            self.set_h_flag();
+        } else {
+            self.reset_h_flag();
+        }
+
 
         let resultado = valor_a.wrapping_add(valor_b);
 
-        // Establece los flags
-        if resultado == 0 {
-            self.set_z_flag();
-        } else {
-            self.reset_z_flag();
-        }
+        // TODO No todos les afecta Z????????
+//        if resultado == 0 {
+//            self.set_z_flag();
+//        } else {
+//            self.reset_z_flag();
+//        }
 
         resultado
     }
@@ -400,6 +411,27 @@ impl CPU {
         self.set_h_flag();
 
         let resultado = valor_a | valor_b;
+        if resultado == 0 {
+            self.set_z_flag();
+        } else {
+            self.reset_z_flag();
+        }
+
+        if self.prueba_paridad_u8(resultado) {
+            self.set_pv_flag();
+        } else {
+            self.reset_pv_flag();
+        }
+
+        resultado
+    }
+
+    pub fn xor_u8_con_u8(&mut self, valor_a: u8, valor_b: u8) -> u8 {
+        self.reset_c_flag();
+        self.reset_n_flag();
+        self.set_h_flag();
+
+        let resultado = valor_a ^ valor_b;
         if resultado == 0 {
             self.set_z_flag();
         } else {
