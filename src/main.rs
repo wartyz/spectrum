@@ -26,7 +26,7 @@ fn main() {
     //while input().read_char().unwrap() != 'x' {
 
     loop {
-        if cpu.pc == 0x0E4C { // BreakPoint
+        if cpu.pc == 0xFFFF { // BreakPoint
             cpu.establece_debug();
             while input().read_char().unwrap() != 'x' {
                 cpu.limpia_consola();
