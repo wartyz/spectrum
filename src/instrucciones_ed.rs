@@ -72,7 +72,7 @@ pub fn mete_funciones_ed(cpu: &mut CPU) {
     cpu.funciones_ed[0x78 as usize].set_punt_y_val_a_fn(fnED_no_impl, fnED_no_impl, 0, 0);
     cpu.funciones_ed[0x79 as usize].set_punt_y_val_a_fn(fnED_no_impl, fnED_no_impl, 0, 0);
     cpu.funciones_ed[0x7A as usize].set_punt_y_val_a_fn(fnED_no_impl, fnED_no_impl, 0, 0);
-    cpu.funciones_ed[0x7B as usize].set_punt_y_val_a_fn(fnED_no_impl, fnED_no_impl, 0, 0);
+    cpu.funciones_ed[0x7B as usize].set_punt_y_val_a_fn(ld_sp_OnnO, ld_sp_OnnO_txt, 4, 20);
     cpu.funciones_ed[0x7C as usize].set_punt_y_val_a_fn(fnED_no_impl, fnED_no_impl, 0, 0);
     cpu.funciones_ed[0x7D as usize].set_punt_y_val_a_fn(fnED_no_impl, fnED_no_impl, 0, 0);
     cpu.funciones_ed[0x7E as usize].set_punt_y_val_a_fn(fnED_no_impl, fnED_no_impl, 0, 0);
@@ -114,9 +114,11 @@ pub fn mete_funciones_ed(cpu: &mut CPU) {
 }
 
 pub fn fnED_no_impl(cpu: &mut CPU) {
-    panic!(format!("Funcion especial ED   #ED{:02X} no implementada", cpu.r1));
+    panic!(format!("Funcion ED no implementada\n\
+    PC = #{:04X}  r0 = #{:02X}  r1 = #{:02X}  r2 = #{:02X}  \
+    r3 = #{:02X}\n",
+                   cpu.pc, cpu.r0, cpu.r1, cpu.r2, cpu.r3));
 }
-
 
 // *************************** 4 ***********************************
 // 0xED40
@@ -338,6 +340,17 @@ fn ld_a_r_txt() { panic!("0x5F funcion ED no implementada"); }
 
 // *************************** 6 ***********************************
 // *************************** 7 ***********************************
+// 0xED7B
+pub fn ld_sp_OnnO(cpu: &mut CPU) {
+    let sp = cpu.mem.lee_2bytes_de_mem(cpu.r2r3);
+    cpu.sp = sp;
+
+    cpu.t += cpu.get_t_instruccion();
+    cpu.pc += cpu.get_bytes_instruccion();
+}
+
+pub fn ld_sp_OnnO_txt(cpu: &mut CPU) { cpu.texto(&format!("LD SP(#{:04X})", cpu.r2r3)); }
+
 // *************************** A ***********************************
 // *************************** B ***********************************
 // 0xEDB0

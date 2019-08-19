@@ -22,11 +22,13 @@ fn main() {
     //cpu.establece_debug();
 
     //cpu.limpia_consola();
+
+
     println!("Presionar una tecla para empezar (x para salir)");
     //while input().read_char().unwrap() != 'x' {
 
     loop {
-        if cpu.pc == 0xFFFF { // BreakPoint
+        if cpu.pc == 0x0000 { // BreakPoint
             cpu.establece_debug();
             while input().read_char().unwrap() != 'x' {
                 cpu.limpia_consola();

@@ -10,8 +10,10 @@ use crate::instrucciones_ed::*;
 use crate::instrucciones_fd::*;
 use crate::instrucciones_fdcb::*;
 
+
 //use std::fmt;
 
+#[derive(Copy, Clone)]
 pub enum PROCESADOR {
     Z80,
     SharpLr35902,
@@ -68,6 +70,7 @@ impl Funcion {
     }
 }
 
+
 pub struct CPU {
     pub procesador: PROCESADOR,
     // Registros básicos A F    B C    D E    H L
@@ -123,7 +126,7 @@ pub struct CPU {
     pub permitida_interrupcion: bool,
 
     // Habilita debug
-    debug: bool,
+    pub debug: bool,
 
     // Memória
     pub mem: MEM,
@@ -131,6 +134,7 @@ pub struct CPU {
 
 impl CPU {
     pub fn new(mem: MEM) -> CPU {
+
         // Rellenamos arreglo de funciones con objetos Funcion
 
         let funciones: [Funcion; 256] = [Funcion::new(); 256];
@@ -187,12 +191,15 @@ impl CPU {
 
             debug: false,
             mem: mem,
+
         };
         mete_funciones_normales(&mut cpu);
         mete_funciones_cb(&mut cpu);
         mete_funciones_ed(&mut cpu);
         mete_funciones_fd(&mut cpu);
         mete_funciones_fdcb(&mut cpu);
+
+
         cpu
     }
 
@@ -416,7 +423,7 @@ De hecho, incluso para INC (que va de $ 7f a $ 80f) y DEC (que va de $ 80 a $ 7f
         resultado
     }
     pub fn suma_u16_mas_u16(&mut self, valor_a: u16, valor_b: u16) -> u16 {
-        self.flag_c_u16(valor_a, valor_b); // C
+        self.flag_c_u16_en_suma(valor_a, valor_b); // C
         self.reset_n_flag(); // N  TODO: Comprobar que pasa en todos los casos
 
 
@@ -572,23 +579,66 @@ De hecho, incluso para INC (que va de $ 7f a $ 80f) y DEC (que va de $ 80 a $ 7f
             self.set_pv_flag();
         }
     }
+    // P  (P/V usado como overflow)
+    pub fn flag_v_u8_en_suma(&mut self, valor_a: u8, valor_b: u8, resultado: u8) {
+        if self.overflow_en_suma_u8(valor_a, valor_b, resultado) {
+            self.set_pv_flag();
+        } else {
+            self.reset_pv_flag();
+        }
+    }
 
-    pub fn flag_c_u8(&mut self, valor_a: u8, valor_b: u8) { // C
+    pub fn flag_v_u16_en_suma(&mut self, valor: u16) { // P  (P/V usado como overflow)
+    }
+
+    pub fn flag_v_u8_en_resta(&mut self, valor_a: u8, valor_b: u8, resultado: u8) { // P  (P/V usado como overflow)
+        if self.overflow_en_resta_u8(valor_a, valor_b, resultado) {
+            self.set_pv_flag();
+        } else {
+            self.reset_pv_flag();
+        }
+    }
+
+    pub fn flag_v_u16_en_resta(&mut self, valor: u16) { // P  (P/V usado como overflow)
+    }
+
+    pub fn flag_c_u8_en_suma(&mut self, valor_a: u8, valor_b: u8) { // C
         let valor_a16 = valor_a as u16;
         let valor_b16 = valor_b as u16;
 
-        if ((valor_a16 + valor_b16) & 0x100) != 0 {
+        if ((valor_a16.wrapping_add(valor_b16)) & 0x100) != 0 {
+            self.set_c_flag();
+        } else {
+            self.reset_c_flag();
+        }
+    }
+    pub fn flag_c_u8_en_resta(&mut self, valor_a: u8, valor_b: u8) { // C
+        let valor_a16 = valor_a as u16;
+        let valor_b16 = valor_b as u16;
+
+        if ((valor_a16.wrapping_sub(valor_b16)) & 0x100) != 0 {
             self.set_c_flag();
         } else {
             self.reset_c_flag();
         }
     }
 
-    pub fn flag_c_u16(&mut self, valor_a: u16, valor_b: u16) { // C
+    pub fn flag_c_u16_en_suma(&mut self, valor_a: u16, valor_b: u16) { // C
         let valor_a32 = valor_a as u32;
         let valor_b32 = valor_b as u32;
 
-        if ((valor_a32 + valor_b32) & 0x10000) != 0 {
+        if ((valor_a32.wrapping_add(valor_b32)) & 0x10000) != 0 {
+            self.set_c_flag();
+        } else {
+            self.reset_c_flag();
+        }
+    }
+
+    pub fn flag_c_u16_en_resta(&mut self, valor_a: u16, valor_b: u16) { // C
+        let valor_a32 = valor_a as u32;
+        let valor_b32 = valor_b as u32;
+
+        if ((valor_a32.wrapping_sub(valor_b32)) & 0x10000) != 0 {
             self.set_c_flag();
         } else {
             self.reset_c_flag();
@@ -840,6 +890,10 @@ De hecho, incluso para INC (que va de $ 7f a $ 80f) y DEC (que va de $ 80 a $ 7f
         //self.funciones[self.r0 as usize](self);
         let f: Funcion = self.funciones[self.r0 as usize];
         let ff = f.get_puntero_a_funcion();
+
+        //println!("PC = #{:04X}  r0 = #{:02X}  r1 = #{:02X}  r2 = #{:02X}   r3 = #{:02X}",
+        //         self.pc, self.r0, self.r1, self.r2, self.r3);
+
         ff(self);
         //self.funciones[self.r0 as usize](self);
     }
@@ -856,6 +910,30 @@ De hecho, incluso para INC (que va de $ 7f a $ 80f) y DEC (que va de $ 80 a $ 7f
 
         // TODO: Proteccion de memoria provisional
         if self.pc > 0x386D {
+            //let cpu = self.cola_debug.get_cola().get(0);
+
+
+            //println!("Tamaño de cola: {}", self.cola_debug.get_cola().capacity());
+//            for i in 0..self.cola_debug.get_cola().capacity() {
+//                println!("Datos de debug:\
+//                  PC = #{:04X}  r0 = #{:02X}  r1 = #{:02X}  r2 = #{:02X}  r3 = #{:02X}\n",
+//                         self.cola_debug.get_cola().get(i).unwrap().pc,
+//                         self.cola_debug.get_cola().get(i),
+//                         self.cola_debug.get_cola().get(i),
+//                         self.cola_debug.get_cola().get(i),
+//                         self.cola_debug.get_cola().get(i),
+//                )
+//            }
+            //let tam_cola = self.cola_debug.get_cola().capacity();
+//            println!("En cola: {:?}", self.cola_debug.get_cola()[0]);
+//            println!("En cola: {:?}", self.cola_debug.get_cola()[1]);
+//            println!("En cola: {:?}", self.cola_debug.get_cola()[2]);
+//            println!("En cola: {:?}", self.cola_debug.get_cola()[3]);
+//
+//            for i in 0..tam_cola {
+//                println!("En cola: {:?}", self.cola_debug.get_cola()[i]);
+//            }
+
             panic!(format!("Intento de leer una instruccion en zona superior a 0x386E\n\
     PC = #{:04X}  r0 = #{:02X}  r1 = #{:02X}  r2 = #{:02X}  \
     r3 = #{:02X}\n",

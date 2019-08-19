@@ -1,5 +1,8 @@
 //use crossterm::*;
 
+use crossterm::Result;
+
+#[derive(Copy, Clone)]
 pub struct MEM {
     ram: [u8; 65_536],
     ports: [u8; 256],
@@ -16,6 +19,11 @@ impl MEM {
     }
 
     pub fn escribe_byte_en_mem(&mut self, address: u16, value: u8) {
+        if address < 0x4000 {
+            //panic!("Intento de escribir en ROM");
+        }
+
+
         self.ram[address as usize] = value;
     }
 
