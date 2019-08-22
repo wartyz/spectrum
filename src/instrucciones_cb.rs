@@ -320,6 +320,44 @@ pub fn nopCB_txt(cpu: &mut CPU) {
     panic!("Instrucción CB no implementada");
 }
 
+// XXXXXXXXXXXXXXXXXXX Funciones comunes en instrucciones cb XXXXXXXXXXXXXXXXXXXX
+// https://wikiti.brandonw.net/index.php?title=Z80_Instruction_Set
+// Cuando varias funciones en los arreglos de punteros, tienen opciones comunes
+// usan estas funciones, solo se tocaran los flags en estas funciones
+
+
+// bit B,R 	11001011 01bbbrrr 	8 	+ 	+ 	+ 	1 	+ 	P 	0 	- 	tmp := R AND [1 << B]
+pub fn bas_bit_B_R(cpu: &mut CPU, valor: u8, bit: u8) {
+    if valor & (1 << bit) == 0 {
+        cpu.set_z_flag();
+    } else {
+        cpu.reset_z_flag();
+    }
+
+    cpu.reset_n_flag();
+    cpu.set_h_flag();
+
+    cpu.t += cpu.get_t_instruccion();
+    cpu.pc += cpu.get_bytes_instruccion();
+}
+
+
+// res B,R 	11001011 10bbbrrr 	8 	- 	- 	- 	- 	- 	- 	- 	- 	R := R AND ~[1 << B]
+pub fn bas_res_B_R(cpu: &mut CPU, valor: u8, bit: u8) -> u8 {
+    cpu.t += cpu.get_t_instruccion();
+    cpu.pc += cpu.get_bytes_instruccion();
+
+    valor & !(1u8 << bit)
+}
+
+// set B,R 	11001011 11bbbrrr 	8 	- 	- 	- 	- 	- 	- 	- 	- 	R := R OR [1 << B]
+pub fn bas_set_B_R(cpu: &mut CPU, valor: u8, bit: u8) -> u8 {
+    cpu.t += cpu.get_t_instruccion();
+    cpu.pc += cpu.get_bytes_instruccion();
+
+    valor | (1u8 << bit)
+}
+
 // O = ()  p = '
 // *************************** 0 ***********************************
 // 0xCB00
@@ -474,54 +512,60 @@ pub fn sll_l_txt(cpu: &mut CPU) {
 // *************************** 7 ***********************************
 // 0xCB70
 pub fn bit_6_b(cpu: &mut CPU) {
-    cpu.bit(cpu.b, 6);
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
+    bas_bit_B_R(cpu, cpu.b, 6);
+//    cpu.bit(cpu.b, 6);
+//    cpu.t += cpu.get_t_instruccion();
+//    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 pub fn bit_6_b_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 6,B")); }
 
 // 0xCB71
 pub fn bit_6_c(cpu: &mut CPU) {
-    cpu.bit(cpu.c, 6);
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
+    bas_bit_B_R(cpu, cpu.c, 6);
+//    cpu.bit(cpu.c, 6);
+//    cpu.t += cpu.get_t_instruccion();
+//    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 pub fn bit_6_c_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 6,C")); }
 
 // 0xCB72
 pub fn bit_6_d(cpu: &mut CPU) {
-    cpu.bit(cpu.d, 6);
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
+    bas_bit_B_R(cpu, cpu.d, 6);
+//    cpu.bit(cpu.d, 6);
+//    cpu.t += cpu.get_t_instruccion();
+//    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 pub fn bit_6_d_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 6,D")); }
 
 // 0xCB73
 pub fn bit_6_e(cpu: &mut CPU) {
-    cpu.bit(cpu.e, 6);
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
+    bas_bit_B_R(cpu, cpu.e, 6);
+//    cpu.bit(cpu.e, 6);
+//    cpu.t += cpu.get_t_instruccion();
+//    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 pub fn bit_6_e_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 6,E")); }
 
 // 0xCB74
 pub fn bit_6_h(cpu: &mut CPU) {
-    cpu.bit(cpu.h, 6);
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
+    bas_bit_B_R(cpu, cpu.h, 6);
+//    cpu.bit(cpu.h, 6);
+//    cpu.t += cpu.get_t_instruccion();
+//    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 pub fn bit_6_h_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 6,H")); }
 
 // 0xCB75
 pub fn bit_6_l(cpu: &mut CPU) {
-    cpu.bit(cpu.l, 6);
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
+    bas_bit_B_R(cpu, cpu.l, 6);
+//    cpu.bit(cpu.l, 6);
+//    cpu.t += cpu.get_t_instruccion();
+//    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 pub fn bit_6_l_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 6,L")); }
@@ -530,55 +574,63 @@ pub fn bit_6_l_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 6,L")); }
 pub fn bit_6_OhlO(cpu: &mut CPU) {
     let hl = cpu.lee_hl();
     let dato = cpu.mem.lee_byte_de_mem(hl);
-    cpu.bit(dato, 6);
+    bas_bit_B_R(cpu, dato, 6);
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
+
+//    cpu.bit(dato, 6);
+//
+//    cpu.t += cpu.get_t_instruccion();
+//    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 pub fn bit_6_OhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 6,(HL)")); }
 
 // 0xCB77
 pub fn bit_6_a(cpu: &mut CPU) {
-    cpu.bit(cpu.a, 6);
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
+    bas_bit_B_R(cpu, cpu.a, 6);
+//    cpu.bit(cpu.a, 6);
+//    cpu.t += cpu.get_t_instruccion();
+//    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 pub fn bit_6_a_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 6,A")); }
 
 // 0xCB78
 pub fn bit_7_b(cpu: &mut CPU) {
-    cpu.bit(cpu.b, 7);
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
+    bas_bit_B_R(cpu, cpu.b, 7);
+//    cpu.bit(cpu.b, 7);
+//    cpu.t += cpu.get_t_instruccion();
+//    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 pub fn bit_7_b_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 7,B")); }
 
 // 0xCB79
 pub fn bit_7_c(cpu: &mut CPU) {
-    cpu.bit(cpu.c, 7);
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
+    bas_bit_B_R(cpu, cpu.c, 7);
+//    cpu.bit(cpu.c, 7);
+//    cpu.t += cpu.get_t_instruccion();
+//    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 pub fn bit_7_c_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 7,C")); }
 
 // 0xCB7A
 pub fn bit_7_d(cpu: &mut CPU) {
-    cpu.bit(cpu.d, 7);
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
+    bas_bit_B_R(cpu, cpu.d, 7);
+//    cpu.bit(cpu.d, 7);
+//    cpu.t += cpu.get_t_instruccion();
+//    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 pub fn bit_7_d_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 7,D")); }
 
 // 0xCB7B
 pub fn bit_7_e(cpu: &mut CPU) {
-    cpu.bit(cpu.e, 7);
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
+    bas_bit_B_R(cpu, cpu.e, 7);
+//    cpu.bit(cpu.e, 7);
+//    cpu.t += cpu.get_t_instruccion();
+//    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 pub fn bit_7_e_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 7,E")); }
@@ -586,9 +638,10 @@ pub fn bit_7_e_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 7,E")); }
 
 // 0xCB7C     BIT 7, H
 pub fn bit_7_h(cpu: &mut CPU) {
-    cpu.bit(cpu.h, 7);
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
+    bas_bit_B_R(cpu, cpu.h, 7);
+//    cpu.bit(cpu.h, 7);
+//    cpu.t += cpu.get_t_instruccion();
+//    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 
@@ -596,9 +649,10 @@ pub fn bit_7_h_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 7,H")); }
 // 0xCB7D
 
 pub fn bit_7_l(cpu: &mut CPU) {
-    cpu.bit(cpu.l, 7);
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
+    bas_bit_B_R(cpu, cpu.l, 7);
+//    cpu.bit(cpu.l, 7);
+//    cpu.t += cpu.get_t_instruccion();
+//    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 pub fn bit_7_l_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 7,L")); }
@@ -607,19 +661,21 @@ pub fn bit_7_l_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 7,L")); }
 pub fn bit_7_OhlO(cpu: &mut CPU) {
     let hl = cpu.lee_hl();
     let dato = cpu.mem.lee_byte_de_mem(hl);
-    cpu.bit(dato, 7);
-
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
+    bas_bit_B_R(cpu, dato, 7);
+//    cpu.bit(dato, 7);
+//
+//    cpu.t += cpu.get_t_instruccion();
+//    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 pub fn bit_7_OhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 7,(HL)")); }
 
 // 0xCB7F
 pub fn bit_7_a(cpu: &mut CPU) {
-    cpu.bit(cpu.a, 7);
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
+    bas_bit_B_R(cpu, cpu.a, 7);
+//    cpu.bit(cpu.a, 7);
+//    cpu.t += cpu.get_t_instruccion();
+//    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 pub fn bit_7_a_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 7,A")); }
@@ -627,60 +683,66 @@ pub fn bit_7_a_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 7,A")); }
 // *************************** 8 ***********************************
 //0xCB80
 pub fn res_0_b(cpu: &mut CPU) {
-    cpu.b = cpu.reset_bitu8(cpu.b, 5);
-
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
+    cpu.b = bas_res_B_R(cpu, cpu.b, 0);
+//    cpu.b = cpu.reset_bitu8(cpu.b, 5);
+//
+//    cpu.t += cpu.get_t_instruccion();
+//    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 pub fn res_0_b_txt(cpu: &mut CPU) { cpu.texto(&format!("RES 0,B")); }
 
 //0xCB81
 pub fn res_0_c(cpu: &mut CPU) {
-    cpu.c = cpu.reset_bitu8(cpu.c, 0);
-
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
+    cpu.c = bas_res_B_R(cpu, cpu.c, 0);
+//    cpu.c = cpu.reset_bitu8(cpu.c, 0);
+//
+//    cpu.t += cpu.get_t_instruccion();
+//    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 pub fn res_0_c_txt(cpu: &mut CPU) { cpu.texto(&format!("RES 0,C")); }
 
 //0xCB82
 pub fn res_0_d(cpu: &mut CPU) {
-    cpu.d = cpu.reset_bitu8(cpu.d, 0);
-
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
+    cpu.d = bas_res_B_R(cpu, cpu.d, 0);
+//    cpu.d = cpu.reset_bitu8(cpu.d, 0);
+//
+//    cpu.t += cpu.get_t_instruccion();
+//    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 pub fn res_0_d_txt(cpu: &mut CPU) { cpu.texto(&format!("RES 0,D")); }
 
 //0xCB83
 pub fn res_0_e(cpu: &mut CPU) {
-    cpu.e = cpu.reset_bitu8(cpu.e, 0);
-
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
+    cpu.e = bas_res_B_R(cpu, cpu.e, 0);
+//    cpu.e = cpu.reset_bitu8(cpu.e, 0);
+//
+//    cpu.t += cpu.get_t_instruccion();
+//    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 pub fn res_0_e_txt(cpu: &mut CPU) { cpu.texto(&format!("RES 0,E")); }
 
 //0xCB84
 pub fn res_0_h(cpu: &mut CPU) {
-    cpu.h = cpu.reset_bitu8(cpu.h, 0);
-
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
+    cpu.h = bas_res_B_R(cpu, cpu.h, 0);
+//    cpu.h = cpu.reset_bitu8(cpu.h, 0);
+//
+//    cpu.t += cpu.get_t_instruccion();
+//    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 pub fn res_0_h_txt(cpu: &mut CPU) { cpu.texto(&format!("RES 0,H")); }
 
 //0xCB85
 pub fn res_0_l(cpu: &mut CPU) {
-    cpu.l = cpu.reset_bitu8(cpu.l, 0);
-
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
+    cpu.l = bas_res_B_R(cpu, cpu.l, 0);
+//    cpu.l = cpu.reset_bitu8(cpu.l, 0);
+//
+//    cpu.t += cpu.get_t_instruccion();
+//    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 pub fn res_0_l_txt(cpu: &mut CPU) { cpu.texto(&format!("RES 0,L")); }
@@ -690,21 +752,25 @@ pub fn res_0_l_txt(cpu: &mut CPU) { cpu.texto(&format!("RES 0,L")); }
 pub fn res_0_OhlO(cpu: &mut CPU) {
     let hl = cpu.lee_hl();
     let mut dato = cpu.mem.lee_byte_de_mem(hl);
-    dato = cpu.reset_bitu8(dato, 0);
-    cpu.mem.escribe_byte_en_mem(hl, dato);
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
+    dato = bas_res_B_R(cpu, dato, 0);
+
+//    dato = cpu.reset_bitu8(dato, 0);
+    cpu.mem.escribe_byte_en_mem(hl, dato);
+//
+//    cpu.t += cpu.get_t_instruccion();
+//    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 pub fn res_0_OhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("RES 0,(HL)")); }
 
 //0xCB87
 pub fn res_0_a(cpu: &mut CPU) {
-    cpu.a = cpu.reset_bitu8(cpu.a, 0);
-
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
+    cpu.a = bas_res_B_R(cpu, cpu.a, 0);
+//    cpu.a = cpu.reset_bitu8(cpu.a, 0);
+//
+//    cpu.t += cpu.get_t_instruccion();
+//    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 pub fn res_0_a_txt(cpu: &mut CPU) { cpu.texto(&format!("RES 0,A")); }
@@ -785,11 +851,16 @@ pub fn res_5_l_txt(cpu: &mut CPU) { fnCB_no_impl(cpu); }
 pub fn res_5_OhlO(cpu: &mut CPU) {
     let hl = cpu.lee_hl();
     let mut dato = cpu.mem.lee_byte_de_mem(hl);
-    dato = cpu.reset_bitu8(dato, 5);
+
+    dato = bas_res_B_R(cpu, dato, 5);
+
+//    dato = cpu.reset_bitu8(dato, 5);
     cpu.mem.escribe_byte_en_mem(hl, dato);
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
+
+//
+//    cpu.t += cpu.get_t_instruccion();
+//    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 pub fn res_5_OhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("RES 5,(HL)")); }
@@ -834,13 +905,12 @@ pub fn set_0_l_txt(cpu: &mut CPU) { fnCB_no_impl(cpu); }
 //0xCBC6
 pub fn set_0_OhlO(cpu: &mut CPU) {
     let hl = cpu.lee_hl();
-    let dato = cpu.mem.lee_byte_de_mem(hl);
+    let mut dato = cpu.mem.lee_byte_de_mem(hl);
 
-    cpu.set_bitu8(dato, 0);
+    dato = bas_set_B_R(cpu, dato, 0);
+
+//    dato = cpu.reset_bitu8(dato, 5);
     cpu.mem.escribe_byte_en_mem(hl, dato);
-
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 pub fn set_0_OhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("SET 0,(HL)")); }

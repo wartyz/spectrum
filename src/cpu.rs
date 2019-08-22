@@ -9,15 +9,16 @@ use crate::instrucciones_cb::*;
 use crate::instrucciones_ed::*;
 use crate::instrucciones_fd::*;
 use crate::instrucciones_fdcb::*;
+use crate::procesador::PROCESADOR;
 
 
 //use std::fmt;
 
-#[derive(Copy, Clone)]
-pub enum PROCESADOR {
-    Z80,
-    SharpLr35902,
-}
+//#[derive(Copy, Clone)]
+//pub enum PROCESADOR {
+//    Z80,
+//    SharpLr35902,
+//}
 
 #[derive(Copy, Clone)]
 pub struct Funcion {
@@ -133,7 +134,7 @@ pub struct CPU {
 }
 
 impl CPU {
-    pub fn new(mem: MEM) -> CPU {
+    pub fn new(mem: MEM, procesador: PROCESADOR) -> CPU {
 
         // Rellenamos arreglo de funciones con objetos Funcion
 
@@ -145,13 +146,13 @@ impl CPU {
 
         let mut cpu = CPU {
             // OJO Cambiar si se usa otro procesador!
-            procesador: PROCESADOR::Z80,
-            a: 0xFF,
+            procesador: procesador,
+            a: 0,
             b: 0,
             c: 0,
             d: 0,
             e: 0,
-            f: 0xFF,
+            f: 0,
             h: 0,
             l: 0,
             ap: 0,
@@ -171,7 +172,7 @@ impl CPU {
             r: 0,
 
             pc: 0,
-            sp: 0xFFFF,
+            sp: 0,
             t: 0,
 
             funciones: funciones,
@@ -204,9 +205,12 @@ impl CPU {
     }
 
 
-    // FLAGS *****************************************************
+    // FLAGS EN Z80 ****************************
     // Bit           7  6  5  4  3   2   1  0
     // Posicion      S  Z  X  H  X  P/V  N  C   (X = no usado)
+    // FLAGS EN SharpLr35902 ****************************
+    // Bit           7  6  5  4  3   2   1  0
+    // Posicion      Z  N  H  C  0   0   0  0
 
     // Funciones GET de FLAGS
     /// Función general que usan las demás funciones de flag
@@ -538,8 +542,26 @@ De hecho, incluso para INC (que va de $ 7f a $ 80f) y DEC (que va de $ 80 a $ 7f
 
 
     // TODO Experimento
-    pub fn flag_h_u8(&mut self, valor: u8) { // H  carry del bit 3 al 4
-        if (valor & 0b0001_0000) != 0 {
+    pub fn flag_h_u8_en_suma(&mut self, valor1: u8, valor2: u8) { // H  carry del bit 3 al 4
+//        if (valor & 0b0001_0000) != 0 {
+//            self.set_h_flag();
+//        } else {
+//            self.reset_h_flag();
+//        }
+        if ((valor1 & 0x0f) + (valor2 & 0x0f)) > 0x0F {
+            self.set_h_flag();
+        } else {
+            self.reset_h_flag();
+        }
+    }
+    pub fn flag_h_u8_en_resta(&mut self, valor1: u8, valor2: u8) { // H  carry del bit 3 al 4
+//        if (valor & 0b0001_0000) != 0 {
+//            self.set_h_flag();
+//        } else {
+//            self.reset_h_flag();
+//        }
+
+        if (valor1 & 0x0F) < (valor2 & 0x0F) {
             self.set_h_flag();
         } else {
             self.reset_h_flag();
@@ -548,7 +570,13 @@ De hecho, incluso para INC (que va de $ 7f a $ 80f) y DEC (que va de $ 80 a $ 7f
 
 
     pub fn flag_h_u16(&mut self, valor: u16) { // H carry del bit 11 al 12
-        if (valor & 0b0001_0000_0000_0000) != 0 {
+//        if (valor & 0b0001_0000_0000_0000) != 0 {
+//            self.set_h_flag();
+//        } else {
+//            self.reset_h_flag();
+//        }
+
+        if ((valor & 0x0FFF) + 1) > 0x0FFF {
             self.set_h_flag();
         } else {
             self.reset_h_flag();
@@ -803,13 +831,15 @@ De hecho, incluso para INC (que va de $ 7f a $ 80f) y DEC (que va de $ 80 a $ 7f
 
     // FUNCIONES DE BIT *******************************************
     /// Pone flags segun bit de registro
-    pub fn bit(&mut self, reg: u8, bit: u8) {
-        if reg & (1 << bit) == 0 {
-            self.set_z_flag();
-        };
-        self.reset_n_flag();
-        self.set_h_flag();
-    }
+//    pub fn bit(&mut self, reg: u8, bit: u8) {
+//        if reg & (1 << bit) == 0 {
+//            self.set_z_flag();
+//        } else {
+//            self.reset_z_flag();
+//        };
+//        self.reset_n_flag();
+//        self.set_h_flag();
+//    }
     // FIN FUNCIONES DE BIT *******************************************
     // FUNCIONES DE ROTACION DE BITS *******************************************
 //    pub fn do_rl_n(&mut self, register_value: u8) -> u8 {
@@ -890,9 +920,9 @@ De hecho, incluso para INC (que va de $ 7f a $ 80f) y DEC (que va de $ 80 a $ 7f
         //self.funciones[self.r0 as usize](self);
         let f: Funcion = self.funciones[self.r0 as usize];
         let ff = f.get_puntero_a_funcion();
-
-        //println!("PC = #{:04X}  r0 = #{:02X}  r1 = #{:02X}  r2 = #{:02X}   r3 = #{:02X}",
-        //         self.pc, self.r0, self.r1, self.r2, self.r3);
+        // DESCOMENTAR ESTA LINEA PARA VER EL DEBUG DE LAS INSTRUCCIONES
+//        println!("PC = #{:04X}  r0 = #{:02X}  r1 = #{:02X}  r2 = #{:02X}   r3 = #{:02X}",
+//                 self.pc, self.r0, self.r1, self.r2, self.r3);
 
         ff(self);
         //self.funciones[self.r0 as usize](self);
@@ -908,37 +938,14 @@ De hecho, incluso para INC (que va de $ 7f a $ 80f) y DEC (que va de $ 80 a $ 7f
         self.r1r2 = ((self.r2 as u16) << 8) | self.r1 as u16;
         self.r2r3 = ((self.r3 as u16) << 8) | self.r2 as u16;
 
-        // TODO: Proteccion de memoria provisional
-        if self.pc > 0x386D {
-            //let cpu = self.cola_debug.get_cola().get(0);
-
-
-            //println!("Tamaño de cola: {}", self.cola_debug.get_cola().capacity());
-//            for i in 0..self.cola_debug.get_cola().capacity() {
-//                println!("Datos de debug:\
-//                  PC = #{:04X}  r0 = #{:02X}  r1 = #{:02X}  r2 = #{:02X}  r3 = #{:02X}\n",
-//                         self.cola_debug.get_cola().get(i).unwrap().pc,
-//                         self.cola_debug.get_cola().get(i),
-//                         self.cola_debug.get_cola().get(i),
-//                         self.cola_debug.get_cola().get(i),
-//                         self.cola_debug.get_cola().get(i),
-//                )
-//            }
-            //let tam_cola = self.cola_debug.get_cola().capacity();
-//            println!("En cola: {:?}", self.cola_debug.get_cola()[0]);
-//            println!("En cola: {:?}", self.cola_debug.get_cola()[1]);
-//            println!("En cola: {:?}", self.cola_debug.get_cola()[2]);
-//            println!("En cola: {:?}", self.cola_debug.get_cola()[3]);
+//        // TODO: Proteccion de memoria provisional
+//        if self.pc > 0x386D {
 //
-//            for i in 0..tam_cola {
-//                println!("En cola: {:?}", self.cola_debug.get_cola()[i]);
-//            }
-
-            panic!(format!("Intento de leer una instruccion en zona superior a 0x386E\n\
-    PC = #{:04X}  r0 = #{:02X}  r1 = #{:02X}  r2 = #{:02X}  \
-    r3 = #{:02X}\n",
-                           self.pc, self.r0, self.r1, self.r2, self.r3));
-        }
+//            panic!(format!("Intento de leer una instruccion en zona superior a 0x386E\n\
+//    PC = #{:04X}  r0 = #{:02X}  r1 = #{:02X}  r2 = #{:02X}  \
+//    r3 = #{:02X}\n",
+//                           self.pc, self.r0, self.r1, self.r2, self.r3));
+//        }
     }
 
     pub fn limpia_consola(&self) {
@@ -1095,6 +1102,17 @@ De hecho, incluso para INC (que va de $ 7f a $ 80f) y DEC (que va de $ 80 a $ 7f
 
             cursor.goto(1, 10);
             println!("         {}   {}   {}   {}   {}   {}", s, z, h, pv, n, c);
+
+            cursor.goto(40, 10);
+            if self.procesador == PROCESADOR::SharpLr35902 {
+                let mut f = 0;
+                if self.get_z_flag() { f += 0x80 }
+                if self.get_n_flag() { f += 0x40 }
+                if self.get_h_flag() { f += 0x20 }
+                if self.get_c_flag() { f += 0x10 }
+
+                println!("F en Gameboy = 0x{:02X}", f);
+            }
 
 //            println!("{}FLAGS{}      Z = {:#?} N = {:#?}",
 //                     Colored::Fg(Color::Red),

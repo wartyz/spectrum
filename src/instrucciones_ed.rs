@@ -122,19 +122,19 @@ pub fn fnED_no_impl(cpu: &mut CPU) {
 
 // *************************** 4 ***********************************
 // 0xED40
-fn b_OcO(cpu: &mut CPU) { panic!("0x40 funcion ED no implementada"); }
+fn b_OcO(cpu: &mut CPU) { fnED_no_impl(cpu); }
 
-fn b_OcO_txt(cpu: &mut CPU) { panic!("0x40 funcion ED no implementada"); }
+fn b_OcO_txt(cpu: &mut CPU) { fnED_no_impl(cpu); }
 
 // 0xED41
-fn out_OcO_b(cpu: &mut CPU) { panic!("0x41 funcion ED no implementada"); }
+fn out_OcO_b(cpu: &mut CPU) { fnED_no_impl(cpu); }
 
-fn out_OcO_b_txt(cpu: &mut CPU) { panic!("0x41 funcion ED no implementada"); }
+fn out_OcO_b_txt(cpu: &mut CPU) { fnED_no_impl(cpu); }
 
 // 0xED42
-fn sbc_hl_bc(cpu: &mut CPU) { panic!("0x42 funcion ED no implementada"); }
+fn sbc_hl_bc(cpu: &mut CPU) { fnED_no_impl(cpu); }
 
-fn sbc_hl_bc_txt(cpu: &mut CPU) { panic!("0x42 funcion ED no implementada"); }
+fn sbc_hl_bc_txt(cpu: &mut CPU) { fnED_no_impl(cpu); }
 
 // 0xED43
 fn ld_OnnO_bc(cpu: &mut CPU) {
@@ -148,19 +148,19 @@ fn ld_OnnO_bc(cpu: &mut CPU) {
 fn ld_OnnO_bc_txt(cpu: &mut CPU) { cpu.texto(&format!("LD(#{:04X}),BC", cpu.r2r3)); }
 
 // 0xED44
-fn neg(cpu: &mut CPU) { panic!("0x44 funcion ED no implementada"); }
+fn neg(cpu: &mut CPU) { fnED_no_impl(cpu); }
 
-fn neg_txt(cpu: &mut CPU) { panic!("0x44 funcion ED no implementada"); }
+fn neg_txt(cpu: &mut CPU) { fnED_no_impl(cpu); }
 
 // 0xED45
-fn retn(cpu: &mut CPU) { panic!("0x45 funcion ED no implementada"); }
+fn retn(cpu: &mut CPU) { fnED_no_impl(cpu); }
 
-fn retn_txt(cpu: &mut CPU) { panic!("0x45 funcion ED no implementada"); }
+fn retn_txt(cpu: &mut CPU) { fnED_no_impl(cpu); }
 
 // 0xED46
-fn im_0(cpu: &mut CPU) { panic!("0x46 funcion ED no implementada"); }
+fn im_0(cpu: &mut CPU) { fnED_no_impl(cpu); }
 
-fn im_0_txt(cpu: &mut CPU) { panic!("0x46 funcion ED no implementada"); }
+fn im_0_txt(cpu: &mut CPU) { fnED_no_impl(cpu); }
 
 // 0xED47
 fn ld_i_a(cpu: &mut CPU) {
@@ -173,11 +173,11 @@ fn ld_i_a(cpu: &mut CPU) {
 fn ld_i_a_txt(cpu: &mut CPU) { cpu.texto(&format!("LD I,A")); }
 
 
-fn in_c_OcO(cpu: &mut CPU) { fn_no_impl(cpu); }
+fn in_c_OcO(cpu: &mut CPU) { fnED_no_impl(cpu); }
 
-fn outOcO_c(cpu: &mut CPU) { fn_no_impl(cpu); }
+fn outOcO_c(cpu: &mut CPU) { fnED_no_impl(cpu); }
 
-fn adc_hl_bc(cpu: &mut CPU) { fn_no_impl(cpu); }
+fn adc_hl_bc(cpu: &mut CPU) { fnED_no_impl(cpu); }
 
 // 0xED4B
 fn ld_bc_OnnO(cpu: &mut CPU) {
@@ -191,25 +191,25 @@ fn ld_bc_OnnO(cpu: &mut CPU) {
 fn ld_bc_OnnO_txt(cpu: &mut CPU) { cpu.texto(&format!("LD BC(#{:04X})", cpu.r2r3)); }
 
 //fn neg(){}
-fn reti(cpu: &mut CPU) { fn_no_impl(cpu); }
+fn reti(cpu: &mut CPU) { fnED_no_impl(cpu); }
 
-fn im_0_1(cpu: &mut CPU) { fn_no_impl(cpu); }
+fn im_0_1(cpu: &mut CPU) { fnED_no_impl(cpu); }
 
-fn ld_r_a(cpu: &mut CPU) { fn_no_impl(cpu); }
+fn ld_r_a(cpu: &mut CPU) { fnED_no_impl(cpu); }
 
 
 // *************************** 5 ***********************************
 
 
 // 0xED50
-fn in_dOcO() { panic!("0x50 funcion ED no implementada"); }
+fn in_dOcO(cpu: &mut CPU) { fnED_no_impl(cpu); }
 
-fn in_dOcO_txt() { panic!("0x50 funcion ED no implementada"); }
+fn in_dOcO_txt(cpu: &mut CPU) { fnED_no_impl(cpu); }
 
 // 0xED51
-fn out_cOdO() { panic!("0x51 funcion ED no implementada"); }
+fn out_cOdO(cpu: &mut CPU) { fnED_no_impl(cpu); }
 
-fn out_cOdO_txt() { panic!("0x51 funcion ED no implementada"); }
+fn out_cOdO_txt(cpu: &mut CPU) { fnED_no_impl(cpu); }
 
 // 0xED52
 fn sbc_hl_de(cpu: &mut CPU) {
@@ -300,19 +300,19 @@ fn ld_a_i_txt(cpu: &mut CPU) {
 }
 
 // 0xED58
-fn in_e_OcO() { panic!("0x58 funcion ED no implementada"); }
+fn in_e_OcO(cpu: &mut CPU) { fnED_no_impl(cpu); }
 
-fn in_e_OcO_txt() { panic!("0x58 funcion ED no implementada"); }
+fn in_e_OcO_txt(cpu: &mut CPU) { fnED_no_impl(cpu); }
 
 // 0x59
-fn outOcO_e() { panic!("0x59 funcion ED no implementada"); }
+fn outOcO_e(cpu: &mut CPU) { fnED_no_impl(cpu); }
 
-fn outOcO_e_txt() { panic!("0x59 funcion ED no implementada"); }
+fn outOcO_e_txt(cpu: &mut CPU) { fnED_no_impl(cpu); }
 
 // 0xED5A
-fn adc_hl_de() { panic!("0x5A funcion ED no implementada"); }
+fn adc_hl_de(cpu: &mut CPU) { fnED_no_impl(cpu); }
 
-fn adc_hl_de_txt() { panic!("0x5A funcion ED no implementada"); }
+fn adc_hl_de_txt(cpu: &mut CPU) { fnED_no_impl(cpu); }
 
 // 0xED5B
 fn ld_de_OnnO(cpu: &mut CPU) {
@@ -329,14 +329,14 @@ fn ld_de_OnnO_txt(cpu: &mut CPU) { cpu.texto(&format!("LD DE(#{:04X})", cpu.r2r3
 // 0x5D REPETIDO
 
 // 0x5E
-fn im_2() { panic!("0x5E funcion ED no implementada"); }
+fn im_2(cpu: &mut CPU) { fnED_no_impl(cpu); }
 
-fn im_2_txt() { panic!("0x5E funcion ED no implementada"); }
+fn im_2_txt(cpu: &mut CPU) { fnED_no_impl(cpu); }
 
 // 0xED5F
-fn ld_a_r() { panic!("0x5F funcion ED no implementada"); }
+fn ld_a_r(cpu: &mut CPU) { fnED_no_impl(cpu); }
 
-fn ld_a_r_txt() { panic!("0x5F funcion ED no implementada"); }
+fn ld_a_r_txt(cpu: &mut CPU) { fnED_no_impl(cpu); }
 
 // *************************** 6 ***********************************
 // *************************** 7 ***********************************
