@@ -9,4 +9,6 @@ edition = "2018"
 #unicode-width = "0.1.5"
 crossterm = "0.10.2"
 #raylib = "0.9"
+#minifb="0.12"
+image = "0.22.1"
 

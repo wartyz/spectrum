@@ -1691,7 +1691,6 @@ pub fn bas_sub_R(cpu: &mut CPU) {
     cpu.flag_s_u8(kk);
     cpu.flag_z_u8(kk);
 
-
     cpu.t += cpu.get_t_instruccion();
     cpu.pc += cpu.get_bytes_instruccion();
 }

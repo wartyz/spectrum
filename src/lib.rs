@@ -7,3 +7,4 @@ pub mod instrucciones_fd;
 pub mod instrucciones_fdcb;
 pub mod procesador;
 pub mod hardware;
+pub mod constantes;

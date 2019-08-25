@@ -11,14 +11,8 @@ use crate::instrucciones_fd::*;
 use crate::instrucciones_fdcb::*;
 use crate::procesador::PROCESADOR;
 
+use super::constantes::*;
 
-//use std::fmt;
-
-//#[derive(Copy, Clone)]
-//pub enum PROCESADOR {
-//    Z80,
-//    SharpLr35902,
-//}
 
 #[derive(Copy, Clone)]
 pub struct Funcion {
@@ -133,10 +127,22 @@ pub struct CPU {
     pub mem: MEM,
 }
 
+//// FLAGS EN Z80 ****************************
+//// Bit           7  6  5  4  3   2   1  0
+//// Posicion      S  Z  X  H  X  P/V  N  C   (X = no usado)
+//// Mascaras de flags
+//pub const FLAG_C: u8 = 1u8 << 0;
+//pub const FLAG_N: u8 = 1u8 << 1;
+//pub const FLAG_PV: u8 = 1u8 << 2;
+//pub const FLAG_H: u8 = 1u8 << 4;
+//pub const FLAG_Z: u8 = 1u8 << 6;
+//pub const FLAG_S: u8 = 1u8 << 7;
+
+
 impl CPU {
     pub fn new(mem: MEM, procesador: PROCESADOR) -> CPU {
 
-        // Rellenamos arreglo de funciones con objetos Funcion
+// Rellenamos arreglo de funciones con objetos Funcion
 
         let funciones: [Funcion; 256] = [Funcion::new(); 256];
         let funcionesED: [Funcion; 256] = [Funcion::new(); 256];
@@ -145,7 +151,7 @@ impl CPU {
         let funcionesFDCB: [Funcion; 256] = [Funcion::new(); 256];
 
         let mut cpu = CPU {
-            // OJO Cambiar si se usa otro procesador!
+// OJO Cambiar si se usa otro procesador!
             procesador: procesador,
             a: 0,
             b: 0,
@@ -163,18 +169,15 @@ impl CPU {
             fp: 0,
             hp: 0,
             lp: 0,
-
             ixh: 0,
             ixl: 0,
             iyh: 0,
             iyl: 0,
             i: 0,
             r: 0,
-
             pc: 0,
             sp: 0,
             t: 0,
-
             funciones: funciones,
             funciones_ed: funcionesED,
             funciones_cb: funcionesCB,
@@ -186,10 +189,8 @@ impl CPU {
             r3: 0,
             r1r2: 0,
             r2r3: 0,
-
             im: 0,
             permitida_interrupcion: false,
-
             debug: false,
             mem: mem,
 
@@ -205,81 +206,79 @@ impl CPU {
     }
 
 
-    // FLAGS EN Z80 ****************************
-    // Bit           7  6  5  4  3   2   1  0
-    // Posicion      S  Z  X  H  X  P/V  N  C   (X = no usado)
-    // FLAGS EN SharpLr35902 ****************************
-    // Bit           7  6  5  4  3   2   1  0
-    // Posicion      Z  N  H  C  0   0   0  0
+// FLAGS EN Z80 ****************************
+// Bit           7  6  5  4  3   2   1  0
+// Posicion      S  Z  X  H  X  P/V  N  C   (X = no usado)
+// FLAGS EN SharpLr35902 ****************************
+// Bit           7  6  5  4  3   2   1  0
+// Posicion      Z  N  H  C  0   0   0  0
 
     // Funciones GET de FLAGS
     /// Función general que usan las demás funciones de flag
     /// Recibe una máscara indicando el flag a leer y devuelve true o false segun sea 1 o 0
+    ///
+
+
     pub fn get_flag(&self, bit_mask: u8) -> bool {
         (self.f & bit_mask) != 0
     }
+
     pub fn get_s_flag(&self) -> bool {
-        self.get_flag(0b1000_0000)
+        self.get_flag(FLAG_S)
     }
     pub fn get_z_flag(&self) -> bool {
-        self.get_flag(0b0100_0000)
+        self.get_flag(FLAG_Z)
     }
     pub fn get_h_flag(&self) -> bool {
-        self.get_flag(0b0001_0000)
+        self.get_flag(FLAG_H)
     }
     pub fn get_pv_flag(&self) -> bool {
-        self.get_flag(0b0000_0100)
+        self.get_flag(FLAG_PV)
     }
     pub fn get_n_flag(&self) -> bool {
-        self.get_flag(0b0000_0010)
+        self.get_flag(FLAG_N)
     }
     pub fn get_c_flag(&self) -> bool {
-        self.get_flag(0b0000_0001)
+        self.get_flag(FLAG_C)
     }
 
     // Funciones SET de FLAGS
-    pub fn set_s_flag(&mut self) { self.f = self.f | 0b1000_0000; }
-    pub fn reset_s_flag(&mut self) {
-        self.f = self.f & 0b0111_1111;
-    }
-    pub fn set_z_flag(&mut self) { self.f = self.f | 0b0100_0000; }
-    pub fn reset_z_flag(&mut self) {
-        self.f = self.f & 0b1011_1111;
-    }
-    pub fn set_h_flag(&mut self) { self.f = self.f | 0b0001_0000; }
-    pub fn reset_h_flag(&mut self) { self.f = self.f & 0b1110_1111; }
-    pub fn set_pv_flag(&mut self) { self.f = self.f | 0b0000_0100; }
-    pub fn reset_pv_flag(&mut self) { self.f = self.f & 0b1111_1011; }
-    pub fn set_n_flag(&mut self) { self.f = self.f | 0b0000_0010; }
-    pub fn reset_n_flag(&mut self) { self.f = self.f & 0b1111_1101; }
-    pub fn set_c_flag(&mut self) { self.f = self.f | 0b0000_0001; }
-    pub fn reset_c_flag(&mut self) {
-        self.f = self.f & 0b1111_1110;
-    }
+    pub fn set_s_flag(&mut self) { self.f = self.f | FLAG_S; }
+    pub fn reset_s_flag(&mut self) { self.f = self.f & (!FLAG_S) }
+    pub fn set_z_flag(&mut self) { self.f = self.f | FLAG_Z; }
+    pub fn reset_z_flag(&mut self) { self.f = self.f & (!FLAG_Z); }
+    pub fn set_h_flag(&mut self) { self.f = self.f | FLAG_H; }
+    pub fn reset_h_flag(&mut self) { self.f = self.f & !(FLAG_H); }
+    pub fn set_pv_flag(&mut self) { self.f = self.f | FLAG_PV; }
+    pub fn reset_pv_flag(&mut self) { self.f = self.f & !(FLAG_PV); }
+    pub fn set_n_flag(&mut self) { self.f = self.f | FLAG_N; }
+    pub fn reset_n_flag(&mut self) { self.f = self.f & !(FLAG_N); }
+    pub fn set_c_flag(&mut self) { self.f = self.f | FLAG_C; }
+    pub fn reset_c_flag(&mut self) { self.f = self.f & !(FLAG_C); }
 
 
     // FUNCIONES ARITMETICAS **************************************
     /*
-   El flag P/V tiene dos funciones:
-   Paridad (para instrucciones lógicas) y
-   oVerflow (para instrucciones aritméticas)
+    El flag P/V tiene dos funciones:
+    Paridad (para instrucciones lógicas) y
+    oVerflow (para instrucciones aritméticas)
 
-para instrucciones aritméticas de 8-bits el Z80 assume que todos los operandos son enteros
-con signo en el flag de overflow.
+    para instrucciones aritméticas de 8-bits el Z80 assume que todos los operandos son enteros
+    con signo en el flag de overflow.
 
-The algorithm for calculating P/V flag for ADD instruction is:
+    The algorithm for calculating P/V flag for ADD instruction is:
 
-if (((reg_a ^ operand) & 0x80) == 0 /* Same sign */
-   && ((reg_a ^ result) & 0x80) != 0) /* Not same sign */
-   {
+    if (((reg_a ^ operand) & 0x80) == 0 /* Same sign */
+    && ((reg_a ^ result) & 0x80) != 0) /* Not same sign */
+    {
        overflow = 1;
-   } else {
+    } else {
       overflow = 0;
-   }
+    }
 
-Para una instrucción SUB es:
-0x80 = 0b1000_0000
-if (((reg_a ^ operand) & 0x80) != 0 /* Not same sign */
+    Para una instrucción SUB es:
+    0x80 = 0b1000_0000
+    if (((reg_a ^ operand) & 0x80) != 0 /* Not same sign */
     && ((operand ^ result) & 0x80) == 0) /* Same sign */
     {
          overflow = 1;
@@ -287,11 +286,11 @@ if (((reg_a ^ operand) & 0x80) != 0 /* Not same sign */
          overflow = 0;
     }
 
-In fact even for INC (going from $7f to $80) and DEC (going from $80 to $7f) is calculated this overflow flag.
+    In fact even for INC (going from $7f to $80) and DEC (going from $80 to $7f) is calculated this overflow flag.
 
-De hecho, incluso para INC (que va de $ 7f a $ 80f) y DEC (que va de $ 80 a $ 7f) se calcula este indicador de desbordamiento.
+    De hecho, incluso para INC (que va de $ 7f a $ 80f) y DEC (que va de $ 80 a $ 7f) se calcula este indicador de desbordamiento.
 
-   */
+    */
     pub fn overflow_en_suma_u8(&mut self, valor_a: u8, valor_b: u8, resultado: u8) -> bool {
         (((valor_a ^ valor_b) & 0x80) == 0          // mismo signo     0x80 = 0b1000_0000
             && ((valor_b ^ resultado) & 0x80) != 0) // no es el mismo signo
@@ -340,43 +339,42 @@ De hecho, incluso para INC (que va de $ 7f a $ 80f) y DEC (que va de $ 80 a $ 7f
         (valor_a & 0xF) < (valor_b & 0xF)
     }
 
+    // Funcion que usan las funciones de manejo de flags
+    pub fn set_flag(&mut self, flag: u8, condicion: bool) {
+        if condicion {
+            self.f = self.f | flag
+        } else {
+            self.f = self.f & (!flag);
+        }
+    }
+
+
     /// Devuelve valor_a - valor_b y modifica flags
     pub fn resta_u8_menos_u8(&mut self, valor_a: u8, valor_b: u8) -> u8 {
         let nuevo_valor = valor_a.wrapping_sub(valor_b);
 
-        if (nuevo_valor & 0b1000_0000) != 0 { // S
-            self.set_s_flag()
-        } else {
-            self.reset_s_flag();
-        }
+        self.set_flag(FLAG_S,
+                      (nuevo_valor & FLAG_S) != 0);
 
-        if nuevo_valor == 0 { // Z
-            self.set_z_flag();
-        } else {
-            self.reset_z_flag();
-        }
+        self.set_flag(FLAG_Z,
+                      nuevo_valor == 0);
 
-        if self.half_carry_en_resta_u8_sub(valor_a, valor_b) { // H
-            self.set_h_flag();
-        } else {
-            self.reset_h_flag();
-        }
+        self.set_flag(FLAG_H,
+                      self.half_carry_en_resta_u8_sub(valor_a, valor_b));
 
-        if self.overflow_en_resta_u8(valor_a, valor_b, nuevo_valor) { // P/V
-            self.set_pv_flag();
-        } else {
-            self.reset_pv_flag();
-        }
+        let ov = self.overflow_en_resta_u8(valor_a, valor_b, nuevo_valor);
+        self.set_flag(FLAG_PV, ov);
 
         // Carry TODO: No estoy seguro
-        if valor_a < valor_b { self.set_c_flag(); } else { self.reset_c_flag(); }  // C
 
-        self.set_n_flag();                                                         // N
+        self.set_flag(FLAG_C, valor_a < valor_b);
+        self.set_flag(FLAG_N, true);
+
         nuevo_valor
     }
     pub fn resta_u16_menos_u16(&mut self, valor_a: u16, valor_b: u16) -> u16 {
-        // TODO: Faltan Flags (Flags afectados: C N P/V H Z S)
-        // TODO: Probar si hay acarreo de medio byte (flag H) no lo tengo claro con 16 bits
+// TODO: Faltan Flags (Flags afectados: C N P/V H Z S)
+// TODO: Probar si hay acarreo de medio byte (flag H) no lo tengo claro con 16 bits
 
 //        if self.half_carry_en_resta_u8_sub(valor_a, valor_b) {
 //            self.set_h_flag();
@@ -386,7 +384,7 @@ De hecho, incluso para INC (que va de $ 7f a $ 80f) y DEC (que va de $ 80 a $ 7f
 
         let nuevo_valor = valor_a.wrapping_sub(valor_b);
 
-        // flag Z lo quito, lddr no lo necesita
+// flag Z lo quito, lddr no lo necesita
 //        if nuevo_valor == 0 {
 //            self.set_z_flag();
 //        } else {
@@ -397,39 +395,28 @@ De hecho, incluso para INC (que va de $ 7f a $ 80f) y DEC (que va de $ 80 a $ 7f
     }
 
     pub fn suma_u8_mas_u8(&mut self, valor_a: u8, valor_b: u8) -> u8 {
-        // TODO: Faltan Flags (Flags afectados: C N P/V H Z S)
+// TODO: Faltan Flags (Flags afectados: C N P/V H Z S)
 
         let valor_a16 = valor_a as u16;
         let valor_b16 = valor_b as u16;
 
-        let resultado16 = valor_a16 + valor_b16;   // C
-        if (0b1_0000_0000 & resultado16) != 0 {
-            self.set_c_flag();
-        } else {
-            self.reset_c_flag();
-        }
-        // Probar si hay acarreo de medio byte
-        if self.calc_half_carry_on_u8_sum(valor_a, valor_b) {
-            self.set_h_flag();
-        } else {
-            self.reset_h_flag();
-        }
-
+        let resultado16 = valor_a16 + valor_b16;
         let resultado = valor_a.wrapping_add(valor_b);
 
-        // Establece los flags
-        if resultado == 0 {
-            self.set_z_flag();
-        } else {
-            self.reset_z_flag();
-        }
-        self.reset_n_flag();
+        self.set_flag(FLAG_C, (0b1_0000_0000 & resultado16) != 0);
+
+        self.set_flag(FLAG_H, self.calc_half_carry_on_u8_sum(valor_a, valor_b));
+
+        self.set_flag(FLAG_Z, resultado == 0);
+
+        self.set_flag(FLAG_N, false);
+
         resultado
     }
     pub fn suma_u16_mas_u16(&mut self, valor_a: u16, valor_b: u16) -> u16 {
         self.flag_c_u16_en_suma(valor_a, valor_b); // C
-        self.reset_n_flag(); // N  TODO: Comprobar que pasa en todos los casos
 
+        self.reset_n_flag(); // N  TODO: Comprobar que pasa en todos los casos
 
         let resultado = valor_a.wrapping_add(valor_b);
 
@@ -438,7 +425,7 @@ De hecho, incluso para INC (que va de $ 7f a $ 80f) y DEC (que va de $ 80 a $ 7f
         self.flag_h_u16(resultado);
 
 
-        // TODO No todos les afecta Z????????
+// TODO No todos les afecta Z????????
 //        if resultado == 0 {
 //            self.set_z_flag();
 //        } else {
@@ -449,140 +436,33 @@ De hecho, incluso para INC (que va de $ 7f a $ 80f) y DEC (que va de $ 80 a $ 7f
     }
 
 
-    pub fn and_u8_con_u8(&mut self, valor_a: u8, valor_b: u8) -> u8 {
-        self.reset_c_flag();
-        self.reset_n_flag();
-        self.set_h_flag();
-
-        let resultado = valor_a & valor_b;
-        self.flag_z_u8(resultado);
-
-        self.flag_p_u8(resultado);
-
-        resultado
-    }
-
-    pub fn or_u8_con_u8(&mut self, valor_a: u8, valor_b: u8) -> u8 {
-        self.reset_c_flag();
-        self.reset_n_flag();
-        self.set_h_flag();
-
-        let resultado = valor_a | valor_b;
-        self.flag_z_u8(resultado);
-
-        self.flag_p_u8(resultado);
-        resultado
-    }
-
-    pub fn xor_u8_con_u8(&mut self, valor_a: u8, valor_b: u8) -> u8 {
-        self.reset_c_flag();
-        self.reset_n_flag();
-        self.reset_h_flag();
-
-        let resultado = valor_a ^ valor_b;
-        self.flag_z_u8(resultado); // Z
-
-        self.flag_s_u8(resultado); // S
-
-        self.flag_p_u8(resultado); // P
-
-        resultado
-    }
-
     // Pone los flags segun lo que se le envie *********************************
     pub fn flag_s_u8(&mut self, valor: u8) { // Signo
-        if valor & 0b1000_0000 != 0 {
-            self.set_s_flag();
-        } else {
-            self.reset_s_flag();
-        }
+        self.set_flag(FLAG_S, valor & FLAG_S != 0);
     }
 
     pub fn flag_s_u16(&mut self, valor: u16) { // Signo
-        if valor & 0b1000_0000_0000_0000 != 0 {
-            self.set_s_flag();
-        } else {
-            self.reset_s_flag();
-        }
+        self.set_flag(FLAG_S, valor & 0b1000_0000_0000_0000 != 0);
     }
 
     pub fn flag_z_u8(&mut self, valor: u8) { // Zero
-        if valor == 0 {
-            self.set_z_flag();
-        } else {
-            self.reset_z_flag();
-        }
+        self.set_flag(FLAG_Z, valor == 0);
     }
 
     pub fn flag_z_u16(&mut self, valor: u16) { // Zero
-        if valor == 0 {
-            self.set_s_flag();
-        } else {
-            self.reset_s_flag();
-        }
+        self.set_flag(FLAG_S, valor == 0);
     }
 
-    //    pub fn flag_h_u8(&mut self, valor1: u8, valor2: u8) { // H  carry del bit 3 al 4
-//        if ((valor1 & 0b0000_1111) + (valor2 & 0b0000_1111)) > 0b0000_1111 {
-//            self.set_h_flag();
-//        } else {
-//            self.reset_h_flag();
-//        }
-//    }
-//    // TODO falla y no entiendo porque
-//    pub fn flag_h_u16(&mut self, valor1: u16, valor2: u16) { // H carry del bit 11 al 12
-//        if ((valor1 & 0b0000_1111_1111_1111) +
-//            (valor2 & 0b0000_1111_1111_1111)) >
-//            0b0000_1111_1111_1111 {
-//            self.set_h_flag();
-//        } else {
-//            self.reset_h_flag();
-//        }
-//    }
-
-
-    // TODO Experimento
     pub fn flag_h_u8_en_suma(&mut self, valor1: u8, valor2: u8) { // H  carry del bit 3 al 4
-//        if (valor & 0b0001_0000) != 0 {
-//            self.set_h_flag();
-//        } else {
-//            self.reset_h_flag();
-//        }
-        if ((valor1 & 0x0f) + (valor2 & 0x0f)) > 0x0F {
-            self.set_h_flag();
-        } else {
-            self.reset_h_flag();
-        }
+        self.set_flag(FLAG_H, ((valor1 & 0x0f) + (valor2 & 0x0f)) > 0x0F);
     }
     pub fn flag_h_u8_en_resta(&mut self, valor1: u8, valor2: u8) { // H  carry del bit 3 al 4
-//        if (valor & 0b0001_0000) != 0 {
-//            self.set_h_flag();
-//        } else {
-//            self.reset_h_flag();
-//        }
-
-        if (valor1 & 0x0F) < (valor2 & 0x0F) {
-            self.set_h_flag();
-        } else {
-            self.reset_h_flag();
-        }
+        self.set_flag(FLAG_H, (valor1 & 0x0F) < (valor2 & 0x0F));
     }
-
 
     pub fn flag_h_u16(&mut self, valor: u16) { // H carry del bit 11 al 12
-//        if (valor & 0b0001_0000_0000_0000) != 0 {
-//            self.set_h_flag();
-//        } else {
-//            self.reset_h_flag();
-//        }
-
-        if ((valor & 0x0FFF) + 1) > 0x0FFF {
-            self.set_h_flag();
-        } else {
-            self.reset_h_flag();
-        }
+        self.set_flag(FLAG_H, ((valor & 0x0FFF) + 1) > 0x0FFF);
     }
-    // TODO FIN Experimento
 
     pub fn flag_p_u8(&mut self, valor: u8) { // P  (P/V usado como paridad)
         let mut unos: u8 = 0;
@@ -591,9 +471,8 @@ De hecho, incluso para INC (que va de $ 7f a $ 80f) y DEC (que va de $ 80 a $ 7f
                 unos += 1;
             }
         }
-        if (unos % 2) == 0 {
-            self.set_pv_flag();
-        }
+
+        self.set_flag(FLAG_PV, (unos % 2) == 0);
     }
 
     pub fn flag_p_u16(&mut self, valor: u16) { // P  (P/V usado como paridad)
@@ -603,28 +482,21 @@ De hecho, incluso para INC (que va de $ 7f a $ 80f) y DEC (que va de $ 80 a $ 7f
                 unos += 1;
             }
         }
-        if (unos % 2) == 0 {
-            self.set_pv_flag();
-        }
+
+        self.set_flag(FLAG_PV, (unos % 2) == 0);
     }
     // P  (P/V usado como overflow)
     pub fn flag_v_u8_en_suma(&mut self, valor_a: u8, valor_b: u8, resultado: u8) {
-        if self.overflow_en_suma_u8(valor_a, valor_b, resultado) {
-            self.set_pv_flag();
-        } else {
-            self.reset_pv_flag();
-        }
+        let ov = self.overflow_en_suma_u8(valor_a, valor_b, resultado);
+        self.set_flag(FLAG_PV, ov);
     }
 
     pub fn flag_v_u16_en_suma(&mut self, valor: u16) { // P  (P/V usado como overflow)
     }
 
     pub fn flag_v_u8_en_resta(&mut self, valor_a: u8, valor_b: u8, resultado: u8) { // P  (P/V usado como overflow)
-        if self.overflow_en_resta_u8(valor_a, valor_b, resultado) {
-            self.set_pv_flag();
-        } else {
-            self.reset_pv_flag();
-        }
+        let ov = self.overflow_en_resta_u8(valor_a, valor_b, resultado);
+        self.set_flag(FLAG_PV, ov);
     }
 
     pub fn flag_v_u16_en_resta(&mut self, valor: u16) { // P  (P/V usado como overflow)
@@ -634,53 +506,35 @@ De hecho, incluso para INC (que va de $ 7f a $ 80f) y DEC (que va de $ 80 a $ 7f
         let valor_a16 = valor_a as u16;
         let valor_b16 = valor_b as u16;
 
-        if ((valor_a16.wrapping_add(valor_b16)) & 0x100) != 0 {
-            self.set_c_flag();
-        } else {
-            self.reset_c_flag();
-        }
+        self.set_flag(FLAG_C, ((valor_a16.wrapping_add(valor_b16)) & 0x100) != 0);
     }
     pub fn flag_c_u8_en_resta(&mut self, valor_a: u8, valor_b: u8) { // C
         let valor_a16 = valor_a as u16;
         let valor_b16 = valor_b as u16;
 
-        if ((valor_a16.wrapping_sub(valor_b16)) & 0x100) != 0 {
-            self.set_c_flag();
-        } else {
-            self.reset_c_flag();
-        }
+        self.set_flag(FLAG_C, ((valor_a16.wrapping_sub(valor_b16)) & 0x100) != 0);
     }
 
     pub fn flag_c_u16_en_suma(&mut self, valor_a: u16, valor_b: u16) { // C
         let valor_a32 = valor_a as u32;
         let valor_b32 = valor_b as u32;
 
-        if ((valor_a32.wrapping_add(valor_b32)) & 0x10000) != 0 {
-            self.set_c_flag();
-        } else {
-            self.reset_c_flag();
-        }
+        self.set_flag(FLAG_C, ((valor_a32.wrapping_add(valor_b32)) & 0x10000) != 0);
     }
 
     pub fn flag_c_u16_en_resta(&mut self, valor_a: u16, valor_b: u16) { // C
         let valor_a32 = valor_a as u32;
         let valor_b32 = valor_b as u32;
 
-        if ((valor_a32.wrapping_sub(valor_b32)) & 0x10000) != 0 {
-            self.set_c_flag();
-        } else {
-            self.reset_c_flag();
-        }
+        self.set_flag(FLAG_C, ((valor_a32.wrapping_sub(valor_b32)) & 0x10000) != 0);
     }
 
-
-    pub fn inc_8bits(&mut self, valor: u8) -> u8 {
-        self.suma_u8_mas_u8(valor, 1)
-    }
     pub fn inc_16bits(&mut self, valor: u16) -> u16 {
         self.suma_u16_mas_u16(valor, 1)
     }
+
     pub fn dec_8bits(&mut self, valor: u8) -> u8 { self.resta_u8_menos_u8(valor, 1) }
+
     pub fn dec_16bits(&mut self, valor: u16) -> u16 {
         self.resta_u16_menos_u16(valor, 1)
     }
@@ -696,17 +550,18 @@ De hecho, incluso para INC (que va de $ 7f a $ 80f) y DEC (que va de $ 80 a $ 7f
     }
 
     pub fn suma_compl2_a_un_u16(&mut self, valoru16: u16, valorcomp2: u8) -> u16 {
-        let mut resultado;
+        let mut valorcomp2_u16;
 
         // Comprueba si el u8 es negativo
-        if valorcomp2 & 0b1000_0000 != 0 {
-            resultado = 0b1111_1111_0000_0000 | (valorcomp2 as u16);
-        } else {
-            resultado = valorcomp2 as u16;
+        // Paso el complemento a 2 de 8 bits a complemento a 2 de 16 bits
+        if valorcomp2 & FLAG_S != 0 {    // valorcomp2 es negativo
+            valorcomp2_u16 = 0b1111_1111_0000_0000 | (valorcomp2 as u16);
+        } else {     // valorcomp2 es positivo
+            valorcomp2_u16 = valorcomp2 as u16;
         }
-        resultado = resultado.wrapping_add(valoru16);
+        valorcomp2_u16 = valorcomp2_u16.wrapping_add(valoru16);
 
-        resultado
+        valorcomp2_u16
     }
 
     // Pone a 1 el bit dado por posicion (0 a 7) en un u8
@@ -727,28 +582,37 @@ De hecho, incluso para INC (que va de $ 7f a $ 80f) y DEC (que va de $ 80 a $ 7f
     pub fn lee_af(&mut self) -> u16 {
         self.concatena_dos_u8_en_un_u16(self.a, self.f)
     }
+
     pub fn lee_afp(&mut self) -> u16 {
         self.concatena_dos_u8_en_un_u16(self.ap, self.fp)
     }
+
     pub fn lee_bc(&mut self) -> u16 {
         self.concatena_dos_u8_en_un_u16(self.b, self.c)
     }
+
     pub fn lee_bcp(&mut self) -> u16 {
         self.concatena_dos_u8_en_un_u16(self.bp, self.cp)
     }
+
     pub fn lee_de(&mut self) -> u16 {
         self.concatena_dos_u8_en_un_u16(self.d, self.e)
     }
+
     pub fn lee_dep(&mut self) -> u16 { self.concatena_dos_u8_en_un_u16(self.dp, self.ep) }
+
     pub fn lee_hl(&mut self) -> u16 {
         self.concatena_dos_u8_en_un_u16(self.h, self.l)
     }
+
     pub fn lee_hlp(&mut self) -> u16 {
         self.concatena_dos_u8_en_un_u16(self.hp, self.lp)
     }
+
     pub fn lee_ix(&mut self) -> u16 {
         self.concatena_dos_u8_en_un_u16(self.ixh, self.ixl)
     }
+
     pub fn lee_iy(&mut self) -> u16 {
         self.concatena_dos_u8_en_un_u16(self.iyh, self.iyl)
     }
@@ -759,46 +623,55 @@ De hecho, incluso para INC (que va de $ 7f a $ 80f) y DEC (que va de $ 80 a $ 7f
         self.a = hltupla.1;
         self.f = hltupla.0;
     }
+
     pub fn escribe_afp(&mut self, afp: u16) {
         let hltupla = self.desconcatena_un_u16_en_dos_u8(afp);
         self.ap = hltupla.1;
         self.fp = hltupla.0;
     }
+
     pub fn escribe_bc(&mut self, bc: u16) {
         let hltupla = self.desconcatena_un_u16_en_dos_u8(bc);
         self.c = hltupla.1;
         self.b = hltupla.0;
     }
+
     pub fn escribe_bcp(&mut self, bcp: u16) {
         let hltupla = self.desconcatena_un_u16_en_dos_u8(bcp);
         self.cp = hltupla.1;
         self.bp = hltupla.0;
     }
+
     pub fn escribe_de(&mut self, de: u16) {
         let hltupla = self.desconcatena_un_u16_en_dos_u8(de);
         self.e = hltupla.1;
         self.d = hltupla.0;
     }
+
     pub fn escribe_dep(&mut self, dep: u16) {
         let hltupla = self.desconcatena_un_u16_en_dos_u8(dep);
         self.ep = hltupla.1;
         self.dp = hltupla.0;
     }
+
     pub fn escribe_hl(&mut self, hl: u16) {
         let hltupla = self.desconcatena_un_u16_en_dos_u8(hl);
         self.l = hltupla.1;
         self.h = hltupla.0;
     }
+
     pub fn escribe_hlp(&mut self, hlp: u16) {
         let hltupla = self.desconcatena_un_u16_en_dos_u8(hlp);
         self.lp = hltupla.1;
         self.hp = hltupla.0;
     }
+
     pub fn escribe_ix(&mut self, ix: u16) {
         let hltupla = self.desconcatena_un_u16_en_dos_u8(ix);
         self.ixl = hltupla.1;
         self.ixh = hltupla.0;
     }
+
     pub fn escribe_iy(&mut self, iy: u16) {
         let hltupla = self.desconcatena_un_u16_en_dos_u8(iy);
         self.iyl = hltupla.1;
@@ -827,21 +700,10 @@ De hecho, incluso para INC (que va de $ 7f a $ 80f) y DEC (que va de $ 80 a $ 7f
         addr
     }
 
-    // FIN de FUNCIONES DE STACK **********************************
+// FIN de FUNCIONES DE STACK **********************************
 
-    // FUNCIONES DE BIT *******************************************
-    /// Pone flags segun bit de registro
-//    pub fn bit(&mut self, reg: u8, bit: u8) {
-//        if reg & (1 << bit) == 0 {
-//            self.set_z_flag();
-//        } else {
-//            self.reset_z_flag();
-//        };
-//        self.reset_n_flag();
-//        self.set_h_flag();
-//    }
-    // FIN FUNCIONES DE BIT *******************************************
-    // FUNCIONES DE ROTACION DE BITS *******************************************
+
+// FUNCIONES DE ROTACION DE BITS *******************************************
 //    pub fn do_rl_n(&mut self, register_value: u8) -> u8 {
 //        let old_c_flag = self.get_c_flag();
 //        let c_flag: bool = (0b1000_0000 & register_value) != 0;
@@ -910,22 +772,22 @@ De hecho, incluso para INC (que va de $ 7f a $ 80f) y DEC (que va de $ 80 a $ 7f
     pub fn get_bytes_instruccion(&mut self) -> u16 {
         self.get_objeto_funcion_segun_arreglo().get_bytes_de_instruccion()
     }
-    // FIN FUNCIONES DE LOS DATOS DEL ARREGLO DE FUNCIONES ***************
+// FIN FUNCIONES DE LOS DATOS DEL ARREGLO DE FUNCIONES ***************
 
 
     pub fn ejecuta_instruccion(&mut self) {
         self.obtiene_intruccion_y_bytes_posteriores();
 
-        // Ejecuta instruccion
-        //self.funciones[self.r0 as usize](self);
+// Ejecuta instruccion
+//self.funciones[self.r0 as usize](self);
         let f: Funcion = self.funciones[self.r0 as usize];
         let ff = f.get_puntero_a_funcion();
-        // DESCOMENTAR ESTA LINEA PARA VER EL DEBUG DE LAS INSTRUCCIONES
+// DESCOMENTAR ESTA LINEA PARA VER EL DEBUG DE LAS INSTRUCCIONES
 //        println!("PC = #{:04X}  r0 = #{:02X}  r1 = #{:02X}  r2 = #{:02X}   r3 = #{:02X}",
 //                 self.pc, self.r0, self.r1, self.r2, self.r3);
 
         ff(self);
-        //self.funciones[self.r0 as usize](self);
+//self.funciones[self.r0 as usize](self);
     }
     /// Lee de memoria el opcode y los bytes posteriores
     pub fn obtiene_intruccion_y_bytes_posteriores(&mut self) {
@@ -934,7 +796,7 @@ De hecho, incluso para INC (que va de $ 7f a $ 80f) y DEC (que va de $ 80 a $ 7f
         self.r2 = self.mem.lee_byte_de_mem(self.pc + 2);
         self.r3 = self.mem.lee_byte_de_mem(self.pc + 3);
 
-        // Invirtiendo posición de 16 bits ya que es BIG ENDIAN
+// Invirtiendo posición de 16 bits ya que es BIG ENDIAN
         self.r1r2 = ((self.r2 as u16) << 8) | self.r1 as u16;
         self.r2r3 = ((self.r3 as u16) << 8) | self.r2 as u16;
 
@@ -950,10 +812,10 @@ De hecho, incluso para INC (que va de $ 7f a $ 80f) y DEC (que va de $ 80 a $ 7f
 
     pub fn limpia_consola(&self) {
         if self.debug {
-            // Crea terminal
+// Crea terminal
             let mut terminal = terminal();
 
-            // Borra todas las lineas del terminal;
+// Borra todas las lineas del terminal;
             terminal.clear(ClearType::All);
         }
     }
@@ -1004,7 +866,7 @@ De hecho, incluso para INC (que va de $ 7f a $ 80f) y DEC (que va de $ 80 a $ 7f
 
     pub fn imprime_memoria(&mut self, inicio: u16) {
         if self.debug {
-            // Crea cursor
+// Crea cursor
             let mut cursor = cursor();
 
             cursor.hide();
@@ -1025,7 +887,7 @@ De hecho, incluso para INC (que va de $ 7f a $ 80f) y DEC (que va de $ 80 a $ 7f
 
     pub fn imprime_ports(&mut self) {
         if self.debug {
-            // Crea cursor
+// Crea cursor
             let mut cursor = cursor();
 
             cursor.hide();
@@ -1048,13 +910,13 @@ De hecho, incluso para INC (que va de $ 7f a $ 80f) y DEC (que va de $ 80 a $ 7f
     }
     pub fn imprime_cpu(&mut self) {
         if self.debug {
-            // Crea cursor
+// Crea cursor
             let mut cursor = cursor();
 
             cursor.hide();
 
-            // Crea entrada a terminal
-            //let mut stdin = input().read_sync();
+// Crea entrada a terminal
+//let mut stdin = input().read_sync();
 
             cursor.goto(1, 1);
             println!("AF = 0b{:08b} 0b{:08b} (0x{:02X}) (0x{:02X})", self.a, self.f, self.a, self.f);
@@ -1075,8 +937,8 @@ De hecho, incluso para INC (que va de $ 7f a $ 80f) y DEC (que va de $ 80 a $ 7f
 //            cursor.goto(1, 5);
 //            println!("SP = 0x{:04X}", self.sp);
 
-            //cursor.goto(15, 5);
-            //println!("I = 0x{:02X}", self.i);
+//cursor.goto(15, 5);
+//println!("I = 0x{:02X}", self.i);
 
             cursor.goto(1, 7);
             println!("PC = 0x{:04X}", self.pc);
@@ -1126,7 +988,7 @@ De hecho, incluso para INC (que va de $ 7f a $ 80f) y DEC (que va de $ 80 a $ 7f
 
             self.obtiene_intruccion_y_bytes_posteriores();
 
-            // Ejecuta instruccion _txt
+// Ejecuta instruccion _txt
             self.get_objeto_funcion_segun_arreglo().get_puntero_txt_a_funcion()(self);
 
             cursor.goto(10, 10);

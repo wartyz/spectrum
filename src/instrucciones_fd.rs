@@ -314,6 +314,12 @@ pub fn fnFD_no_impl(cpu: &mut CPU) {
                    cpu.pc, cpu.r0, cpu.r1, cpu.r2, cpu.r3));
 }
 
+
+// XXXXXXXXXXXXXXXXXXX Funciones comunes en instrucciones fd XXXXXXXXXXXXXXXXXXXX
+// https://wikiti.brandonw.net/index.php?title=Z80_Instruction_Set
+// Cuando varias funciones en los arreglos de punteros, tienen opciones comunes
+// usan estas funciones, solo se tocaran los flags en estas funciones
+
 // O = ()  p = '
 // *************************** 0 ***********************************
 // *************************** 1 ***********************************
@@ -323,15 +329,8 @@ pub fn ld_iy_nn(cpu: &mut CPU) {
     cpu.iyl = cpu.r2;
     cpu.iyh = cpu.r3;
 
-    cpu.t += 14;
-    cpu.pc += 4;
-
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-//    println!("FD21->cpu.t = {}", cpu.t);
-//    println!("FD21->cpu.pc = {}", cpu.pc);
-
-    //panic!(format!("Funcion #FD{:02X} no implementada", cpu.r1));
+    cpu.t += cpu.get_t_instruccion();
+    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 pub fn ld_iy_nn_txt(cpu: &mut CPU) {
@@ -340,6 +339,7 @@ pub fn ld_iy_nn_txt(cpu: &mut CPU) {
 
 // *************************** 3 ***********************************
 // 0xFD35 Ojo N es complemento a 2 (tiene signo)
+// dec (I+D) 	11i11101 00110101 dddddddd 	19 	+ 	+ 	+ 	+ 	+ 	V 	1 	- 	(I+D) -= 1
 pub fn decOiymnO(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
     let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
@@ -355,6 +355,7 @@ pub fn decOiymnO_txt(cpu: &mut CPU) {
 }
 
 // OxFD36    (IY+dd)<-nn   FD36ddnn
+// ld (I+D),N 	11i11101 00110110 dddddddd nnnnnnnn 	19 	- 	- 	- 	- 	- 	- 	- 	- 	(I+D) := N
 pub fn ldOiymn1O_n2(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
     let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);

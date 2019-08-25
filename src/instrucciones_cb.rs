@@ -23,26 +23,26 @@ D9      RETI               EXX
 
 */
 use crate::cpu::CPU;
-
+use super::constantes::*;
 
 pub fn mete_funciones_cb(cpu: &mut CPU) {
     // *************************** 0 ***********************************
-    cpu.funciones_cb[0x00 as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 0, 0);
-    cpu.funciones_cb[0x01 as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 0, 0);
-    cpu.funciones_cb[0x02 as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 0, 0);
-    cpu.funciones_cb[0x03 as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 0, 0);
-    cpu.funciones_cb[0x04 as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 0, 0);
-    cpu.funciones_cb[0x05 as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 0, 0);
-    cpu.funciones_cb[0x06 as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 0, 0);
-    cpu.funciones_cb[0x07 as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 0, 0);
-    cpu.funciones_cb[0x08 as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 0, 0);
-    cpu.funciones_cb[0x09 as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 0, 0);
-    cpu.funciones_cb[0x0A as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 0, 0);
-    cpu.funciones_cb[0x0B as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 0, 0);
-    cpu.funciones_cb[0x0C as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 0, 0);
-    cpu.funciones_cb[0x0D as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 0, 0);
-    cpu.funciones_cb[0x0E as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 0, 0);
-    cpu.funciones_cb[0x0F as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 0, 0);
+    cpu.funciones_cb[0x00 as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 2, 8);
+    cpu.funciones_cb[0x01 as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 2, 8);
+    cpu.funciones_cb[0x02 as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 2, 8);
+    cpu.funciones_cb[0x03 as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 2, 8);
+    cpu.funciones_cb[0x04 as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 2, 8);
+    cpu.funciones_cb[0x05 as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 2, 8);
+    cpu.funciones_cb[0x06 as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 2, 15);
+    cpu.funciones_cb[0x07 as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 2, 8);
+    cpu.funciones_cb[0x08 as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 2, 8);
+    cpu.funciones_cb[0x09 as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 2, 8);
+    cpu.funciones_cb[0x0A as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 2, 8);
+    cpu.funciones_cb[0x0B as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 2, 8);
+    cpu.funciones_cb[0x0C as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 2, 8);
+    cpu.funciones_cb[0x0D as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 2, 8);
+    cpu.funciones_cb[0x0E as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 2, 15);
+    cpu.funciones_cb[0x0F as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 2, 8);
 
     // *************************** 1 ***********************************
     cpu.funciones_cb[0x10 as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 0, 0);
@@ -52,7 +52,7 @@ pub fn mete_funciones_cb(cpu: &mut CPU) {
     cpu.funciones_cb[0x14 as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 0, 0);
     cpu.funciones_cb[0x15 as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 0, 0);
     cpu.funciones_cb[0x16 as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 0, 0);
-    cpu.funciones_cb[0x17 as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 0, 0);
+    cpu.funciones_cb[0x17 as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 2, 8);
     cpu.funciones_cb[0x18 as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 0, 0);
     cpu.funciones_cb[0x19 as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 0, 0);
     cpu.funciones_cb[0x1A as usize].set_punt_y_val_a_fn(fnCB_no_impl, fnCB_no_impl, 0, 0);
@@ -328,14 +328,17 @@ pub fn nopCB_txt(cpu: &mut CPU) {
 
 // bit B,R 	11001011 01bbbrrr 	8 	+ 	+ 	+ 	1 	+ 	P 	0 	- 	tmp := R AND [1 << B]
 pub fn bas_bit_B_R(cpu: &mut CPU, valor: u8, bit: u8) {
-    if valor & (1 << bit) == 0 {
-        cpu.set_z_flag();
-    } else {
-        cpu.reset_z_flag();
-    }
+//    if valor & (1 << bit) == 0 {
+//        cpu.set_z_flag();
+//    } else {
+//        cpu.reset_z_flag();
+//    }
+    cpu.set_flag(FLAG_Z, valor & (1 << bit) == 0);
 
-    cpu.reset_n_flag();
-    cpu.set_h_flag();
+    //cpu.reset_n_flag();
+    cpu.set_flag(FLAG_N, false);
+    //cpu.set_h_flag();
+    cpu.set_flag(FLAG_H, true);
 
     cpu.t += cpu.get_t_instruccion();
     cpu.pc += cpu.get_bytes_instruccion();
@@ -363,15 +366,11 @@ pub fn bas_set_B_R(cpu: &mut CPU, valor: u8, bit: u8) -> u8 {
 // 0xCB00
 
 pub fn rlc_b(cpu: &mut CPU) {
-    cpu.t += 8;
-    cpu.pc += 2;
+    cpu.t += cpu.get_t_instruccion();
+    cpu.pc += cpu.get_bytes_instruccion();
 }
 
-pub fn rlc_b_txt(cpu: &mut CPU) {
-//    let txt = format!("NOP opcode = #{:02X}", cpu.r0);
-//    cpu.texto(&txt);
-    cpu.texto(&format!("opcode = #CB{:02X}", cpu.r1));
-}
+pub fn rlc_b_txt(cpu: &mut CPU) { cpu.texto(&format!("opcode = #CB{:02X}", cpu.r1)); }
 
 // 0xCB01
 pub fn rlc_c(cpu: &mut CPU) {}
@@ -394,34 +393,35 @@ pub fn rlc_l(cpu: &mut CPU) {}
 // 0xCB06
 pub fn rlc_OhlO(cpu: &mut CPU) {}
 
-pub fn rlc_a() {}
+pub fn rlc_a(cpu: &mut CPU) {}
 
-pub fn rrc_b() {}
+pub fn rrc_b(cpu: &mut CPU) {}
 
-pub fn rrc_c() {}
+pub fn rrc_c(cpu: &mut CPU) {}
 
-pub fn rrc_d() {}
+pub fn rrc_d(cpu: &mut CPU) {}
 
-pub fn rrc_e() {}
+pub fn rrc_e(cpu: &mut CPU) {}
 
-pub fn rrc_h() {}
+pub fn rrc_h(cpu: &mut CPU) {}
 
-pub fn rrc_l() {}
+pub fn rrc_l(cpu: &mut CPU) {}
 
-pub fn rrcOhlO() {}
+pub fn rrcOhlO(cpu: &mut CPU) {}
 
-pub fn rrc_a() {}
+pub fn rrc_a(cpu: &mut CPU) {}
 
 // *************************** 1 ***********************************
 // 0xCB11     RL C
 pub fn rl_c(cpu: &mut CPU) {
     let viejo_c_flag = cpu.get_c_flag();
-    let c_flag: bool = (0b1000_0000 & cpu.c) != 0;
-    if c_flag {
-        cpu.set_c_flag();
-    } else {
-        cpu.reset_c_flag();
-    }
+//    let c_flag: bool = (0b1000_0000 & cpu.c) != 0;
+//    if c_flag {
+//        cpu.set_c_flag();
+//    } else {
+//        cpu.reset_c_flag();
+//    }
+    cpu.set_flag(FLAG_C, (0b1000_0000 & cpu.c) != 0);
 
     // Rotación
     let mut nuevo_valor = cpu.c << 1;
@@ -431,33 +431,35 @@ pub fn rl_c(cpu: &mut CPU) {
     }
 
     //maneja flags
-    if nuevo_valor == 0 {
-        cpu.set_z_flag();
-    } else {
-        cpu.reset_z_flag();
-    }
-    cpu.reset_n_flag();
-    cpu.reset_h_flag();
+//    if nuevo_valor == 0 {
+//        cpu.set_z_flag();
+//    } else {
+//        cpu.reset_z_flag();
+//    }
+    cpu.set_flag(FLAG_Z, nuevo_valor == 0);
+    cpu.set_flag(FLAG_N, false);
+    cpu.set_flag(FLAG_H, false);
+//    cpu.reset_n_flag();
+//    cpu.reset_h_flag();
 
-    cpu.pc += 2;
-    cpu.t += 8;
+    cpu.t += cpu.get_t_instruccion();
+    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 pub fn rl_c_txt(cpu: &mut CPU) {
-    let txt = format!("RL C");
-    cpu.texto(&txt);
+    cpu.texto(&format!("RL C"));
 }
 
 // 0xCB17     RL A
 pub fn rl_a(cpu: &mut CPU) {
     let viejo_c_flag = cpu.get_c_flag();
-    let c_flag: bool = (0b1000_0000 & cpu.a) != 0;
-    if c_flag {
-        cpu.set_c_flag();
-    } else {
-        cpu.reset_c_flag();
-    }
-
+//    let c_flag: bool = (0b1000_0000 & cpu.a) != 0;
+//    if c_flag {
+//        cpu.set_c_flag();
+//    } else {
+//        cpu.reset_c_flag();
+//    }
+    cpu.set_flag(FLAG_C, (0b1000_0000 & cpu.c) != 0);
     // Rotación
     let mut nuevo_valor = cpu.a << 1;
     nuevo_valor = nuevo_valor & 0b1111_1110;
@@ -466,17 +468,20 @@ pub fn rl_a(cpu: &mut CPU) {
     }
 
     //maneja flags
-    if nuevo_valor == 0 {
-        cpu.set_z_flag();
-    } else {
-        cpu.reset_z_flag();
-    }
-    cpu.reset_n_flag();
-    cpu.reset_h_flag();
+//    if nuevo_valor == 0 {
+//        cpu.set_z_flag();
+//    } else {
+//        cpu.reset_z_flag();
+//    }
+//    cpu.reset_n_flag();
+//    cpu.reset_h_flag();
+    cpu.set_flag(FLAG_Z, nuevo_valor == 0);
+    cpu.set_flag(FLAG_N, false);
+    cpu.set_flag(FLAG_H, false);
 
-    cpu.pc += 2;
 
-    cpu.t += 8;
+    cpu.t += cpu.get_t_instruccion();
+    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 pub fn rl_a_txt(cpu: &mut CPU) {
@@ -488,11 +493,12 @@ pub fn rl_a_txt(cpu: &mut CPU) {
 // *************************** 3 ***********************************
 // 0xCB35
 pub fn sll_l(cpu: &mut CPU) {
-    if (cpu.l & 0b1000_0000) != 0 {
-        cpu.set_c_flag();
-    } else {
-        cpu.reset_c_flag();
-    }
+//    if (cpu.l & 0b1000_0000) != 0 {
+//        cpu.set_c_flag();
+//    } else {
+//        cpu.reset_c_flag();
+//    }
+    cpu.set_flag(FLAG_C, (cpu.l & 0b1000_0000) != 0);
     cpu.l = (cpu.l << 1) | 0b0000_0001;
 
     cpu.pc += cpu.get_bytes_instruccion();
