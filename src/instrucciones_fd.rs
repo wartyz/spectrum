@@ -26,6 +26,7 @@ D9      RETI               EXX
 // *************************** 0 ***********************************
 
 use crate::cpu::{CPU, Funcion};
+use crate::operaciones_binarias::*;
 //use crate::instrucciones_normales::di;
 
 
@@ -342,8 +343,8 @@ pub fn ld_iy_nn_txt(cpu: &mut CPU) {
 // dec (I+D) 	11i11101 00110101 dddddddd 	19 	+ 	+ 	+ 	+ 	+ 	V 	1 	- 	(I+D) -= 1
 pub fn decOiymnO(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
-    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
-    let datodec = cpu.dec_8bits(cpu.mem.lee_byte_de_mem(direccion));
+    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
+    let datodec = dec_8bits(cpu, cpu.mem.lee_byte_de_mem(direccion));
     cpu.mem.escribe_byte_en_mem(direccion, datodec);
 
     cpu.t += cpu.get_t_instruccion();
@@ -358,7 +359,7 @@ pub fn decOiymnO_txt(cpu: &mut CPU) {
 // ld (I+D),N 	11i11101 00110110 dddddddd nnnnnnnn 	19 	- 	- 	- 	- 	- 	- 	- 	- 	(I+D) := N
 pub fn ldOiymn1O_n2(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
-    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
     cpu.mem.escribe_byte_en_mem(direccion, cpu.r3);
 
     cpu.t += cpu.get_t_instruccion();
@@ -373,7 +374,7 @@ pub fn ldOiymn1O_n2_txt(cpu: &mut CPU) {
 // OxFD46
 pub fn ld_b_OiymnO(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
-    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
     cpu.b = cpu.mem.lee_byte_de_mem(direccion);
 
     cpu.t += cpu.get_t_instruccion();
@@ -385,7 +386,7 @@ pub fn ld_b_OiymnO_txt(cpu: &mut CPU) { cpu.texto(&format!("LD B,(IY+#{:02X})", 
 // 0xFD4E
 pub fn ld_c_OiymnO(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
-    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
     cpu.c = cpu.mem.lee_byte_de_mem(direccion);
 
     cpu.t += cpu.get_t_instruccion();
@@ -398,7 +399,7 @@ pub fn ld_c_OiymnO_txt(cpu: &mut CPU) { cpu.texto(&format!("LD C,(IY+#{:02X})", 
 // OxFD56
 pub fn ld_d_OiymnO(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
-    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
     cpu.d = cpu.mem.lee_byte_de_mem(direccion);
 
     cpu.t += cpu.get_t_instruccion();
@@ -410,7 +411,7 @@ pub fn ld_d_OiymnO_txt(cpu: &mut CPU) { cpu.texto(&format!("LD D,(IY+#{:02X})", 
 // 0xFD5E
 pub fn ld_e_OiymnO(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
-    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
     cpu.e = cpu.mem.lee_byte_de_mem(direccion);
 
     cpu.t += cpu.get_t_instruccion();
@@ -453,7 +454,7 @@ pub fn ld_iyh_iyl_txt(cpu: &mut CPU) { fnFD_no_impl(cpu); }
 // OxFD66
 pub fn ld_h_OiymnO(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
-    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
     cpu.h = cpu.mem.lee_byte_de_mem(direccion);
 
     cpu.t += cpu.get_t_instruccion();
@@ -467,7 +468,7 @@ pub fn ld_h_OiymnO_txt(cpu: &mut CPU) {
 // 0xFD6E
 pub fn ld_l_OiymnO(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
-    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
     cpu.l = cpu.mem.lee_byte_de_mem(direccion);
 
     cpu.t += cpu.get_t_instruccion();
@@ -487,7 +488,7 @@ pub fn ldOiymnO_b_txt(cpu: &mut CPU) { fnFD_no_impl(cpu); }
 // 0xFD71
 pub fn ldOiymnO_c(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
-    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
     cpu.mem.escribe_byte_en_mem(direccion, cpu.c);
 
     cpu.t += cpu.get_t_instruccion();
@@ -514,7 +515,7 @@ pub fn ldOiymnO_h_txt(cpu: &mut CPU) { fnFD_no_impl(cpu); }
 // 0xFD75
 pub fn ldOiymnO_l(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
-    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
 
 
     cpu.mem.escribe_byte_en_mem(direccion, cpu.l);
@@ -533,7 +534,7 @@ pub fn ldOiymnO_a_txt(cpu: &mut CPU) { fnFD_no_impl(cpu); }
 // 0xFD7E
 pub fn ld_a_OiymnO(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
-    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
     cpu.a = cpu.mem.lee_byte_de_mem(direccion);
 
     cpu.t += cpu.get_t_instruccion();
@@ -548,9 +549,9 @@ pub fn ld_a_OiymnO_txt(cpu: &mut CPU) {
 // 0xFD86
 pub fn add_aOiymnO(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
-    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
     let dato = cpu.mem.lee_byte_de_mem(direccion);
-    let resultado = cpu.suma_u8_mas_u8(cpu.a, dato);
+    let resultado = suma_u8_mas_u8(cpu, cpu.a, dato);
     cpu.mem.escribe_byte_en_mem(direccion, resultado);
 
 

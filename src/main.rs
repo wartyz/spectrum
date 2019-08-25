@@ -66,7 +66,7 @@ fn main() {
 
     loop {
         //if window.is_open() && window.is_key_down(Key::T) {
-        if cpu.pc > 0x000C { // BreakPoint
+        if cpu.pc > 0x0000 { // BreakPoint
             cpu.establece_debug();
 
 

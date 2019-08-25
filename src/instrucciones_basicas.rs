@@ -27,6 +27,8 @@ panic!(format!("0x19 ADD HL DE    hl16 = #{:04X}  de16 = #{:04X}\n", hl16, de16)
 
 use crate::cpu::{CPU, Funcion};
 use crate::procesador::PROCESADOR;
+use crate::constantes::*;
+use crate::operaciones_binarias::*;
 
 // bytes, time   datos sacados de fichero:
 // https://github.com/malandrin/gbe/blob/master/gbe/opcodes_info.cpp
@@ -493,57 +495,58 @@ pub fn bas_add_a_R(cpu: &mut CPU) {
         0b00000_111 => {
             kk = cpu.a.wrapping_add(cpu.a);
 
-            cpu.flag_v_u8_en_suma(cpu.a, cpu.a, kk);
-            cpu.flag_c_u8_en_suma(cpu.a, cpu.a);
-            cpu.flag_h_u8_en_suma(cpu.a, cpu.a);
+            flag_v_u8_en_suma(cpu, cpu.a, cpu.a, kk);
+            flag_c_u8_en_suma(cpu, cpu.a, cpu.a);
+            flag_h_u8_en_suma(cpu, cpu.a, cpu.a);
             cpu.a = kk;
         }
         0b00000_000 => {
             kk = cpu.a.wrapping_add(cpu.b);
 
-            cpu.flag_v_u8_en_suma(cpu.a, cpu.b, kk);
-            cpu.flag_c_u8_en_suma(cpu.a, cpu.b);
-            cpu.flag_h_u8_en_suma(cpu.a, cpu.b);
+            flag_v_u8_en_suma(cpu, cpu.a, cpu.b, kk);
+            flag_c_u8_en_suma(cpu, cpu.a, cpu.b);
+            flag_h_u8_en_suma(cpu, cpu.a, cpu.b);
+
             cpu.b = kk;
         }
         0b00000_001 => {
             kk = cpu.a.wrapping_add(cpu.c);
 
-            cpu.flag_v_u8_en_suma(cpu.a, cpu.c, kk);
-            cpu.flag_c_u8_en_suma(cpu.a, cpu.c);
-            cpu.flag_h_u8_en_suma(cpu.a, cpu.c);
+            flag_v_u8_en_suma(cpu, cpu.a, cpu.c, kk);
+            flag_c_u8_en_suma(cpu, cpu.a, cpu.c);
+            flag_h_u8_en_suma(cpu, cpu.a, cpu.c);
             cpu.c = kk;
         }
         0b00000_010 => {
             kk = cpu.a.wrapping_add(cpu.d);
 
-            cpu.flag_v_u8_en_suma(cpu.a, cpu.d, kk);
-            cpu.flag_c_u8_en_suma(cpu.a, cpu.d);
-            cpu.flag_h_u8_en_suma(cpu.a, cpu.d);
+            flag_v_u8_en_suma(cpu, cpu.a, cpu.d, kk);
+            flag_c_u8_en_suma(cpu, cpu.a, cpu.d);
+            flag_h_u8_en_suma(cpu, cpu.a, cpu.d);
             cpu.d = kk;
         }
         0b00000_011 => {
             kk = cpu.a.wrapping_add(cpu.e);
 
-            cpu.flag_v_u8_en_suma(cpu.a, cpu.e, kk);
-            cpu.flag_c_u8_en_suma(cpu.a, cpu.e);
-            cpu.flag_h_u8_en_suma(cpu.a, cpu.e);
+            flag_v_u8_en_suma(cpu, cpu.a, cpu.e, kk);
+            flag_c_u8_en_suma(cpu, cpu.a, cpu.e);
+            flag_h_u8_en_suma(cpu, cpu.a, cpu.e);
             cpu.e = kk;
         }
         0b00000_100 => {
             kk = cpu.a.wrapping_add(cpu.h);
 
-            cpu.flag_v_u8_en_suma(cpu.a, cpu.h, kk);
-            cpu.flag_c_u8_en_suma(cpu.a, cpu.h);
-            cpu.flag_h_u8_en_suma(cpu.a, cpu.h);
+            flag_v_u8_en_suma(cpu, cpu.a, cpu.h, kk);
+            flag_c_u8_en_suma(cpu, cpu.a, cpu.h);
+            flag_h_u8_en_suma(cpu, cpu.a, cpu.h);
             cpu.h = kk;
         }
         0b00000_101 => {
             kk = cpu.a.wrapping_add(cpu.l);
 
-            cpu.flag_v_u8_en_suma(cpu.a, cpu.l, kk);
-            cpu.flag_c_u8_en_suma(cpu.a, cpu.l);
-            cpu.flag_h_u8_en_suma(cpu.a, cpu.l);
+            flag_v_u8_en_suma(cpu, cpu.a, cpu.l, kk);
+            flag_c_u8_en_suma(cpu, cpu.a, cpu.l);
+            flag_h_u8_en_suma(cpu, cpu.a, cpu.l);
             cpu.l = kk;
         }
         0b00000_110 => { // (hl)
@@ -551,19 +554,21 @@ pub fn bas_add_a_R(cpu: &mut CPU) {
             let dato = cpu.mem.lee_byte_de_mem(hl);
             kk = cpu.a.wrapping_add(dato);
 
-            cpu.flag_v_u8_en_suma(cpu.a, dato, kk);
-            cpu.flag_c_u8_en_suma(cpu.a, dato);
-            cpu.flag_h_u8_en_suma(cpu.a, dato);
+            flag_v_u8_en_suma(cpu, cpu.a, dato, kk);
+            flag_c_u8_en_suma(cpu, cpu.a, dato);
+            flag_h_u8_en_suma(cpu, cpu.a, dato);
             cpu.a = kk;
         }
         _ => panic!("Instruccion en bas_add_a_R no reconocida"),
     }
 
-    cpu.reset_n_flag();
-    cpu.flag_s_u8(kk);
-    cpu.flag_z_u8(kk);
-    //cpu.flag_h_u8(kk);
+//    cpu.reset_n_flag();
+//    cpu.flag_s_u8(kk);
+    //cpu.flag_z_u8(kk);
 
+    cpu.set_flag(FLAG_N, false);
+    cpu.set_flag(FLAG_S, kk & FLAG_S != 0);
+    cpu.set_flag(FLAG_Z, kk == 0);
 
     cpu.t += cpu.get_t_instruccion();
     cpu.pc += cpu.get_bytes_instruccion();
@@ -589,30 +594,37 @@ pub fn bas_add_hl_Q(cpu: &mut CPU) {
             let bc = cpu.lee_bc();
             hl = hl.wrapping_add(bc);
 
-            cpu.flag_c_u16_en_suma(hl, bc);
+            //cpu.flag_c_u16_en_suma(hl, bc);
+
+            cpu.set_flag(FLAG_C, (((hl as u32).wrapping_add(bc as u32)) & 0x10000) != 0);
         }
         0b00_01_0000 => {
             let de = cpu.lee_de();
             hl = hl.wrapping_add(de);
 
-            cpu.flag_c_u16_en_suma(hl, de);
+            //cpu.flag_c_u16_en_suma(hl, de);
+            cpu.set_flag(FLAG_C, (((hl as u32).wrapping_add(de as u32)) & 0x10000) != 0);
         }
         0b00_10_0000 => {
             hl = hl.wrapping_add(hl);
 
-            cpu.flag_c_u16_en_suma(hl, hl);
+            //cpu.flag_c_u16_en_suma(hl, hl);
+            cpu.set_flag(FLAG_C, (((hl as u32).wrapping_add(hl as u32)) & 0x10000) != 0);
         }
         0b00_11_0000 => {
             hl = hl.wrapping_add(cpu.sp);
 
-            cpu.flag_c_u16_en_suma(hl, cpu.sp);
+            //cpu.flag_c_u16_en_suma(hl, cpu.sp);
+            cpu.set_flag(FLAG_C, (((hl as u32).wrapping_add(cpu.sp as u32)) & 0x10000) != 0);
         }
         _ => panic!("Instruccion en add_hl_Q no reconocida"),
     }
 
     cpu.escribe_hl(hl);
-    cpu.flag_h_u16(hl);
-    cpu.reset_n_flag();
+    //cpu.flag_h_u16(hl);
+    cpu.set_flag(FLAG_H, ((hl & 0x0FFF) + 1) > 0x0FFF);
+    //cpu.reset_n_flag();
+    cpu.set_flag(FLAG_N, false);
 
     cpu.t += cpu.get_t_instruccion();
     cpu.pc += cpu.get_bytes_instruccion();
@@ -654,14 +666,28 @@ pub fn bas_and_R(cpu: &mut CPU) {
         _ => panic!("Instruccion en bas_and_R no reconocida"),
     }
 
-    cpu.flag_s_u8(cpu.a);
-    cpu.flag_z_u8(cpu.a);
-    cpu.flag_p_u8(cpu.a); // Como paridad
-    cpu.set_h_flag();
+    //cpu.flag_s_u8(cpu.a);
+    cpu.set_flag(FLAG_S, cpu.a & FLAG_S != 0);
+    //cpu.flag_z_u8(cpu.a);
+    cpu.set_flag(FLAG_Z, cpu.a == 0);
+    //cpu.flag_p_u8(cpu.a); // Como paridad
+    let mut unos: u8 = 0;
+    for n in 0..=7 {
+        if cpu.a & (1 << n) != 0 {
+            unos += 1;
+        }
+    }
 
-    cpu.reset_c_flag();
-    cpu.reset_n_flag();
+    cpu.set_flag(FLAG_PV, (unos % 2) == 0);
 
+
+    //cpu.set_h_flag();
+    cpu.set_flag(FLAG_H, true);
+
+//    cpu.reset_c_flag();
+//    cpu.reset_n_flag();
+    cpu.set_flag(FLAG_C, true);
+    cpu.set_flag(FLAG_N, true);
 
     cpu.t += cpu.get_t_instruccion();
     cpu.pc += cpu.get_bytes_instruccion();
@@ -704,65 +730,79 @@ pub fn bas_cp_R(cpu: &mut CPU) {
         0b00000_111 => {
             kk = cpu.a.wrapping_sub(cpu.a);
 
-            cpu.flag_v_u8_en_resta(cpu.a, cpu.a, kk);
-            cpu.flag_c_u8_en_resta(cpu.a, cpu.a);
-            cpu.flag_h_u8_en_resta(cpu.a, cpu.a);
+            flag_v_u8_en_resta(cpu, cpu.a, cpu.a, kk);
+            //let ov = cpu.overflow_en_resta_u8(cpu.a, cpu.a, kk);
+            //cpu.set_flag(FLAG_PV, ov);
+
+            //cpu.flag_c_u8_en_resta(cpu.a, cpu.a);
+            cpu.set_flag(FLAG_C, (((cpu.a as u16).wrapping_sub(cpu.a as u16)) & 0x100) != 0);
+
+            //cpu.flag_h_u8_en_resta(cpu.a, cpu.a);
+            cpu.set_flag(FLAG_H, (cpu.a & 0x0F) < (cpu.a & 0x0F));
         }
         0b00000_000 => {
             kk = cpu.a.wrapping_sub(cpu.b);
 
-            cpu.flag_v_u8_en_resta(cpu.a, cpu.b, kk);
-            cpu.flag_c_u8_en_resta(cpu.a, cpu.b);
-            cpu.flag_h_u8_en_resta(cpu.a, cpu.b);
+            //cpu.flag_v_u8_en_resta(cpu.a, cpu.b, kk);
+            let ov = overflow_en_resta_u8(cpu.a, cpu.b, kk);
+            cpu.set_flag(FLAG_PV, ov);
+
+            //cpu.flag_c_u8_en_resta(cpu.a, cpu.b);
+            cpu.set_flag(FLAG_C, (((cpu.a as u16).wrapping_sub(cpu.b as u16)) & 0x100) != 0);
+
+
+            //cpu.flag_h_u8_en_resta(cpu.a, cpu.b);
+            cpu.set_flag(FLAG_H, (cpu.a & 0x0F) < (cpu.b & 0x0F));
         }
         0b00000_001 => {
             kk = cpu.a.wrapping_sub(cpu.c);
 
-            cpu.flag_v_u8_en_resta(cpu.a, cpu.c, kk);
-            cpu.flag_c_u8_en_resta(cpu.a, cpu.c);
-            cpu.flag_h_u8_en_resta(cpu.a, cpu.c);
+            flag_v_u8_en_resta(cpu, cpu.a, cpu.c, kk);
+            flag_c_u8_en_resta(cpu, cpu.a, cpu.c);
+            flag_h_u8_en_resta(cpu, cpu.a, cpu.c);
         }
         0b00000_010 => {
             kk = cpu.a.wrapping_sub(cpu.d);
 
-            cpu.flag_v_u8_en_resta(cpu.a, cpu.d, kk);
-            cpu.flag_c_u8_en_resta(cpu.a, cpu.d);
-            cpu.flag_h_u8_en_resta(cpu.a, cpu.d);
+            flag_v_u8_en_resta(cpu, cpu.a, cpu.d, kk);
+            flag_c_u8_en_resta(cpu, cpu.a, cpu.d);
+            flag_h_u8_en_resta(cpu, cpu.a, cpu.d);
         }
         0b00000_011 => {
             kk = cpu.a.wrapping_sub(cpu.e);
 
-            cpu.flag_v_u8_en_resta(cpu.a, cpu.e, kk);
-            cpu.flag_c_u8_en_resta(cpu.a, cpu.e);
-            cpu.flag_h_u8_en_resta(cpu.a, cpu.e);
+            flag_v_u8_en_resta(cpu, cpu.a, cpu.e, kk);
+            flag_c_u8_en_resta(cpu, cpu.a, cpu.e);
+            flag_h_u8_en_resta(cpu, cpu.a, cpu.e);
         }
         0b00000_100 => {
             kk = cpu.a.wrapping_sub(cpu.h);
 
-            cpu.flag_v_u8_en_resta(cpu.a, cpu.h, kk);
-            cpu.flag_c_u8_en_resta(cpu.a, cpu.h);
-            cpu.flag_h_u8_en_resta(cpu.a, cpu.h);
+            flag_v_u8_en_resta(cpu, cpu.a, cpu.h, kk);
+            flag_c_u8_en_resta(cpu, cpu.a, cpu.h);
+            flag_h_u8_en_resta(cpu, cpu.a, cpu.h);
         }
         0b00000_101 => {
             kk = cpu.a.wrapping_sub(cpu.l);
 
-            cpu.flag_v_u8_en_resta(cpu.a, cpu.l, kk);
-            cpu.flag_c_u8_en_resta(cpu.a, cpu.l);
-            cpu.flag_h_u8_en_resta(cpu.a, cpu.l);
+            flag_v_u8_en_resta(cpu, cpu.a, cpu.l, kk);
+            flag_c_u8_en_resta(cpu, cpu.a, cpu.l);
+            flag_h_u8_en_resta(cpu, cpu.a, cpu.l);
         }
         0b00000_110 => { // (hl)
             let hl = cpu.lee_hl();
             let dato = cpu.mem.lee_byte_de_mem(hl);
             kk = cpu.a.wrapping_sub(dato);
 
-            cpu.flag_v_u8_en_resta(cpu.a, dato, kk);
-            cpu.flag_c_u8_en_resta(cpu.a, dato);
-            cpu.flag_h_u8_en_resta(cpu.a, dato);
+            flag_v_u8_en_resta(cpu, cpu.a, dato, kk);
+            flag_c_u8_en_resta(cpu, cpu.a, dato);
+            flag_h_u8_en_resta(cpu, cpu.a, dato);
         }
         _ => panic!("Instruccion en bas_cp_R no reconocida"),
     }
 
-    cpu.set_n_flag();
+    //cpu.set_n_flag();
+    cpu.set_flag(FLAG_N, true);
     cpu.flag_s_u8(kk);
     cpu.flag_z_u8(kk);
 
@@ -823,50 +863,50 @@ pub fn bas_dec_R(cpu: &mut CPU) {
         0b00_111_000 => {
             kk = cpu.a.wrapping_sub(1);
 
-            cpu.flag_v_u8_en_resta(cpu.a, 1, kk);
-            cpu.flag_h_u8_en_resta(cpu.a, 1);
+            flag_v_u8_en_resta(cpu, cpu.a, 1, kk);
+            flag_h_u8_en_resta(cpu, cpu.a, 1);
             cpu.a = kk;
         }
         0b00_000_000 => {
             kk = cpu.b.wrapping_sub(1);
 
-            cpu.flag_v_u8_en_resta(cpu.b, 1, kk);
-            cpu.flag_h_u8_en_resta(cpu.b, 1);
+            flag_v_u8_en_resta(cpu, cpu.b, 1, kk);
+            flag_h_u8_en_resta(cpu, cpu.b, 1);
             cpu.b = kk;
         }
         0b00_001_000 => {
             kk = cpu.c.wrapping_sub(1);
 
-            cpu.flag_v_u8_en_resta(cpu.c, 1, kk);
-            cpu.flag_h_u8_en_resta(cpu.c, 1);
+            flag_v_u8_en_resta(cpu, cpu.c, 1, kk);
+            flag_h_u8_en_resta(cpu, cpu.c, 1);
             cpu.c = kk;
         }
         0b00_010_000 => {
             kk = cpu.d.wrapping_sub(1);
 
-            cpu.flag_v_u8_en_suma(cpu.d, 1, kk);
-            cpu.flag_h_u8_en_resta(cpu.d, 1);
+            flag_v_u8_en_suma(cpu, cpu.d, 1, kk);
+            flag_h_u8_en_resta(cpu, cpu.d, 1);
             cpu.d = kk;
         }
         0b00_011_000 => {
             kk = cpu.e.wrapping_sub(1);
 
-            cpu.flag_v_u8_en_resta(cpu.e, 1, kk);
-            cpu.flag_h_u8_en_resta(cpu.e, 1);
+            flag_v_u8_en_resta(cpu, cpu.e, 1, kk);
+            flag_h_u8_en_resta(cpu, cpu.e, 1);
             cpu.e = kk;
         }
         0b00_100_000 => {
             kk = cpu.h.wrapping_sub(1);
 
-            cpu.flag_v_u8_en_resta(cpu.h, 1, kk);
-            cpu.flag_h_u8_en_resta(cpu.h, 1);
+            flag_v_u8_en_resta(cpu, cpu.h, 1, kk);
+            flag_h_u8_en_resta(cpu, cpu.h, 1);
             cpu.h = kk;
         }
         0b00_101_000 => {
             kk = cpu.l.wrapping_sub(1);
 
-            cpu.flag_v_u8_en_resta(cpu.l, 1, kk);
-            cpu.flag_h_u8_en_resta(cpu.l, 1);
+            flag_v_u8_en_resta(cpu, cpu.l, 1, kk);
+            flag_h_u8_en_resta(cpu, cpu.l, 1);
             cpu.l = kk;
         }
         0b00_110_000 => {
@@ -874,14 +914,15 @@ pub fn bas_dec_R(cpu: &mut CPU) {
             let dato = cpu.mem.lee_byte_de_mem(hl);
             kk = dato.wrapping_sub(1);
 
-            cpu.flag_v_u8_en_resta(dato, 1, kk);
-            cpu.flag_h_u8_en_resta(dato, 1);
+            flag_v_u8_en_resta(cpu, dato, 1, kk);
+            flag_h_u8_en_resta(cpu, dato, 1);
             cpu.mem.escribe_byte_en_mem(hl, kk);
         }
         _ => panic!("Instruccion en bas_dec_R no reconocida"),
     }
 
-    cpu.set_n_flag();
+    //cpu.set_n_flag();
+    cpu.set_flag(FLAG_N, true);
     cpu.flag_s_u8(kk);
     cpu.flag_z_u8(kk);
 
@@ -988,50 +1029,50 @@ pub fn bas_inc_R(cpu: &mut CPU) {
         0b00_111_000 => {
             kk = cpu.a.wrapping_add(1);
 
-            cpu.flag_v_u8_en_suma(cpu.a, 1, kk);
-            cpu.flag_h_u8_en_suma(cpu.a, 1);
+            flag_v_u8_en_suma(cpu, cpu.a, 1, kk);
+            flag_h_u8_en_suma(cpu, cpu.a, 1);
             cpu.a = kk;
         }
         0b00_000_000 => {
             kk = cpu.b.wrapping_add(1);
 
-            cpu.flag_v_u8_en_suma(cpu.b, 1, kk);
-            cpu.flag_h_u8_en_suma(cpu.b, 1);
+            flag_v_u8_en_suma(cpu, cpu.b, 1, kk);
+            flag_h_u8_en_suma(cpu, cpu.b, 1);
             cpu.b = kk;
         }
         0b00_001_000 => {
             kk = cpu.c.wrapping_add(1);
 
-            cpu.flag_v_u8_en_suma(cpu.c, 1, kk);
-            cpu.flag_h_u8_en_suma(cpu.c, 1);
+            flag_v_u8_en_suma(cpu, cpu.c, 1, kk);
+            flag_h_u8_en_suma(cpu, cpu.c, 1);
             cpu.c = kk;
         }
         0b00_010_000 => {
             kk = cpu.d.wrapping_add(1);
 
-            cpu.flag_v_u8_en_suma(cpu.d, 1, kk);
-            cpu.flag_h_u8_en_suma(cpu.d, 1);
+            flag_v_u8_en_suma(cpu, cpu.d, 1, kk);
+            flag_h_u8_en_suma(cpu, cpu.d, 1);
             cpu.d = kk;
         }
         0b00_011_000 => {
             kk = cpu.e.wrapping_add(1);
 
-            cpu.flag_v_u8_en_suma(cpu.e, 1, kk);
-            cpu.flag_h_u8_en_suma(cpu.e, 1);
+            flag_v_u8_en_suma(cpu, cpu.e, 1, kk);
+            flag_h_u8_en_suma(cpu, cpu.e, 1);
             cpu.e = kk;
         }
         0b00_100_000 => {
             kk = cpu.h.wrapping_add(1);
 
-            cpu.flag_v_u8_en_suma(cpu.h, 1, kk);
-            cpu.flag_h_u8_en_suma(cpu.h, 1);
+            flag_v_u8_en_suma(cpu, cpu.h, 1, kk);
+            flag_h_u8_en_suma(cpu, cpu.h, 1);
             cpu.h = kk;
         }
         0b00_101_000 => {
             kk = cpu.l.wrapping_add(1);
 
-            cpu.flag_v_u8_en_suma(cpu.l, 1, kk);
-            cpu.flag_h_u8_en_suma(cpu.l, 1);
+            flag_v_u8_en_suma(cpu, cpu.l, 1, kk);
+            flag_h_u8_en_suma(cpu, cpu.l, 1);
             cpu.l = kk;
         }
         0b00_110_000 => { //(hl)
@@ -1039,14 +1080,15 @@ pub fn bas_inc_R(cpu: &mut CPU) {
             let dato = cpu.mem.lee_byte_de_mem(hl);
             kk = dato.wrapping_add(1);
 
-            cpu.flag_v_u8_en_suma(cpu.l, 1, kk);
-            cpu.flag_h_u8_en_suma(dato, 1);
+            flag_v_u8_en_suma(cpu, cpu.l, 1, kk);
+            flag_h_u8_en_suma(cpu, dato, 1);
             cpu.mem.escribe_byte_en_mem(hl, kk);
         }
         _ => panic!("Instruccion en bas_inc_R no reconocida"),
     }
 
-    cpu.reset_n_flag();
+    //cpu.reset_n_flag();
+    cpu.set_flag(FLAG_N, false);
     cpu.flag_s_u8(kk);
     cpu.flag_z_u8(kk);
     //cpu.flag_h_u8(kk);
@@ -1351,12 +1393,14 @@ pub fn bas_or_R(cpu: &mut CPU) {
 
     cpu.flag_s_u8(cpu.a);
     cpu.flag_z_u8(cpu.a);
-    cpu.flag_p_u8(cpu.a); // Como paridad
-    cpu.reset_h_flag();
+    flag_p_u8(cpu, cpu.a); // Como paridad
+    //cpu.reset_h_flag();
+    cpu.set_flag(FLAG_H, false);
 
-    cpu.reset_c_flag();
-    cpu.reset_n_flag();
-
+    //cpu.reset_c_flag();
+    cpu.set_flag(FLAG_C, false);
+    //cpu.reset_n_flag();
+    cpu.set_flag(FLAG_N, false);
 
     cpu.t += cpu.get_t_instruccion();
     cpu.pc += cpu.get_bytes_instruccion();
@@ -1620,58 +1664,58 @@ pub fn bas_sub_R(cpu: &mut CPU) {
         0b00000_111 => {
             kk = cpu.a.wrapping_sub(cpu.a);
 
-            cpu.flag_v_u8_en_resta(cpu.a, cpu.a, kk);
-            cpu.flag_c_u8_en_resta(cpu.a, cpu.a);
-            cpu.flag_h_u8_en_resta(cpu.a, cpu.a);
+            flag_v_u8_en_resta(cpu, cpu.a, cpu.a, kk);
+            flag_c_u8_en_resta(cpu, cpu.a, cpu.a);
+            flag_h_u8_en_resta(cpu, cpu.a, cpu.a);
 
             cpu.a = kk;
         }
         0b00000_000 => {
             kk = cpu.a.wrapping_sub(cpu.b);
 
-            cpu.flag_v_u8_en_resta(cpu.a, cpu.b, kk);
-            cpu.flag_c_u8_en_resta(cpu.a, cpu.b);
-            cpu.flag_h_u8_en_resta(cpu.a, cpu.b);
+            flag_v_u8_en_resta(cpu, cpu.a, cpu.b, kk);
+            flag_c_u8_en_resta(cpu, cpu.a, cpu.b);
+            flag_h_u8_en_resta(cpu, cpu.a, cpu.b);
             cpu.a = kk;
         }
         0b00000_001 => {
             kk = cpu.a.wrapping_sub(cpu.c);
 
-            cpu.flag_v_u8_en_resta(cpu.a, cpu.c, kk);
-            cpu.flag_c_u8_en_resta(cpu.a, cpu.c);
-            cpu.flag_h_u8_en_resta(cpu.a, cpu.c);
+            flag_v_u8_en_resta(cpu, cpu.a, cpu.c, kk);
+            flag_c_u8_en_resta(cpu, cpu.a, cpu.c);
+            flag_h_u8_en_resta(cpu, cpu.a, cpu.c);
             cpu.a = kk;
         }
         0b00000_010 => {
             kk = cpu.a.wrapping_sub(cpu.d);
 
-            cpu.flag_v_u8_en_resta(cpu.a, cpu.d, kk);
-            cpu.flag_c_u8_en_resta(cpu.a, cpu.d);
-            cpu.flag_h_u8_en_resta(cpu.a, cpu.d);
+            flag_v_u8_en_resta(cpu, cpu.a, cpu.d, kk);
+            flag_c_u8_en_resta(cpu, cpu.a, cpu.d);
+            flag_h_u8_en_resta(cpu, cpu.a, cpu.d);
             cpu.a = kk;
         }
         0b00000_011 => {
             kk = cpu.a.wrapping_sub(cpu.e);
 
-            cpu.flag_v_u8_en_resta(cpu.a, cpu.e, kk);
-            cpu.flag_c_u8_en_resta(cpu.a, cpu.e);
-            cpu.flag_h_u8_en_resta(cpu.a, cpu.e);
+            flag_v_u8_en_resta(cpu, cpu.a, cpu.e, kk);
+            flag_c_u8_en_resta(cpu, cpu.a, cpu.e);
+            flag_h_u8_en_resta(cpu, cpu.a, cpu.e);
             cpu.a = kk;
         }
         0b00000_100 => {
             kk = cpu.a.wrapping_sub(cpu.h);
 
-            cpu.flag_v_u8_en_resta(cpu.a, cpu.h, kk);
-            cpu.flag_c_u8_en_resta(cpu.a, cpu.h);
-            cpu.flag_h_u8_en_resta(cpu.a, cpu.h);
+            flag_v_u8_en_resta(cpu, cpu.a, cpu.h, kk);
+            flag_c_u8_en_resta(cpu, cpu.a, cpu.h);
+            flag_h_u8_en_resta(cpu, cpu.a, cpu.h);
             cpu.a = kk;
         }
         0b00000_101 => {
             kk = cpu.a.wrapping_sub(cpu.l);
 
-            cpu.flag_v_u8_en_resta(cpu.a, cpu.l, kk);
-            cpu.flag_c_u8_en_resta(cpu.a, cpu.l);
-            cpu.flag_h_u8_en_resta(cpu.a, cpu.l);
+            flag_v_u8_en_resta(cpu, cpu.a, cpu.l, kk);
+            flag_c_u8_en_resta(cpu, cpu.a, cpu.l);
+            flag_h_u8_en_resta(cpu, cpu.a, cpu.l);
             cpu.a = kk;
         }
         0b00000_110 => { // (hl)
@@ -1679,15 +1723,16 @@ pub fn bas_sub_R(cpu: &mut CPU) {
             let dato = cpu.mem.lee_byte_de_mem(hl);
             kk = cpu.a.wrapping_sub(dato);
 
-            cpu.flag_v_u8_en_resta(cpu.a, dato, kk);
-            cpu.flag_c_u8_en_resta(cpu.a, dato);
-            cpu.flag_h_u8_en_resta(cpu.a, dato);
+            flag_v_u8_en_resta(cpu, cpu.a, dato, kk);
+            flag_c_u8_en_resta(cpu, cpu.a, dato);
+            flag_h_u8_en_resta(cpu, cpu.a, dato);
             cpu.mem.escribe_byte_en_mem(hl, kk);
         }
         _ => panic!("Instruccion en bas_sub_R no reconocida"),
     }
 
-    cpu.set_n_flag();
+    //cpu.set_n_flag();
+    cpu.set_flag(FLAG_N, true);
     cpu.flag_s_u8(kk);
     cpu.flag_z_u8(kk);
 
@@ -1741,12 +1786,14 @@ pub fn bas_xor_R(cpu: &mut CPU) {
 
     cpu.flag_s_u8(cpu.a);
     cpu.flag_z_u8(cpu.a);
-    cpu.flag_p_u8(cpu.a); // Como paridad
-    cpu.reset_h_flag();
+    flag_p_u8(cpu, cpu.a); // Como paridad
+    //cpu.reset_h_flag();
+    cpu.set_flag(FLAG_H, false);
 
-    cpu.reset_c_flag();
-    cpu.reset_n_flag();
-
+    //cpu.reset_c_flag();
+    cpu.set_flag(FLAG_C, false);
+    //cpu.reset_n_flag();
+    cpu.set_flag(FLAG_N, false);
 
     cpu.t += cpu.get_t_instruccion();
     cpu.pc += cpu.get_bytes_instruccion();
@@ -1957,11 +2004,12 @@ pub fn ld_c_n_txt(cpu: &mut CPU) { cpu.texto(&format!("LD C,#{:02X}", cpu.r1)); 
 // 0x0F
 pub fn rrca(cpu: &mut CPU) {
     let bit0: bool = (0b0000_0001 & cpu.a) != 0;
-    if bit0 {
-        cpu.set_c_flag();
-    } else {
-        cpu.reset_c_flag();
-    }
+//    if bit0 {
+//        cpu.set_c_flag();
+//    } else {
+//        cpu.reset_c_flag();
+//    }
+    cpu.set_flag(FLAG_C, bit0);
 
     // Rotación
     let mut nuevo_valor = cpu.a >> 1;
@@ -1972,8 +2020,10 @@ pub fn rrca(cpu: &mut CPU) {
 
     //maneja flags
     cpu.flag_z_u8(nuevo_valor);
-    cpu.reset_n_flag();
-    cpu.reset_h_flag();
+    //cpu.reset_n_flag();
+    cpu.set_flag(FLAG_N, false);
+    //cpu.reset_h_flag();
+    cpu.set_flag(FLAG_H, false);
 
     cpu.t += cpu.get_t_instruccion();
     cpu.pc += cpu.get_bytes_instruccion();
@@ -1987,9 +2037,9 @@ pub fn rrca_txt(cpu: &mut CPU) {
 // 0x10
 pub fn djnz_n(cpu: &mut CPU) {
     cpu.pc += cpu.get_bytes_instruccion();
-    cpu.b = cpu.dec_8bits(cpu.b);
+    cpu.b = dec_8bits(cpu, cpu.b);
     if cpu.b != 0 {
-        cpu.pc = cpu.suma_compl2_a_un_u16(cpu.pc, cpu.r1);
+        cpu.pc = suma_compl2_a_un_u16(cpu.pc, cpu.r1);
         cpu.t += cpu.get_t_instruccion() + 5;
     } else {
         cpu.t += cpu.get_t_instruccion();
@@ -2062,11 +2112,12 @@ pub fn ld_d_n_txt(cpu: &mut CPU) {
 pub fn rla(cpu: &mut CPU) {
     let viejo_c_flag = cpu.get_c_flag();
     let c_flag: bool = (0b1000_0000 & cpu.a) != 0;
-    if c_flag {
-        cpu.set_c_flag();
-    } else {
-        cpu.reset_c_flag();
-    }
+//    if c_flag {
+//        cpu.set_c_flag();
+//    } else {
+//        cpu.reset_c_flag();
+//    }
+    cpu.set_flag(FLAG_C, c_flag);
 
     // Rotación
     let mut nuevo_valor = cpu.a << 1;
@@ -2076,13 +2127,16 @@ pub fn rla(cpu: &mut CPU) {
     }
 
     //maneja flags
-    if nuevo_valor == 0 {
-        cpu.set_z_flag();
-    } else {
-        cpu.reset_z_flag();
-    }
-    cpu.reset_n_flag();
-    cpu.reset_h_flag();
+//    if nuevo_valor == 0 {
+//        cpu.set_z_flag();
+//    } else {
+//        cpu.reset_z_flag();
+//    }
+    cpu.set_flag(FLAG_Z, nuevo_valor == 0);
+    //cpu.reset_n_flag();
+    cpu.set_flag(FLAG_N, false);
+    //cpu.reset_h_flag();
+    cpu.set_flag(FLAG_H, false);
 
     cpu.t += cpu.get_t_instruccion();
     cpu.pc += cpu.get_bytes_instruccion();
@@ -2093,14 +2147,14 @@ pub fn rla_txt(cpu: &mut CPU) { cpu.texto(&format!("RLA")); }
 // 0x18
 pub fn jr_n(cpu: &mut CPU) {
     cpu.pc += 2;  // parece que hace falta TODO: comprobar
-    cpu.pc = cpu.suma_compl2_a_un_u16(cpu.pc, cpu.r1);
+    cpu.pc = suma_compl2_a_un_u16(cpu.pc, cpu.r1);
 
     cpu.t += cpu.get_t_instruccion();
 }
 
 
 pub fn jr_n_txt(cpu: &mut CPU) {
-    let direccion = cpu.suma_compl2_a_un_u16(cpu.pc, cpu.r1) + 2;
+    let direccion = suma_compl2_a_un_u16(cpu.pc, cpu.r1) + 2;
     cpu.texto(&format!("JR {:04X}", direccion));
 }
 
@@ -2177,7 +2231,7 @@ pub fn rra_txt(cpu: &mut CPU) { fn_no_impl(cpu); }
 // *************************** 2 ***********************************
 // 0x20 NN
 fn jr_nz_n(cpu: &mut CPU) {
-    let salto = cpu.suma_compl2_a_un_u16(cpu.pc + 2, cpu.r1);
+    let salto = suma_compl2_a_un_u16(cpu.pc + 2, cpu.r1);
     if !cpu.get_z_flag() {
         cpu.pc = salto;
 
@@ -2189,7 +2243,7 @@ fn jr_nz_n(cpu: &mut CPU) {
 }
 
 fn jr_nz_n_txt(cpu: &mut CPU) {
-    let salto = cpu.suma_compl2_a_un_u16(cpu.pc + 2, cpu.r1);
+    let salto = suma_compl2_a_un_u16(cpu.pc + 2, cpu.r1);
     cpu.texto(&format!("JR NZ #{:04X}", salto));
 }
 
@@ -2211,7 +2265,7 @@ pub fn ldiOhlO_aGB(cpu: &mut CPU) {
     let mut hl = cpu.lee_hl();
     cpu.mem.escribe_byte_en_mem(hl, cpu.a);
 
-    hl = cpu.inc_16bits(hl);
+    hl = inc_16bits(cpu, hl);
     cpu.escribe_hl(hl);
 
     cpu.t += cpu.get_t_instruccion();
@@ -2292,7 +2346,7 @@ pub fn daa_txt(cpu: &mut CPU) { fn_no_impl(cpu); }
 pub fn jr_z_n(cpu: &mut CPU) {
     let salto = cpu.pc.wrapping_add(cpu.get_bytes_instruccion());
     if cpu.get_z_flag() {
-        cpu.pc = cpu.suma_compl2_a_un_u16(salto, cpu.r1);
+        cpu.pc = suma_compl2_a_un_u16(salto, cpu.r1);
         cpu.t += cpu.get_t_instruccion() + 5;
     } else {
         cpu.pc += cpu.get_bytes_instruccion();
@@ -2301,7 +2355,7 @@ pub fn jr_z_n(cpu: &mut CPU) {
 }
 
 pub fn jr_z_n_txt(cpu: &mut CPU) {
-    let salto = cpu.suma_compl2_a_un_u16(cpu.pc.wrapping_add(2), cpu.r1);
+    let salto = suma_compl2_a_un_u16(cpu.pc.wrapping_add(2), cpu.r1);
     cpu.texto(&format!("JR Z(#{:04X})", salto));
 }
 
@@ -2325,7 +2379,7 @@ pub fn ldi_aOhlOGB(cpu: &mut CPU) {
     let mut hl = cpu.lee_hl();
     cpu.a = cpu.mem.lee_byte_de_mem(hl);
 
-    hl = cpu.inc_16bits(hl);
+    hl = inc_16bits(cpu, hl);
     cpu.escribe_hl(hl);
 
     cpu.t += cpu.get_t_instruccion();
@@ -2392,7 +2446,7 @@ pub fn cpl_txt(cpu: &mut CPU) { cpu.texto(&format!("CPL")); }
 pub fn jr_nc_n(cpu: &mut CPU) {
     let salto = cpu.pc.wrapping_add(cpu.get_bytes_instruccion());
     if !cpu.get_c_flag() {
-        cpu.pc = cpu.suma_compl2_a_un_u16(salto, cpu.r1);
+        cpu.pc = suma_compl2_a_un_u16(salto, cpu.r1);
         cpu.t += cpu.get_t_instruccion() + 5;
     } else {
         cpu.t += cpu.get_t_instruccion();
@@ -2401,7 +2455,7 @@ pub fn jr_nc_n(cpu: &mut CPU) {
 }
 
 pub fn jr_nc_n_txt(cpu: &mut CPU) {
-    let salto = cpu.suma_compl2_a_un_u16(cpu.pc.wrapping_add(2), cpu.r1);
+    let salto = suma_compl2_a_un_u16(cpu.pc.wrapping_add(2), cpu.r1);
     cpu.texto(&format!("JR NC #{:04X}", salto));
 }
 
@@ -2422,7 +2476,7 @@ pub fn ld_sp_nn_txt(cpu: &mut CPU) {
 pub fn lddOhlO_aGB(cpu: &mut CPU) {
     let mut hl = cpu.lee_hl();
     cpu.mem.escribe_byte_en_mem(hl, cpu.a);
-    hl = cpu.dec_16bits(hl);
+    hl = dec_16bits(hl);
 
     cpu.escribe_hl(hl);
 
@@ -2519,9 +2573,12 @@ pub fn ld_OhlO_n_txt(cpu: &mut CPU) { cpu.texto(&format!("LD(HL)#{:02X}", cpu.r1
 
 // 0x37
 pub fn scf(cpu: &mut CPU) {
-    cpu.set_c_flag();
-    cpu.reset_h_flag();
-    cpu.reset_n_flag();
+    //cpu.set_c_flag();
+    cpu.set_flag(FLAG_C, true);
+    //cpu.reset_h_flag();
+    cpu.set_flag(FLAG_H, false);
+    //cpu.reset_n_flag();
+    cpu.set_flag(FLAG_N, false);
 
     cpu.t += cpu.get_t_instruccion();
     cpu.pc += cpu.get_bytes_instruccion();
@@ -2537,7 +2594,7 @@ pub fn jr_c_n(cpu: &mut CPU) {
     let salto = cpu.pc.wrapping_add(cpu.get_bytes_instruccion());
 
     if cpu.get_c_flag() {
-        cpu.pc = cpu.suma_compl2_a_un_u16(salto, cpu.r1);
+        cpu.pc = suma_compl2_a_un_u16(salto, cpu.r1);
         cpu.t += cpu.get_t_instruccion() + 5;
     } else {
         cpu.t += cpu.get_t_instruccion();
@@ -2548,7 +2605,7 @@ pub fn jr_c_n(cpu: &mut CPU) {
 pub fn jr_c_n_txt(cpu: &mut CPU) {
     let mut salto = cpu.pc.wrapping_add(cpu.get_bytes_instruccion());
 
-    salto = cpu.suma_compl2_a_un_u16(salto, cpu.r1);
+    salto = suma_compl2_a_un_u16(salto, cpu.r1);
     cpu.texto(&format!("JR C #{:04X}", salto));
 }
 
@@ -2633,13 +2690,17 @@ pub fn ld_a_n_txt(cpu: &mut CPU) {
 
 // 0x3F
 pub fn ccf(cpu: &mut CPU) {
-    if cpu.get_c_flag() {
-        cpu.reset_c_flag();
-    } else {
-        cpu.set_c_flag();
-    }
+//    if cpu.get_c_flag() {
+//        cpu.reset_c_flag();
+//
+//    } else {
+//        cpu.set_c_flag();
+//
+//    }
+    cpu.set_flag(FLAG_C, cpu.get_c_flag());
 
-    cpu.reset_n_flag();
+    //cpu.reset_n_flag();
+    cpu.set_flag(FLAG_N, false);
 
     cpu.t += cpu.get_t_instruccion();
     cpu.pc += cpu.get_bytes_instruccion();
@@ -3882,12 +3943,14 @@ pub fn push_bc_txt(cpu: &mut CPU) { cpu.texto(&format!("PUSH BC")); }
 // 0xC6
 pub fn add_a_n(cpu: &mut CPU) {
     let kk = cpu.a.wrapping_add(cpu.r1);
-    cpu.flag_v_u8_en_suma(cpu.a, cpu.r1, kk);
-    cpu.flag_c_u8_en_suma(cpu.a, cpu.r1);
-    cpu.flag_h_u8_en_suma(cpu.a, cpu.r1);
+    flag_v_u8_en_suma(cpu, cpu.a, cpu.r1, kk);
+    flag_c_u8_en_suma(cpu, cpu.a, cpu.r1);
+    flag_h_u8_en_suma(cpu, cpu.a, cpu.r1);
     cpu.a = kk;
 
-    cpu.reset_n_flag();
+    //cpu.reset_n_flag();
+    cpu.set_flag(FLAG_N, false);
+
     cpu.flag_s_u8(kk);
     cpu.flag_z_u8(kk);
     //cpu.flag_h_u8(kk);
@@ -4059,12 +4122,13 @@ pub fn push_de_txt(cpu: &mut CPU) { cpu.texto(&format!("PUSH DE")); }
 // 0xD6
 pub fn sub_n(cpu: &mut CPU) {
     let kk = cpu.a.wrapping_sub(cpu.r1);
-    cpu.flag_v_u8_en_resta(cpu.a, cpu.r1, kk);
-    cpu.flag_c_u8_en_resta(cpu.a, cpu.r1);
-    cpu.flag_h_u8_en_resta(cpu.a, cpu.r1);
+    flag_v_u8_en_resta(cpu, cpu.a, cpu.r1, kk);
+    flag_c_u8_en_resta(cpu, cpu.a, cpu.r1);
+    flag_h_u8_en_resta(cpu, cpu.a, cpu.r1);
     cpu.a = kk;
 
-    cpu.set_n_flag();
+    //cpu.set_n_flag();
+    cpu.set_flag(FLAG_N, true);
     cpu.flag_s_u8(kk);
     cpu.flag_z_u8(kk);
 
@@ -4226,11 +4290,13 @@ pub fn and_n(cpu: &mut CPU) {
 
     cpu.flag_s_u8(cpu.a);
     cpu.flag_z_u8(cpu.a);
-    cpu.flag_p_u8(cpu.a); // Como paridad
-    cpu.set_h_flag();
-
-    cpu.reset_c_flag();
-    cpu.reset_n_flag();
+    flag_p_u8(cpu, cpu.a); // Como paridad
+    //cpu.set_h_flag();
+    cpu.set_flag(FLAG_H, true);
+    //cpu.reset_c_flag();
+    cpu.set_flag(FLAG_C, false);
+    //cpu.reset_n_flag();
+    cpu.set_flag(FLAG_N, false);
 
     cpu.pc += cpu.get_bytes_instruccion();
     cpu.t = cpu.get_t_instruccion();
@@ -4403,11 +4469,14 @@ pub fn or_n(cpu: &mut CPU) {
 
     cpu.flag_s_u8(cpu.a);
     cpu.flag_z_u8(cpu.a);
-    cpu.flag_p_u8(cpu.a); // Como paridad
-    cpu.reset_h_flag();
+    flag_p_u8(cpu, cpu.a); // Como paridad
+    //cpu.reset_h_flag();
+    cpu.set_flag(FLAG_H, false);
 
-    cpu.reset_c_flag();
-    cpu.reset_n_flag();
+    //cpu.reset_c_flag();
+    cpu.set_flag(FLAG_C, false);
+    //cpu.reset_n_flag();
+    cpu.set_flag(FLAG_N, false);
 
     cpu.t += cpu.get_t_instruccion();
     cpu.pc += cpu.get_bytes_instruccion();
@@ -4455,11 +4524,12 @@ pub fn ei_txt(cpu: &mut CPU) { cpu.texto(&format!("EI")); }
 pub fn cp_n(cpu: &mut CPU) {
     let kk = cpu.a.wrapping_sub(cpu.r1);
 
-    cpu.flag_v_u8_en_resta(cpu.a, cpu.r1, kk);
-    cpu.flag_c_u8_en_resta(cpu.a, cpu.r1);
-    cpu.flag_h_u8_en_resta(cpu.a, cpu.r1);
+    flag_v_u8_en_resta(cpu, cpu.a, cpu.r1, kk);
+    flag_c_u8_en_resta(cpu, cpu.a, cpu.r1);
+    flag_h_u8_en_resta(cpu, cpu.a, cpu.r1);
 
-    cpu.set_n_flag();
+    //cpu.set_n_flag();
+    cpu.set_flag(FLAG_N, true);
     cpu.flag_s_u8(kk);
     cpu.flag_z_u8(kk);
 

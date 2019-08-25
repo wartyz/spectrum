@@ -2,7 +2,8 @@
 
 use crate::cpu::CPU;
 use crate::instrucciones_basicas::fn_no_impl;
-
+use crate::operaciones_binarias::*;
+use crate::constantes::*;
 
 pub fn mete_funciones_ed(cpu: &mut CPU) {
 
@@ -227,28 +228,30 @@ fn sbc_hl_de(cpu: &mut CPU) {
     cpu.l = hltupla.1;
 
     // Z
-    if hl == 0 {
-        cpu.set_z_flag();
-    } else {
-        cpu.reset_z_flag();
-    }
-
+//    if hl == 0 {
+//        cpu.set_z_flag();
+//    } else {
+//        cpu.reset_z_flag();
+//    }
+    cpu.set_flag(FLAG_Z, hl == 0);
     // C
-    if hl < de {
-        cpu.set_c_flag();
-    } else {
-        cpu.reset_c_flag();
-    }
-
+//    if hl < de {
+//        cpu.set_c_flag();
+//    } else {
+//        cpu.reset_c_flag();
+//    }
+    cpu.set_flag(FLAG_C, hl < de);
     // P/V
-    if cpu.overflow_en_resta_u16(hl, de, hl) {
-        cpu.set_pv_flag();
+    if overflow_en_resta_u16(hl, de, hl) {
+        //cpu.set_pv_flag();
+        cpu.set_flag(FLAG_PV, true);
     } else {
-        cpu.reset_pv_flag();
+        cpu.set_flag(FLAG_PV, false);
     }
 
     // N
-    cpu.set_n_flag();
+    //cpu.set_n_flag();
+    cpu.set_flag(FLAG_N, true);
 
     cpu.t += 15;
     cpu.pc += 2;
@@ -365,9 +368,9 @@ pub fn ldir(cpu: &mut CPU) {
 
     cpu.mem.escribe_byte_en_mem(de, dato);
 
-    let hldec = cpu.inc_16bits(hl);
-    let dedec = cpu.inc_16bits(de);
-    let bcdec = cpu.dec_16bits(bc);
+    let hldec = inc_16bits(cpu, hl);
+    let dedec = inc_16bits(cpu, de);
+    let bcdec = dec_16bits(bc);
 
     let hl_tupla = cpu.desconcatena_un_u16_en_dos_u8(hldec);
     let de_tupla = cpu.desconcatena_un_u16_en_dos_u8(dedec);
@@ -389,9 +392,12 @@ pub fn ldir(cpu: &mut CPU) {
     }
 
 
-    cpu.reset_n_flag();
-    cpu.reset_pv_flag();
-    cpu.reset_h_flag();
+    //cpu.reset_n_flag();
+    cpu.set_flag(FLAG_N, false);
+    //cpu.reset_pv_flag();
+    cpu.set_flag(FLAG_PV, false);
+    //cpu.reset_h_flag();
+    cpu.set_flag(FLAG_H, false);
 }
 
 pub fn ldir_txt(cpu: &mut CPU) { cpu.texto(&format!("LDIR")); }
@@ -408,9 +414,9 @@ pub fn lddr(cpu: &mut CPU) {
 
     cpu.mem.escribe_byte_en_mem(de, dato);
 
-    let hldec = cpu.dec_16bits(hl);
-    let dedec = cpu.dec_16bits(de);
-    let bcdec = cpu.dec_16bits(bc);
+    let hldec = dec_16bits(hl);
+    let dedec = dec_16bits(de);
+    let bcdec = dec_16bits(bc);
 
     let hl_tupla = cpu.desconcatena_un_u16_en_dos_u8(hldec);
     let de_tupla = cpu.desconcatena_un_u16_en_dos_u8(dedec);
@@ -432,9 +438,12 @@ pub fn lddr(cpu: &mut CPU) {
     }
 
 
-    cpu.reset_n_flag();
-    cpu.reset_pv_flag();
-    cpu.reset_h_flag();
+    //cpu.reset_n_flag();
+    cpu.set_flag(FLAG_N, false);
+    //cpu.reset_pv_flag();
+    cpu.set_flag(FLAG_PV, false);
+    //cpu.reset_h_flag();
+    cpu.set_flag(FLAG_H, false);
 }
 
 fn lddr_txt(cpu: &mut CPU) {

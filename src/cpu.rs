@@ -223,9 +223,7 @@ impl CPU {
         (self.f & bit_mask) != 0
     }
 
-    pub fn get_s_flag(&self) -> bool {
-        self.get_flag(FLAG_S)
-    }
+    pub fn get_s_flag(&self) -> bool { self.get_flag(FLAG_S) }
     pub fn get_z_flag(&self) -> bool {
         self.get_flag(FLAG_Z)
     }
@@ -243,18 +241,18 @@ impl CPU {
     }
 
     // Funciones SET de FLAGS
-    pub fn set_s_flag(&mut self) { self.f = self.f | FLAG_S; }
-    pub fn reset_s_flag(&mut self) { self.f = self.f & (!FLAG_S) }
-    pub fn set_z_flag(&mut self) { self.f = self.f | FLAG_Z; }
-    pub fn reset_z_flag(&mut self) { self.f = self.f & (!FLAG_Z); }
-    pub fn set_h_flag(&mut self) { self.f = self.f | FLAG_H; }
-    pub fn reset_h_flag(&mut self) { self.f = self.f & !(FLAG_H); }
-    pub fn set_pv_flag(&mut self) { self.f = self.f | FLAG_PV; }
-    pub fn reset_pv_flag(&mut self) { self.f = self.f & !(FLAG_PV); }
-    pub fn set_n_flag(&mut self) { self.f = self.f | FLAG_N; }
-    pub fn reset_n_flag(&mut self) { self.f = self.f & !(FLAG_N); }
-    pub fn set_c_flag(&mut self) { self.f = self.f | FLAG_C; }
-    pub fn reset_c_flag(&mut self) { self.f = self.f & !(FLAG_C); }
+    //pub fn set_s_flag(&mut self) { self.f = self.f | FLAG_S; }
+    //pub fn reset_s_flag(&mut self) { self.f = self.f & (!FLAG_S) }
+    //pub fn set_z_flag(&mut self) { self.f = self.f | FLAG_Z; }
+    //pub fn reset_z_flag(&mut self) { self.f = self.f & (!FLAG_Z); }
+    //pub fn set_h_flag(&mut self) { self.f = self.f | FLAG_H; }
+    //pub fn reset_h_flag(&mut self) { self.f = self.f & !(FLAG_H); }
+    //pub fn set_pv_flag(&mut self) { self.f = self.f | FLAG_PV; }
+    //pub fn reset_pv_flag(&mut self) { self.f = self.f & !(FLAG_PV); }
+    //pub fn set_n_flag(&mut self) { self.f = self.f | FLAG_N; }
+    //pub fn reset_n_flag(&mut self) { self.f = self.f & !(FLAG_N); }
+    //pub fn set_c_flag(&mut self) { self.f = self.f | FLAG_C; }
+    //pub fn reset_c_flag(&mut self) { self.f = self.f & !(FLAG_C); }
 
 
     // FUNCIONES ARITMETICAS **************************************
@@ -291,54 +289,54 @@ impl CPU {
     De hecho, incluso para INC (que va de $ 7f a $ 80f) y DEC (que va de $ 80 a $ 7f) se calcula este indicador de desbordamiento.
 
     */
-    pub fn overflow_en_suma_u8(&mut self, valor_a: u8, valor_b: u8, resultado: u8) -> bool {
-        (((valor_a ^ valor_b) & 0x80) == 0          // mismo signo     0x80 = 0b1000_0000
-            && ((valor_b ^ resultado) & 0x80) != 0) // no es el mismo signo
-    }
+//    pub fn overflow_en_suma_u8(&mut self, valor_a: u8, valor_b: u8, resultado: u8) -> bool {
+//        (((valor_a ^ valor_b) & 0x80) == 0          // mismo signo     0x80 = 0b1000_0000
+//            && ((valor_b ^ resultado) & 0x80) != 0) // no es el mismo signo
+//    }
 
-    pub fn overflow_en_resta_u8(&mut self, valor_a: u8, valor_b: u8, resultado: u8) -> bool {
-        // ojo valor_b es el sustraendo
-        (((valor_a ^ valor_b) & 0x80) != 0          // no es el mismo signo  0x80 = 0b1000_0000
-            && ((valor_b ^ resultado) & 0x80) == 0) // mismo signo
-    }
-
-
-    pub fn overflow_en_suma_u16(&mut self, valor_a: u16, valor_b: u16, resultado: u16) -> bool {
-        // mismo signo     0x80 = 0b1000_0000_0000_0000
-        (((valor_a ^ valor_b) & 0x8000) == 0
-            && ((valor_b ^ resultado) & 0x8000) != 0) // no es el mismo signo
-    }
-
-    pub fn overflow_en_resta_u16(&mut self, valor_a: u16, valor_b: u16, resultado: u16) -> bool {
-        // ojo valor_b es el sustraendo
-        // no es el mismo signo  0x8000 = 0b1000_0000_0000_0000
-        (((valor_a ^ valor_b) & 0x8000) != 0
-            && ((valor_b ^ resultado) & 0x8000) == 0) // mismo signo
-    }
-    /// Devuelve true si hay acarreo de medio byte entre bit 11 y 12 eun un u16 en suma
-    pub fn calc_half_carry_on_u16_sum(&self, valor_a: u16, valor_b: u16) -> bool {
-        ((valor_a & 0xFFF) + (valor_b & 0xFFF)) & 0x1000 == 0x1000
-    }
-
-    /// Devuelve true si hay acarreo de medio byte entre bit 11 y 12 eun un u16 en resta
-    pub fn calc_half_carry_on_u16_sub(&self, valor_a: u16, valor_b: u16) -> bool {
-        (valor_a & 0xFFF) < (valor_b & 0xFFF)
-    }
-
-    /// Devuelve true si hay acarreo de medio byte en suma
-    fn calc_half_carry_on_u8_sum(&self, valor_a: u8, valor_b: u8) -> bool {
-        ((valor_a & 0xF) + (valor_b & 0xF)) & 0x10 == 0x10
-    }
-
-    /// Devuelve true si hay acarreo de medio byte en resta
-    fn calc_half_carry_on_u8_sub(&self, valor_a: u8, valor_b: u8) -> bool {
-        (valor_a & 0xF) < (valor_b & 0xF)
-    }
-    /// Devuelve true si hay acarreo de medio byte en resta
-    fn half_carry_en_resta_u8_sub(&self, valor_a: u8, valor_b: u8) -> bool {
-        (valor_a & 0xF) < (valor_b & 0xF)
-    }
-
+    //    pub fn overflow_en_resta_u8(&mut self, valor_a: u8, valor_b: u8, resultado: u8) -> bool {
+//        // ojo valor_b es el sustraendo
+//        (((valor_a ^ valor_b) & 0x80) != 0          // no es el mismo signo  0x80 = 0b1000_0000
+//            && ((valor_b ^ resultado) & 0x80) == 0) // mismo signo
+//    }
+//
+//
+//    pub fn overflow_en_suma_u16(&mut self, valor_a: u16, valor_b: u16, resultado: u16) -> bool {
+//        // mismo signo     0x80 = 0b1000_0000_0000_0000
+//        (((valor_a ^ valor_b) & 0x8000) == 0
+//            && ((valor_b ^ resultado) & 0x8000) != 0) // no es el mismo signo
+//    }
+//
+//    pub fn overflow_en_resta_u16(&mut self, valor_a: u16, valor_b: u16, resultado: u16) -> bool {
+//        // ojo valor_b es el sustraendo
+//        // no es el mismo signo  0x8000 = 0b1000_0000_0000_0000
+//        (((valor_a ^ valor_b) & 0x8000) != 0
+//            && ((valor_b ^ resultado) & 0x8000) == 0) // mismo signo
+//    }
+//    /// Devuelve true si hay acarreo de medio byte entre bit 11 y 12 eun un u16 en suma
+//    pub fn calc_half_carry_on_u16_sum(&self, valor_a: u16, valor_b: u16) -> bool {
+//        ((valor_a & 0xFFF) + (valor_b & 0xFFF)) & 0x1000 == 0x1000
+//    }
+//
+//    /// Devuelve true si hay acarreo de medio byte entre bit 11 y 12 eun un u16 en resta
+//    pub fn calc_half_carry_on_u16_sub(&self, valor_a: u16, valor_b: u16) -> bool {
+//        (valor_a & 0xFFF) < (valor_b & 0xFFF)
+//    }
+//
+//    /// Devuelve true si hay acarreo de medio byte en suma
+//    fn calc_half_carry_on_u8_sum(&self, valor_a: u8, valor_b: u8) -> bool {
+//        ((valor_a & 0xF) + (valor_b & 0xF)) & 0x10 == 0x10
+//    }
+//
+//    /// Devuelve true si hay acarreo de medio byte en resta
+//    fn calc_half_carry_on_u8_sub(&self, valor_a: u8, valor_b: u8) -> bool {
+//        (valor_a & 0xF) < (valor_b & 0xF)
+//    }
+//    /// Devuelve true si hay acarreo de medio byte en resta
+//    fn half_carry_en_resta_u8_sub(&self, valor_a: u8, valor_b: u8) -> bool {
+//        (valor_a & 0xF) < (valor_b & 0xF)
+//    }
+//
     // Funcion que usan las funciones de manejo de flags
     pub fn set_flag(&mut self, flag: u8, condicion: bool) {
         if condicion {
@@ -349,91 +347,91 @@ impl CPU {
     }
 
 
-    /// Devuelve valor_a - valor_b y modifica flags
-    pub fn resta_u8_menos_u8(&mut self, valor_a: u8, valor_b: u8) -> u8 {
-        let nuevo_valor = valor_a.wrapping_sub(valor_b);
+    //    /// Devuelve valor_a - valor_b y modifica flags
+//    pub fn resta_u8_menos_u8(&mut self, valor_a: u8, valor_b: u8) -> u8 {
+//        let nuevo_valor = valor_a.wrapping_sub(valor_b);
+//
+//        self.set_flag(FLAG_S,
+//                      (nuevo_valor & FLAG_S) != 0);
+//
+//        self.set_flag(FLAG_Z,
+//                      nuevo_valor == 0);
+//
+//        self.set_flag(FLAG_H,
+//                      self.half_carry_en_resta_u8_sub(valor_a, valor_b));
+//
+//        let ov = self.overflow_en_resta_u8(valor_a, valor_b, nuevo_valor);
+//        self.set_flag(FLAG_PV, ov);
+//
+//        // Carry TODO: No estoy seguro
+//
+//        self.set_flag(FLAG_C, valor_a < valor_b);
+//        self.set_flag(FLAG_N, true);
+//
+//        nuevo_valor
+//    }
+//    pub fn resta_u16_menos_u16(&mut self, valor_a: u16, valor_b: u16) -> u16 {
+//// TODO: Faltan Flags (Flags afectados: C N P/V H Z S)
+//// TODO: Probar si hay acarreo de medio byte (flag H) no lo tengo claro con 16 bits
+//
+////        if self.half_carry_en_resta_u8_sub(valor_a, valor_b) {
+////            self.set_h_flag();
+////        } else {
+////            self.reset_h_flag();
+////        }
+//
+//        let nuevo_valor = valor_a.wrapping_sub(valor_b);
+//
+//// flag Z lo quito, lddr no lo necesita
+////        if nuevo_valor == 0 {
+////            self.set_z_flag();
+////        } else {
+////            self.reset_z_flag();
+////        }
+//
+//        nuevo_valor
+//    }
 
-        self.set_flag(FLAG_S,
-                      (nuevo_valor & FLAG_S) != 0);
-
-        self.set_flag(FLAG_Z,
-                      nuevo_valor == 0);
-
-        self.set_flag(FLAG_H,
-                      self.half_carry_en_resta_u8_sub(valor_a, valor_b));
-
-        let ov = self.overflow_en_resta_u8(valor_a, valor_b, nuevo_valor);
-        self.set_flag(FLAG_PV, ov);
-
-        // Carry TODO: No estoy seguro
-
-        self.set_flag(FLAG_C, valor_a < valor_b);
-        self.set_flag(FLAG_N, true);
-
-        nuevo_valor
-    }
-    pub fn resta_u16_menos_u16(&mut self, valor_a: u16, valor_b: u16) -> u16 {
-// TODO: Faltan Flags (Flags afectados: C N P/V H Z S)
-// TODO: Probar si hay acarreo de medio byte (flag H) no lo tengo claro con 16 bits
-
-//        if self.half_carry_en_resta_u8_sub(valor_a, valor_b) {
-//            self.set_h_flag();
-//        } else {
-//            self.reset_h_flag();
-//        }
-
-        let nuevo_valor = valor_a.wrapping_sub(valor_b);
-
-// flag Z lo quito, lddr no lo necesita
-//        if nuevo_valor == 0 {
-//            self.set_z_flag();
-//        } else {
-//            self.reset_z_flag();
-//        }
-
-        nuevo_valor
-    }
-
-    pub fn suma_u8_mas_u8(&mut self, valor_a: u8, valor_b: u8) -> u8 {
-// TODO: Faltan Flags (Flags afectados: C N P/V H Z S)
-
-        let valor_a16 = valor_a as u16;
-        let valor_b16 = valor_b as u16;
-
-        let resultado16 = valor_a16 + valor_b16;
-        let resultado = valor_a.wrapping_add(valor_b);
-
-        self.set_flag(FLAG_C, (0b1_0000_0000 & resultado16) != 0);
-
-        self.set_flag(FLAG_H, self.calc_half_carry_on_u8_sum(valor_a, valor_b));
-
-        self.set_flag(FLAG_Z, resultado == 0);
-
-        self.set_flag(FLAG_N, false);
-
-        resultado
-    }
-    pub fn suma_u16_mas_u16(&mut self, valor_a: u16, valor_b: u16) -> u16 {
-        self.flag_c_u16_en_suma(valor_a, valor_b); // C
-
-        self.reset_n_flag(); // N  TODO: Comprobar que pasa en todos los casos
-
-        let resultado = valor_a.wrapping_add(valor_b);
-
-
-        // Probar si hay acarreo de medio byte (bit 11 en 16 bits)
-        self.flag_h_u16(resultado);
-
-
-// TODO No todos les afecta Z????????
-//        if resultado == 0 {
-//            self.set_z_flag();
-//        } else {
-//            self.reset_z_flag();
-//        }
-
-        resultado
-    }
+//    pub fn suma_u8_mas_u8(&mut self, valor_a: u8, valor_b: u8) -> u8 {
+//// TODO: Faltan Flags (Flags afectados: C N P/V H Z S)
+//
+//        let valor_a16 = valor_a as u16;
+//        let valor_b16 = valor_b as u16;
+//
+//        let resultado16 = valor_a16 + valor_b16;
+//        let resultado = valor_a.wrapping_add(valor_b);
+//
+//        self.set_flag(FLAG_C, (0b1_0000_0000 & resultado16) != 0);
+//
+//        self.set_flag(FLAG_H, self.calc_half_carry_on_u8_sum(valor_a, valor_b));
+//
+//        self.set_flag(FLAG_Z, resultado == 0);
+//
+//        self.set_flag(FLAG_N, false);
+//
+//        resultado
+//    }
+//    pub fn suma_u16_mas_u16(&mut self, valor_a: u16, valor_b: u16) -> u16 {
+//        flag_c_u16_en_suma(cpu,valor_a, valor_b); // C
+//
+//        self.reset_n_flag(); // N  TODO: Comprobar que pasa en todos los casos
+//
+//        let resultado = valor_a.wrapping_add(valor_b);
+//
+//
+//        // Probar si hay acarreo de medio byte (bit 11 en 16 bits)
+//        self.flag_h_u16(resultado);
+//
+//
+//// TODO No todos les afecta Z????????
+////        if resultado == 0 {
+////            self.set_z_flag();
+////        } else {
+////            self.reset_z_flag();
+////        }
+//
+//        resultado
+//    }
 
 
     // Pone los flags segun lo que se le envie *********************************
@@ -453,91 +451,91 @@ impl CPU {
         self.set_flag(FLAG_S, valor == 0);
     }
 
-    pub fn flag_h_u8_en_suma(&mut self, valor1: u8, valor2: u8) { // H  carry del bit 3 al 4
-        self.set_flag(FLAG_H, ((valor1 & 0x0f) + (valor2 & 0x0f)) > 0x0F);
-    }
-    pub fn flag_h_u8_en_resta(&mut self, valor1: u8, valor2: u8) { // H  carry del bit 3 al 4
-        self.set_flag(FLAG_H, (valor1 & 0x0F) < (valor2 & 0x0F));
-    }
+    //    pub fn flag_h_u8_en_suma(&mut self, valor1: u8, valor2: u8) { // H  carry del bit 3 al 4
+//        self.set_flag(FLAG_H, ((valor1 & 0x0f) + (valor2 & 0x0f)) > 0x0F);
+//    }
+//    pub fn flag_h_u8_en_resta(&mut self, valor1: u8, valor2: u8) { // H  carry del bit 3 al 4
+//        self.set_flag(FLAG_H, (valor1 & 0x0F) < (valor2 & 0x0F));
+//    }
 
-    pub fn flag_h_u16(&mut self, valor: u16) { // H carry del bit 11 al 12
-        self.set_flag(FLAG_H, ((valor & 0x0FFF) + 1) > 0x0FFF);
-    }
+//    pub fn flag_h_u16(&mut self, valor: u16) { // H carry del bit 11 al 12
+//        self.set_flag(FLAG_H, ((valor & 0x0FFF) + 1) > 0x0FFF);
+//    }
 
-    pub fn flag_p_u8(&mut self, valor: u8) { // P  (P/V usado como paridad)
-        let mut unos: u8 = 0;
-        for n in 0..=7 {
-            if valor & (1 << n) != 0 {
-                unos += 1;
-            }
-        }
+//    pub fn flag_p_u8(&mut self, valor: u8) { // P  (P/V usado como paridad)
+//        let mut unos: u8 = 0;
+//        for n in 0..=7 {
+//            if valor & (1 << n) != 0 {
+//                unos += 1;
+//            }
+//        }
+//
+//        self.set_flag(FLAG_PV, (unos % 2) == 0);
+//    }
 
-        self.set_flag(FLAG_PV, (unos % 2) == 0);
-    }
-
-    pub fn flag_p_u16(&mut self, valor: u16) { // P  (P/V usado como paridad)
-        let mut unos: u8 = 0;
-        for n in 0..=15 {
-            if valor & (1 << n) != 0 {
-                unos += 1;
-            }
-        }
-
-        self.set_flag(FLAG_PV, (unos % 2) == 0);
-    }
+//    pub fn flag_p_u16(&mut self, valor: u16) { // P  (P/V usado como paridad)
+//        let mut unos: u8 = 0;
+//        for n in 0..=15 {
+//            if valor & (1 << n) != 0 {
+//                unos += 1;
+//            }
+//        }
+//
+//        self.set_flag(FLAG_PV, (unos % 2) == 0);
+//    }
     // P  (P/V usado como overflow)
-    pub fn flag_v_u8_en_suma(&mut self, valor_a: u8, valor_b: u8, resultado: u8) {
-        let ov = self.overflow_en_suma_u8(valor_a, valor_b, resultado);
-        self.set_flag(FLAG_PV, ov);
-    }
+//    pub fn flag_v_u8_en_suma(&mut self, valor_a: u8, valor_b: u8, resultado: u8) {
+//        let ov = self.overflow_en_suma_u8(valor_a, valor_b, resultado);
+//        self.set_flag(FLAG_PV, ov);
+//    }
 
-    pub fn flag_v_u16_en_suma(&mut self, valor: u16) { // P  (P/V usado como overflow)
-    }
+//    pub fn flag_v_u16_en_suma(&mut self, valor: u16) { // P  (P/V usado como overflow)
+//    }
 
-    pub fn flag_v_u8_en_resta(&mut self, valor_a: u8, valor_b: u8, resultado: u8) { // P  (P/V usado como overflow)
-        let ov = self.overflow_en_resta_u8(valor_a, valor_b, resultado);
-        self.set_flag(FLAG_PV, ov);
-    }
+//    pub fn flag_v_u8_en_resta(&mut self, valor_a: u8, valor_b: u8, resultado: u8) { // P  (P/V usado como overflow)
+//        let ov = self.overflow_en_resta_u8(valor_a, valor_b, resultado);
+//        self.set_flag(FLAG_PV, ov);
+//    }
 
-    pub fn flag_v_u16_en_resta(&mut self, valor: u16) { // P  (P/V usado como overflow)
-    }
+//    pub fn flag_v_u16_en_resta(&mut self, valor: u16) { // P  (P/V usado como overflow)
+//    }
 
-    pub fn flag_c_u8_en_suma(&mut self, valor_a: u8, valor_b: u8) { // C
-        let valor_a16 = valor_a as u16;
-        let valor_b16 = valor_b as u16;
+    //    pub fn flag_c_u8_en_suma(&mut self, valor_a: u8, valor_b: u8) { // C
+//        let valor_a16 = valor_a as u16;
+//        let valor_b16 = valor_b as u16;
+//
+//        self.set_flag(FLAG_C, ((valor_a16.wrapping_add(valor_b16)) & 0x100) != 0);
+//    }
+//    pub fn flag_c_u8_en_resta(&mut self, valor_a: u8, valor_b: u8) { // C
+//        let valor_a16 = valor_a as u16;
+//        let valor_b16 = valor_b as u16;
+//
+//        self.set_flag(FLAG_C, ((valor_a16.wrapping_sub(valor_b16)) & 0x100) != 0);
+//    }
 
-        self.set_flag(FLAG_C, ((valor_a16.wrapping_add(valor_b16)) & 0x100) != 0);
-    }
-    pub fn flag_c_u8_en_resta(&mut self, valor_a: u8, valor_b: u8) { // C
-        let valor_a16 = valor_a as u16;
-        let valor_b16 = valor_b as u16;
+//    pub fn flag_c_u16_en_suma(&mut self, valor_a: u16, valor_b: u16) { // C
+//        let valor_a32 = valor_a as u32;
+//        let valor_b32 = valor_b as u32;
+//
+//        self.set_flag(FLAG_C, ((valor_a32.wrapping_add(valor_b32)) & 0x10000) != 0);
+//    }
 
-        self.set_flag(FLAG_C, ((valor_a16.wrapping_sub(valor_b16)) & 0x100) != 0);
-    }
+//    pub fn flag_c_u16_en_resta(&mut self, valor_a: u16, valor_b: u16) { // C
+//        let valor_a32 = valor_a as u32;
+//        let valor_b32 = valor_b as u32;
+//
+//        self.set_flag(FLAG_C, ((valor_a32.wrapping_sub(valor_b32)) & 0x10000) != 0);
+//    }
 
-    pub fn flag_c_u16_en_suma(&mut self, valor_a: u16, valor_b: u16) { // C
-        let valor_a32 = valor_a as u32;
-        let valor_b32 = valor_b as u32;
+//    pub fn inc_16bits(&mut self, valor: u16) -> u16 {
+//        suma_u16_mas_u16(valor, 1)
+//    }
 
-        self.set_flag(FLAG_C, ((valor_a32.wrapping_add(valor_b32)) & 0x10000) != 0);
-    }
-
-    pub fn flag_c_u16_en_resta(&mut self, valor_a: u16, valor_b: u16) { // C
-        let valor_a32 = valor_a as u32;
-        let valor_b32 = valor_b as u32;
-
-        self.set_flag(FLAG_C, ((valor_a32.wrapping_sub(valor_b32)) & 0x10000) != 0);
-    }
-
-    pub fn inc_16bits(&mut self, valor: u16) -> u16 {
-        self.suma_u16_mas_u16(valor, 1)
-    }
-
-    pub fn dec_8bits(&mut self, valor: u8) -> u8 { self.resta_u8_menos_u8(valor, 1) }
-
-    pub fn dec_16bits(&mut self, valor: u16) -> u16 {
-        self.resta_u16_menos_u16(valor, 1)
-    }
+//    pub fn dec_8bits(&mut self, valor: u8) -> u8 { self.resta_u8_menos_u8(valor, 1) }
+//
+//    pub fn dec_16bits(&mut self, valor: u16) -> u16 {
+//        self.resta_u16_menos_u16(valor, 1)
+//    }
 
     pub fn concatena_dos_u8_en_un_u16(&mut self, hight: u8, low: u8) -> u16 {
         ((hight as u16) << 8) | (low as u16)
@@ -549,20 +547,20 @@ impl CPU {
         (hight, low)
     }
 
-    pub fn suma_compl2_a_un_u16(&mut self, valoru16: u16, valorcomp2: u8) -> u16 {
-        let mut valorcomp2_u16;
-
-        // Comprueba si el u8 es negativo
-        // Paso el complemento a 2 de 8 bits a complemento a 2 de 16 bits
-        if valorcomp2 & FLAG_S != 0 {    // valorcomp2 es negativo
-            valorcomp2_u16 = 0b1111_1111_0000_0000 | (valorcomp2 as u16);
-        } else {     // valorcomp2 es positivo
-            valorcomp2_u16 = valorcomp2 as u16;
-        }
-        valorcomp2_u16 = valorcomp2_u16.wrapping_add(valoru16);
-
-        valorcomp2_u16
-    }
+//    pub fn suma_compl2_a_un_u16(&mut self, valoru16: u16, valorcomp2: u8) -> u16 {
+//        let mut valorcomp2_u16;
+//
+//        // Comprueba si el u8 es negativo
+//        // Paso el complemento a 2 de 8 bits a complemento a 2 de 16 bits
+//        if valorcomp2 & FLAG_S != 0 {    // valorcomp2 es negativo
+//            valorcomp2_u16 = 0b1111_1111_0000_0000 | (valorcomp2 as u16);
+//        } else {     // valorcomp2 es positivo
+//            valorcomp2_u16 = valorcomp2 as u16;
+//        }
+//        valorcomp2_u16 = valorcomp2_u16.wrapping_add(valoru16);
+//
+//        valorcomp2_u16
+//    }
 
     // Pone a 1 el bit dado por posicion (0 a 7) en un u8
     pub fn set_bitu8(&mut self, valor: u8, posicion: u8) -> u8 {

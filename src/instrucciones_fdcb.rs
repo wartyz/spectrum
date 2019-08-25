@@ -26,6 +26,8 @@ D9      RETI               EXX
 // *************************** 0 ***********************************
 
 use crate::cpu::CPU;
+use crate::constantes::*;
+use crate::operaciones_binarias::*;
 //use crate::instrucciones_normales::di;
 
 
@@ -323,18 +325,21 @@ pub fn fnFDCB_no_impl(cpu: &mut CPU) {
 // 0xFDCBNN46  TODO:hacer una funcion global
 pub fn bit_0_OiymnO(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
-    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
 
     let dato = cpu.mem.lee_byte_de_mem(direccion);
 
-    if cpu.get_bitu8(dato, 0) {
-        cpu.set_z_flag();
-    } else {
-        cpu.reset_z_flag();
-    }
+//    if cpu.get_bitu8(dato, 0) {
+//        cpu.set_z_flag();
+//    } else {
+//        cpu.reset_z_flag();
+//    }
+    cpu.set_flag(FLAG_Z, cpu.get_bitu8(dato, 0));
 
-    cpu.set_h_flag();
-    cpu.reset_n_flag();
+    //cpu.set_h_flag();
+    cpu.set_flag(FLAG_H, true);
+    //cpu.reset_n_flag();
+    cpu.set_flag(FLAG_N, false);
 
     cpu.t += cpu.get_t_instruccion();
     cpu.pc += cpu.get_bytes_instruccion();
@@ -346,18 +351,21 @@ pub fn bit_0_OiymnO_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 0,(IY+#{:02X})"
 // 0xFDCBNN4E  TODO:hacer una funcion global
 pub fn bit_1_OiymnO(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
-    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
 
     let dato = cpu.mem.lee_byte_de_mem(direccion);
 
-    if cpu.get_bitu8(dato, 1) {
-        cpu.set_z_flag();
-    } else {
-        cpu.reset_z_flag();
-    }
+//    if cpu.get_bitu8(dato, 1) {
+//        cpu.set_z_flag();
+//    } else {
+//        cpu.reset_z_flag();
+//    }
+    cpu.set_flag(FLAG_Z, cpu.get_bitu8(dato, 1));
 
-    cpu.set_h_flag();
-    cpu.reset_n_flag();
+    //cpu.set_h_flag();
+    cpu.set_flag(FLAG_H, true);
+    //cpu.reset_n_flag();
+    cpu.set_flag(FLAG_N, false);
 
     cpu.t += cpu.get_t_instruccion();
     cpu.pc += cpu.get_bytes_instruccion();
@@ -404,7 +412,7 @@ pub fn res_0_OiymnO_l_txt(cpu: &mut CPU) { fnFDCB_no_impl(cpu); }
 // 0xFDCBNN86  TODO:hacer una funcion global
 pub fn res_0_OiymnO(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
-    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
 
     let dato = cpu.mem.lee_byte_de_mem(direccion);
 
@@ -456,7 +464,7 @@ pub fn res_1_OiymnO_l_txt(cpu: &mut CPU) { fnFDCB_no_impl(cpu); }
 // 0xFDCBNN8E  TODO:hacer una funcion global
 pub fn res_1_OiymnO(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
-    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
 
     let mut dato = cpu.mem.lee_byte_de_mem(direccion);
     dato = cpu.reset_bitu8(dato, 1);
@@ -478,7 +486,7 @@ pub fn res_1_OiymnO_a_txt(cpu: &mut CPU) {}
 //0xFDCBNNA6   TODO:hacer una funcion global
 pub fn res_4_OiymnO(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
-    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
 
     let dato = cpu.mem.lee_byte_de_mem(direccion);
 
@@ -494,7 +502,7 @@ pub fn res_4_OiymnO_txt(cpu: &mut CPU) { cpu.texto(&format!("RESET 4(IY+#{:02X})
 //0xFDCBNNAE   TODO:hacer una funcion global
 pub fn res_5_OiymnO(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
-    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
 
     let dato = cpu.mem.lee_byte_de_mem(direccion);
 
@@ -511,7 +519,7 @@ pub fn res_5_OiymnO_txt(cpu: &mut CPU) { cpu.texto(&format!("RESET 5(IY+#{:02X})
 //0xFDCBNNB6   TODO:hacer una funcion global
 pub fn res_6_OiymnO(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
-    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
 
     let dato = cpu.mem.lee_byte_de_mem(direccion);
 
@@ -527,7 +535,7 @@ pub fn res_6_OiymnO_txt(cpu: &mut CPU) { cpu.texto(&format!("RESET 6(IY+#{:02X})
 //0xFDCBNNBE   TODO:hacer una funcion global
 pub fn res_7_OiymnO(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
-    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
 
     let dato = cpu.mem.lee_byte_de_mem(direccion);
 
@@ -544,7 +552,7 @@ pub fn res_7_OiymnO_txt(cpu: &mut CPU) { cpu.texto(&format!("RESET 7(IY+#{:02X})
 // 0xFDCBNNC6 TODO:hacer una funcion global
 pub fn set0_OiymnO(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
-    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
     let mut dato = cpu.mem.lee_byte_de_mem(direccion);
     dato = cpu.set_bitu8(dato, 0);
     cpu.mem.escribe_byte_en_mem(direccion, dato);
@@ -560,7 +568,7 @@ pub fn set0_OiymnO_txt(cpu: &mut CPU) {
 // 0xFDCBNNCE  TODO:hacer una funcion global
 pub fn set1_OiymnO(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
-    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
     let mut dato = cpu.mem.lee_byte_de_mem(direccion);
     dato = cpu.set_bitu8(dato, 1);
     cpu.mem.escribe_byte_en_mem(direccion, dato);
@@ -578,7 +586,7 @@ pub fn set1_OiymnO_txt(cpu: &mut CPU) {
 // 0xFDCBNNE6 TODO:hacer una funcion global
 pub fn set4_OiymnO(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
-    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
     let mut dato = cpu.mem.lee_byte_de_mem(direccion);
     dato = cpu.set_bitu8(dato, 4);
     cpu.mem.escribe_byte_en_mem(direccion, dato);
@@ -594,7 +602,7 @@ pub fn set4_OiymnO_txt(cpu: &mut CPU) {
 // 0xFDCBNNCE  TODO:hacer una funcion global
 pub fn set5_OiymnO(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
-    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
     let mut dato = cpu.mem.lee_byte_de_mem(direccion);
     dato = cpu.set_bitu8(dato, 5);
     cpu.mem.escribe_byte_en_mem(direccion, dato);
@@ -611,7 +619,7 @@ pub fn set5_OiymnO_txt(cpu: &mut CPU) {
 // 0xFDCBNNF6 TODO:hacer una funcion global
 pub fn set6_OiymnO(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
-    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
     let mut dato = cpu.mem.lee_byte_de_mem(direccion);
     dato = cpu.set_bitu8(dato, 6);
     cpu.mem.escribe_byte_en_mem(direccion, dato);
@@ -627,7 +635,7 @@ pub fn set6_OiymnO_txt(cpu: &mut CPU) {
 // 0xFDCBNNFE  TODO:hacer una funcion global
 pub fn set7_OiymnO(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
-    let direccion = cpu.suma_compl2_a_un_u16(iy, cpu.r2);
+    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
     let mut dato = cpu.mem.lee_byte_de_mem(direccion);
     dato = cpu.set_bitu8(dato, 7);
     cpu.mem.escribe_byte_en_mem(direccion, dato);

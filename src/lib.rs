@@ -8,3 +8,4 @@ pub mod instrucciones_fdcb;
 pub mod procesador;
 pub mod hardware;
 pub mod constantes;
+pub mod operaciones_binarias;
