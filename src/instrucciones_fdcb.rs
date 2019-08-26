@@ -28,7 +28,6 @@ D9      RETI               EXX
 use crate::cpu::CPU;
 use crate::constantes::*;
 use crate::operaciones_binarias::*;
-//use crate::instrucciones_normales::di;
 
 
 pub fn mete_funciones_fdcb(cpu: &mut CPU) {
@@ -310,9 +309,70 @@ pub fn mete_funciones_fdcb(cpu: &mut CPU) {
     cpu.funciones_fdcb[0xFF as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
 }
 
+
+// XXXXXXXXXXXXXXXXXXX Funciones comunes en instrucciones FDCB XXXXXXXXXXXXXXXXXXXX
+// https://wikiti.brandonw.net/index.php?title=Z80_Instruction_Set
+// Cuando varias funciones en los arreglos de punteros, tienen opciones comunes
+// usan estas funciones, solo se tocaran los flags en estas funciones
+
 pub fn fnFDCB_no_impl(cpu: &mut CPU) {
     panic!(format!("Funcion #FDCB{:02X}{:02X} no implementada PC = {:04X}", cpu.r2, cpu.r3, cpu.pc));
 }
+
+// bit B,(I+D) 	11i11101 11001011 dddddddd 01bbb*** 	20 	+ 	+ 	X 	1 	X 	P 	0 	-
+// tmp := (I+D) AND [1 << B], xf := [I+D].13, yf := [I+D].11 }
+pub fn bas_bit_B_OImDO_iy(cpu: &mut CPU) { // Solo lee
+    let iy = cpu.lee_iy();
+    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
+
+    let dato = cpu.mem.lee_byte_de_mem(direccion);
+    let posicion_bit = (cpu.r3 >> 3) & 0b00000111;
+    let bit = dato & (1u8 << posicion_bit) != 0;
+
+    cpu.set_flag(FLAG_Z, !bit);
+
+    cpu.set_flag(FLAG_H, true);
+
+    cpu.set_flag(FLAG_N, false);
+
+    cpu.t += cpu.get_t_instruccion();
+    cpu.pc += cpu.get_bytes_instruccion();
+}
+
+// set B,(I+D) 	11i11101 11001011 dddddddd 11bbb110 	23 	- 	- 	- 	- 	- 	- 	- 	-
+// (I+D) := (I+D) OR [1 << B]
+pub fn bas_set_B_OImDO_iy(cpu: &mut CPU) {
+    let iy = cpu.lee_iy();
+    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
+
+    let mut dato = cpu.mem.lee_byte_de_mem(direccion);
+    let posicion_bit = (cpu.r3 >> 3) & 0b00000111;
+
+    dato = dato | (1u8 << posicion_bit);
+
+    cpu.mem.escribe_byte_en_mem(direccion, dato);
+
+    cpu.t += cpu.get_t_instruccion();
+    cpu.pc += cpu.get_bytes_instruccion();
+}
+
+// res B,(I+D) 	11i11101 11001011 dddddddd 10bbb110 	23 	- 	- 	- 	- 	- 	- 	- 	-
+// (I+D) := (I+D) AND ~[1 << B]
+pub fn bas_res_B_OImDO_iy(cpu: &mut CPU) { // Cambia el bit en memoria
+    let iy = cpu.lee_iy();
+    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
+
+    let mut dato = cpu.mem.lee_byte_de_mem(direccion);
+    let posicion_bit = (cpu.r3 >> 3) & 0b00000111;
+
+    dato = dato & !(1u8 << posicion_bit);
+
+    cpu.mem.escribe_byte_en_mem(direccion, dato);
+
+    cpu.t += cpu.get_t_instruccion();
+    cpu.pc += cpu.get_bytes_instruccion();
+}
+
 
 // O = ()  p = '
 // *************************** 0 ***********************************
@@ -322,53 +382,17 @@ pub fn fnFDCB_no_impl(cpu: &mut CPU) {
 // *************************** 4 ***********************************
 
 
-// 0xFDCBNN46  TODO:hacer una funcion global
+// 0xFDCBNN46
 pub fn bit_0_OiymnO(cpu: &mut CPU) {
-    let iy = cpu.lee_iy();
-    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
-
-    let dato = cpu.mem.lee_byte_de_mem(direccion);
-
-//    if cpu.get_bitu8(dato, 0) {
-//        cpu.set_z_flag();
-//    } else {
-//        cpu.reset_z_flag();
-//    }
-    cpu.set_flag(FLAG_Z, cpu.get_bitu8(dato, 0));
-
-    //cpu.set_h_flag();
-    cpu.set_flag(FLAG_H, true);
-    //cpu.reset_n_flag();
-    cpu.set_flag(FLAG_N, false);
-
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
+    bas_bit_B_OImDO_iy(cpu);
 }
 
 pub fn bit_0_OiymnO_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 0,(IY+#{:02X})", cpu.r2)); }
 
 
-// 0xFDCBNN4E  TODO:hacer una funcion global
+// 0xFDCBNN4E
 pub fn bit_1_OiymnO(cpu: &mut CPU) {
-    let iy = cpu.lee_iy();
-    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
-
-    let dato = cpu.mem.lee_byte_de_mem(direccion);
-
-//    if cpu.get_bitu8(dato, 1) {
-//        cpu.set_z_flag();
-//    } else {
-//        cpu.reset_z_flag();
-//    }
-    cpu.set_flag(FLAG_Z, cpu.get_bitu8(dato, 1));
-
-    //cpu.set_h_flag();
-    cpu.set_flag(FLAG_H, true);
-    //cpu.reset_n_flag();
-    cpu.set_flag(FLAG_N, false);
-
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
+    bas_bit_B_OImDO_iy(cpu);
 }
 
 pub fn bit_1_OiymnO_txt(cpu: &mut CPU) { cpu.texto(&format!("Bit 1,(IY+#{:02X})", cpu.r2)); }
@@ -409,18 +433,9 @@ pub fn res_0_OiymnO_l(cpu: &mut CPU) { fnFDCB_no_impl(cpu); }
 
 pub fn res_0_OiymnO_l_txt(cpu: &mut CPU) { fnFDCB_no_impl(cpu); }
 
-// 0xFDCBNN86  TODO:hacer una funcion global
+// 0xFDCBNN86
 pub fn res_0_OiymnO(cpu: &mut CPU) {
-    let iy = cpu.lee_iy();
-    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
-
-    let dato = cpu.mem.lee_byte_de_mem(direccion);
-
-    let dato = cpu.reset_bitu8(dato, 0);
-    cpu.mem.escribe_byte_en_mem(direccion, dato);
-
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
+    bas_res_B_OImDO_iy(cpu);
 }
 
 pub fn res_0_OiymnO_txt(cpu: &mut CPU) { cpu.texto(&format!("RES 0,(IY+#{:02X})", cpu.r2)); }
@@ -461,17 +476,9 @@ pub fn res_1_OiymnO_l(cpu: &mut CPU) { fnFDCB_no_impl(cpu); }
 pub fn res_1_OiymnO_l_txt(cpu: &mut CPU) { fnFDCB_no_impl(cpu); }
 
 
-// 0xFDCBNN8E  TODO:hacer una funcion global
+// 0xFDCBNN8E
 pub fn res_1_OiymnO(cpu: &mut CPU) {
-    let iy = cpu.lee_iy();
-    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
-
-    let mut dato = cpu.mem.lee_byte_de_mem(direccion);
-    dato = cpu.reset_bitu8(dato, 1);
-    cpu.mem.escribe_byte_en_mem(direccion, dato);
-
-    cpu.pc += cpu.get_bytes_instruccion();
-    cpu.t += cpu.get_t_instruccion();
+    bas_res_B_OImDO_iy(cpu);
 }
 
 pub fn res_1_OiymnO_txt(cpu: &mut CPU) { cpu.texto(&format!("RESET 1(IY+#{:02X})", cpu.r2)); }
@@ -483,98 +490,48 @@ pub fn res_1_OiymnO_a_txt(cpu: &mut CPU) {}
 
 // *************************** 9 ***********************************
 // *************************** A ***********************************
-//0xFDCBNNA6   TODO:hacer una funcion global
+//0xFDCBNNA6
 pub fn res_4_OiymnO(cpu: &mut CPU) {
-    let iy = cpu.lee_iy();
-    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
-
-    let dato = cpu.mem.lee_byte_de_mem(direccion);
-
-    let dato = cpu.reset_bitu8(dato, 4);
-    cpu.mem.escribe_byte_en_mem(direccion, dato);
-
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
+    bas_res_B_OImDO_iy(cpu);
 }
 
 pub fn res_4_OiymnO_txt(cpu: &mut CPU) { cpu.texto(&format!("RESET 4(IY+#{:02X})", cpu.r2)); }
 
-//0xFDCBNNAE   TODO:hacer una funcion global
+//0xFDCBNNAE
 pub fn res_5_OiymnO(cpu: &mut CPU) {
-    let iy = cpu.lee_iy();
-    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
-
-    let dato = cpu.mem.lee_byte_de_mem(direccion);
-
-    let dato = cpu.reset_bitu8(dato, 5);
-    cpu.mem.escribe_byte_en_mem(direccion, dato);
-
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
+    bas_res_B_OImDO_iy(cpu);
 }
 
 pub fn res_5_OiymnO_txt(cpu: &mut CPU) { cpu.texto(&format!("RESET 5(IY+#{:02X})", cpu.r2)); }
 
 // *************************** B ***********************************
-//0xFDCBNNB6   TODO:hacer una funcion global
+//0xFDCBNNB6
 pub fn res_6_OiymnO(cpu: &mut CPU) {
-    let iy = cpu.lee_iy();
-    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
-
-    let dato = cpu.mem.lee_byte_de_mem(direccion);
-
-    let dato = cpu.reset_bitu8(dato, 6);
-    cpu.mem.escribe_byte_en_mem(direccion, dato);
-
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
+    bas_res_B_OImDO_iy(cpu);
 }
 
 pub fn res_6_OiymnO_txt(cpu: &mut CPU) { cpu.texto(&format!("RESET 6(IY+#{:02X})", cpu.r2)); }
 
-//0xFDCBNNBE   TODO:hacer una funcion global
+//0xFDCBNNBE
 pub fn res_7_OiymnO(cpu: &mut CPU) {
-    let iy = cpu.lee_iy();
-    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
-
-    let dato = cpu.mem.lee_byte_de_mem(direccion);
-
-    let dato = cpu.reset_bitu8(dato, 7);
-    cpu.mem.escribe_byte_en_mem(direccion, dato);
-
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
+    bas_res_B_OImDO_iy(cpu);
 }
 
 pub fn res_7_OiymnO_txt(cpu: &mut CPU) { cpu.texto(&format!("RESET 7(IY+#{:02X})", cpu.r2)); }
 
 // *************************** C ***********************************
-// 0xFDCBNNC6 TODO:hacer una funcion global
+// 0xFDCBNNC6
 pub fn set0_OiymnO(cpu: &mut CPU) {
-    let iy = cpu.lee_iy();
-    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
-    let mut dato = cpu.mem.lee_byte_de_mem(direccion);
-    dato = cpu.set_bitu8(dato, 0);
-    cpu.mem.escribe_byte_en_mem(direccion, dato);
-
-    cpu.pc += cpu.get_bytes_instruccion();
-    cpu.t += cpu.get_t_instruccion();
+    bas_set_B_OImDO_iy(cpu);
 }
 
 pub fn set0_OiymnO_txt(cpu: &mut CPU) {
     cpu.texto(&format!("SET 0(IY+#{:02X})", cpu.r2));
 }
 
-// 0xFDCBNNCE  TODO:hacer una funcion global
+// 0xFDCBNNCE
 pub fn set1_OiymnO(cpu: &mut CPU) {
-    let iy = cpu.lee_iy();
-    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
-    let mut dato = cpu.mem.lee_byte_de_mem(direccion);
-    dato = cpu.set_bitu8(dato, 1);
-    cpu.mem.escribe_byte_en_mem(direccion, dato);
-
-    cpu.pc += cpu.get_bytes_instruccion();
-    cpu.t += cpu.get_t_instruccion();
+    bas_set_B_OImDO_iy(cpu);
 }
 
 pub fn set1_OiymnO_txt(cpu: &mut CPU) {
@@ -583,16 +540,9 @@ pub fn set1_OiymnO_txt(cpu: &mut CPU) {
 
 // *************************** D ***********************************
 // *************************** E ***********************************
-// 0xFDCBNNE6 TODO:hacer una funcion global
+// 0xFDCBNNE6
 pub fn set4_OiymnO(cpu: &mut CPU) {
-    let iy = cpu.lee_iy();
-    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
-    let mut dato = cpu.mem.lee_byte_de_mem(direccion);
-    dato = cpu.set_bitu8(dato, 4);
-    cpu.mem.escribe_byte_en_mem(direccion, dato);
-
-    cpu.pc += cpu.get_bytes_instruccion();
-    cpu.t += cpu.get_t_instruccion();
+    bas_set_B_OImDO_iy(cpu);
 }
 
 pub fn set4_OiymnO_txt(cpu: &mut CPU) {
@@ -601,14 +551,7 @@ pub fn set4_OiymnO_txt(cpu: &mut CPU) {
 
 // 0xFDCBNNCE  TODO:hacer una funcion global
 pub fn set5_OiymnO(cpu: &mut CPU) {
-    let iy = cpu.lee_iy();
-    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
-    let mut dato = cpu.mem.lee_byte_de_mem(direccion);
-    dato = cpu.set_bitu8(dato, 5);
-    cpu.mem.escribe_byte_en_mem(direccion, dato);
-
-    cpu.pc += cpu.get_bytes_instruccion();
-    cpu.t += cpu.get_t_instruccion();
+    bas_set_B_OImDO_iy(cpu);
 }
 
 pub fn set5_OiymnO_txt(cpu: &mut CPU) {
@@ -618,14 +561,7 @@ pub fn set5_OiymnO_txt(cpu: &mut CPU) {
 // *************************** F ***********************************
 // 0xFDCBNNF6 TODO:hacer una funcion global
 pub fn set6_OiymnO(cpu: &mut CPU) {
-    let iy = cpu.lee_iy();
-    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
-    let mut dato = cpu.mem.lee_byte_de_mem(direccion);
-    dato = cpu.set_bitu8(dato, 6);
-    cpu.mem.escribe_byte_en_mem(direccion, dato);
-
-    cpu.pc += cpu.get_bytes_instruccion();
-    cpu.t += cpu.get_t_instruccion();
+    bas_set_B_OImDO_iy(cpu);
 }
 
 pub fn set6_OiymnO_txt(cpu: &mut CPU) {
@@ -634,14 +570,7 @@ pub fn set6_OiymnO_txt(cpu: &mut CPU) {
 
 // 0xFDCBNNFE  TODO:hacer una funcion global
 pub fn set7_OiymnO(cpu: &mut CPU) {
-    let iy = cpu.lee_iy();
-    let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
-    let mut dato = cpu.mem.lee_byte_de_mem(direccion);
-    dato = cpu.set_bitu8(dato, 7);
-    cpu.mem.escribe_byte_en_mem(direccion, dato);
-
-    cpu.pc += cpu.get_bytes_instruccion();
-    cpu.t += cpu.get_t_instruccion();
+    bas_set_B_OImDO_iy(cpu);
 }
 
 pub fn set7_OiymnO_txt(cpu: &mut CPU) {

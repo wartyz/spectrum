@@ -712,7 +712,7 @@ pub fn bas_bit_B_OhlO(cpu: &mut CPU) { fn_no_impl(cpu); }
 
 // bit B,(I+D) 	11i11101 11001011 dddddddd 01bbb*** 	20 	+ 	+ 	X 	1 	X 	P 	0 	-
 // tmp := (I+D) AND [1 << B], xf := [I+D].13, yf := [I+D].11 }
-pub fn bas_bit_B_OImDO(cpu: &mut CPU) { fn_no_impl(cpu); }
+pub fn bas_bit_B_OImDO_ix(cpu: &mut CPU) { fn_no_impl(cpu); }
 
 // call A 	11001101 alalalal ahahahah 	17 	- 	- 	- 	- 	- 	- 	- 	- 	sp -= 2, (sp) := pc, pc := A
 pub fn bas_call_A(cpu: &mut CPU) { fn_no_impl(cpu); }
@@ -1192,7 +1192,128 @@ pub fn bas_jr_c_E(cpu: &mut CPU) { fn_no_impl(cpu); }
 
 
 // ld R1,R2 	01rrrsss 	4 	- 	- 	- 	- 	- 	- 	- 	- 	R1 := R2
-pub fn bas_ld_R1_R2(cpu: &mut CPU) { fn_no_impl(cpu); }
+pub fn bas_ld_R1_R2(cpu: &mut CPU) {
+    match (cpu.r0 & 0b00111111) {
+        0b000_000 => cpu.b = cpu.b,
+        0b000_001 => cpu.b = cpu.c,
+        0b000_010 => cpu.b = cpu.d,
+        0b000_011 => cpu.b = cpu.e,
+        0b000_100 => cpu.b = cpu.h,
+        0b000_101 => cpu.b = cpu.l,
+        0b000_110 => {
+            let hl = cpu.lee_hl();
+            cpu.b = cpu.mem.lee_byte_de_mem(hl);
+        }
+        0b000_111 => cpu.b = cpu.a,
+
+        0b001_000 => cpu.c = cpu.b,
+        0b001_001 => cpu.c = cpu.c,
+        0b001_010 => cpu.c = cpu.d,
+        0b001_011 => cpu.c = cpu.e,
+        0b001_100 => cpu.c = cpu.h,
+        0b001_101 => cpu.c = cpu.l,
+        0b001_110 => {
+            let hl = cpu.lee_hl();
+            cpu.c = cpu.mem.lee_byte_de_mem(hl);
+        }
+        0b001_111 => cpu.c = cpu.a,
+
+        0b010_000 => cpu.d = cpu.b,
+        0b010_001 => cpu.d = cpu.c,
+        0b010_010 => cpu.d = cpu.d,
+        0b010_011 => cpu.d = cpu.e,
+        0b010_100 => cpu.d = cpu.h,
+        0b010_101 => cpu.d = cpu.l,
+        0b010_110 => {
+            let hl = cpu.lee_hl();
+            cpu.d = cpu.mem.lee_byte_de_mem(hl);
+        }
+        0b010_111 => cpu.d = cpu.a,
+
+        0b011_000 => cpu.e = cpu.b,
+        0b011_001 => cpu.e = cpu.c,
+        0b011_010 => cpu.e = cpu.d,
+        0b011_011 => cpu.e = cpu.e,
+        0b011_100 => cpu.e = cpu.h,
+        0b011_101 => cpu.e = cpu.l,
+        0b011_110 => {
+            let hl = cpu.lee_hl();
+            cpu.e = cpu.mem.lee_byte_de_mem(hl);
+        }
+        0b011_111 => cpu.e = cpu.a,
+
+        0b100_000 => cpu.h = cpu.b,
+        0b100_001 => cpu.h = cpu.c,
+        0b100_010 => cpu.h = cpu.d,
+        0b100_011 => cpu.h = cpu.e,
+        0b100_100 => cpu.h = cpu.h,
+        0b100_101 => cpu.h = cpu.l,
+        0b100_110 => {
+            let hl = cpu.lee_hl();
+            cpu.h = cpu.mem.lee_byte_de_mem(hl);
+        }
+        0b100_111 => cpu.h = cpu.a,
+
+        0b101_000 => cpu.l = cpu.b,
+        0b101_001 => cpu.l = cpu.c,
+        0b101_010 => cpu.l = cpu.d,
+        0b101_011 => cpu.l = cpu.e,
+        0b101_100 => cpu.l = cpu.h,
+        0b101_101 => cpu.l = cpu.l,
+        0b101_110 => {
+            let hl = cpu.lee_hl();
+            cpu.l = cpu.mem.lee_byte_de_mem(hl);
+        }
+        0b101_111 => cpu.l = cpu.a,
+
+        0b110_000 => {
+            let hl = cpu.lee_hl();
+            cpu.mem.escribe_byte_en_mem(hl, cpu.b)
+        } //cpu.h = cpu.b,
+        0b110_001 => {
+            let hl = cpu.lee_hl();
+            cpu.mem.escribe_byte_en_mem(hl, cpu.c)
+        }
+        0b110_010 => {
+            let hl = cpu.lee_hl();
+            cpu.mem.escribe_byte_en_mem(hl, cpu.d)
+        }
+        0b110_011 => {
+            let hl = cpu.lee_hl();
+            cpu.mem.escribe_byte_en_mem(hl, cpu.e)
+        }
+        0b110_100 => {
+            let hl = cpu.lee_hl();
+            cpu.mem.escribe_byte_en_mem(hl, cpu.h)
+        }
+        0b110_101 => {
+            let hl = cpu.lee_hl();
+            cpu.mem.escribe_byte_en_mem(hl, cpu.l)
+        }
+
+        0b110_111 => {
+            let hl = cpu.lee_hl();
+            cpu.mem.escribe_byte_en_mem(hl, cpu.a)
+        }
+
+        0b111_000 => cpu.a = cpu.b,
+        0b111_001 => cpu.a = cpu.c,
+        0b111_010 => cpu.a = cpu.d,
+        0b111_011 => cpu.a = cpu.e,
+        0b111_100 => cpu.a = cpu.h,
+        0b111_101 => cpu.a = cpu.l,
+        0b111_110 => {
+            let hl = cpu.lee_hl();
+            cpu.a = cpu.mem.lee_byte_de_mem(hl);
+        }
+        0b111_111 => cpu.a = cpu.a,
+
+        _ => panic!("opcion no encontrada en bas_ld_R1_R2"),
+    }
+
+    cpu.t += cpu.get_t_instruccion();
+    cpu.pc += cpu.get_bytes_instruccion();
+}
 
 // ld R,J 	11i11101 01rrr10b 	8 	- 	- 	- 	- 	- 	- 	- 	- 	R := J
 pub fn bas_ld_R_J(cpu: &mut CPU) { fn_no_impl(cpu); }
@@ -1465,7 +1586,7 @@ pub fn bas_res_B_OhlO(cpu: &mut CPU) { fn_no_impl(cpu); }
 
 // res B,(I+D) 	11i11101 11001011 dddddddd 10bbb110 	23 	- 	- 	- 	- 	- 	- 	- 	-
 // (I+D) := (I+D) AND ~[1 << B]
-pub fn bas_res_B_OImDO(cpu: &mut CPU) { fn_no_impl(cpu); }
+pub fn bas_res_B_OImDO_ix(cpu: &mut CPU) { fn_no_impl(cpu); }
 
 // res B,(I+D)->R 	11i11101 11001011 dddddddd 10bbbrrr 	23 	- 	- 	- 	- 	- 	- 	- 	-
 // (I+D) := R := (I+D) AND ~[1 << B]
@@ -1594,7 +1715,7 @@ pub fn bas_set_B_OhlO(cpu: &mut CPU) { fn_no_impl(cpu); }
 
 // set B,(I+D) 	11i11101 11001011 dddddddd 11bbb110 	23 	- 	- 	- 	- 	- 	- 	- 	-
 // (I+D) := (I+D) OR [1 << B]
-pub fn bas_set_B_OImDO(cpu: &mut CPU) { fn_no_impl(cpu); }
+pub fn bas_set_B_OImDO_ix(cpu: &mut CPU) { fn_no_impl(cpu); }
 
 // set B,(I+D)->R 	11i11101 11001011 dddddddd 11bbbrrr 	23 	- 	- 	- 	- 	- 	- 	- 	-
 // (I+D) := R := (I+D) OR [1 << B]
@@ -1830,33 +1951,40 @@ pub fn nop_txt(cpu: &mut CPU) {
     cpu.texto(&format!("NOP opcode = #{:02X}", cpu.r0));
 }
 
-// 0x01 NN NN      ld Q,A
-pub fn ld_bc_nn(cpu: &mut CPU) {
-    bas_ld_Q_A(cpu);
-//    cpu.c = cpu.r1;
-//    cpu.b = cpu.r2;
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+/// 0x01 "ld bc,NN"     ld Q,A
+///     The 16-bit integer value is loaded to the BC register pair.
+///     =================================
+///     | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0x01
+///     =================================
+///     |             N Low             |
+///     =================================
+///     |             N High            |
+///     =================================
+///     T-States: 10
+pub fn ld_bc_nn(cpu: &mut CPU) { bas_ld_Q_A(cpu); }
 
 pub fn ld_bc_nn_txt(cpu: &mut CPU) { cpu.texto(&format!("LD BC,#{:04X}", cpu.r1r2)); }
 
-// 0x02    ld (bc),a 	00000010 	- 	- 	- 	- 	- 	- 	- 	- 	(bc) := a
-pub fn ldObcO_a(cpu: &mut CPU) {
-    bas_ld_ObcO_a(cpu);
-//    let direccion = cpu.lee_bc();
-//    cpu.mem.escribe_byte_en_mem(direccion, cpu.a);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+/// 0x02   "ld (bc),a" 	00000010 	- 	- 	- 	- 	- 	- 	- 	- 	(bc) := a
+///     The contents of the A are loaded to the memory location
+///     specified by the contents of the register pair BC.
+///     =================================
+///     | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0x02
+///     =================================
+///     T-States: 7
+pub fn ldObcO_a(cpu: &mut CPU) { bas_ld_ObcO_a(cpu); }
 
 pub fn ldObcO_a_txt(cpu: &mut CPU) {
     cpu.texto(&format!("LD (BC),A"));
 }
 
-// 0x03
+/// 0x03   "inc bc"
+///     The contents of register pair BC are incremented.
+///     =================================
+///     | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 0x03
+///     =================================
+///     T-States: 6
+
 pub fn inc_bc(cpu: &mut CPU) {
     bas_inc_Q(cpu);
 }
@@ -1865,42 +1993,63 @@ pub fn inc_bc_txt(cpu: &mut CPU) {
     cpu.texto(&format!("INC BC"));
 }
 
-// 0x04
-pub fn inc_b(cpu: &mut CPU) {
-//    cpu.b = cpu.inc_8bits(cpu.b);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-    bas_inc_R(cpu);
-}
+/// 0x04   "inc b"
+///     Register B is incremented.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if carry from bit 3; otherwise, it is reset.
+///     P/V is set if r was 7Fh before operation; otherwise, it is reset.
+///     N is reset.
+///     C is not affected.
+///     =================================
+///     | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0x04
+///     =================================
+///     T-States: 4
+pub fn inc_b(cpu: &mut CPU) { bas_inc_R(cpu); }
 
 pub fn inc_b_txt(cpu: &mut CPU) {
     cpu.texto(&format!("INC B"));
 }
 
-// 0x05
-pub fn dec_b(cpu: &mut CPU) {
-    bas_dec_R(cpu);
-//    cpu.b = cpu.dec_8bits(cpu.b);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+/// 0x05   "dec b"
+///     Register B is decremented.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if borrow from bit 4, otherwise, it is reset.
+///     P/V is set if m was 80h before operation; otherwise, it is reset.
+///     N is set.
+///     C is not affected.
+///     =================================
+///     | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 1 | 0x05
+///     =================================
+///     T-States: 4
+pub fn dec_b(cpu: &mut CPU) { bas_dec_R(cpu); }
 
 pub fn dec_b_txt(cpu: &mut CPU) { cpu.texto(&format!("DEC B")); }
 
-// 0x06
-pub fn ld_b_n(cpu: &mut CPU) {
-    bas_ld_R_N(cpu);
-//    cpu.b = cpu.r1;
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+/// 0x06   "ld b,N"
+///     The 8-bit integer N is loaded to B.
+///     =================================
+///     | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 0x06
+///     =================================
+///     |            8-bit              |
+///     =================================
+///     T-States: 7
+pub fn ld_b_n(cpu: &mut CPU) { bas_ld_R_N(cpu); }
 
 pub fn ld_b_n_txt(cpu: &mut CPU) { cpu.texto(&format!("LD B,#{:02X}", cpu.r1)); }
 
-// 0x07
+/// 0x07   "rlca"
+///     The contents of  A are rotated left 1 bit position. The
+///     sign bit (bit 7) is copied to the Carry flag and also
+///     to bit 0.
+///     S, Z, P/V are not affected.
+///     H, N are reset.
+///     C is data from bit 7 of A.
+///     =================================
+///     | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 1 | 0x07
+///     =================================
+///     T-States: 4
 pub fn rlca(cpu: &mut CPU) {
     fn_no_impl(cpu);
 }
@@ -1909,7 +2058,7 @@ pub fn rlca_txt(cpu: &mut CPU) {
     fn_no_impl(cpu);
 }
 
-// 0x08 Difiere según procesador (LR35902->LD(NN),SP)
+/// 0x08 Difiere según procesador (LR35902->LD(NN),SP)
 pub fn ldOnnO_spGB(cpu: &mut CPU) {
     cpu.mem.escribe_2bytes_en_mem(cpu.r1r2, cpu.sp);
 
@@ -1921,7 +2070,13 @@ pub fn ldOnnO_spGB_txt(cpu: &mut CPU) {
     cpu.texto(&format!("LD(#{:04X}),SP", cpu.r1r2));
 }
 
-// 0x08 Difiere según procesador (Z80->EX AF,AF')
+/// 0x08 Difiere según procesador (Z80->EX AF,AF')
+///     "ex af,af'"
+///     The 2-byte contents of the register pairs AF and AF' are exchanged.
+///     =================================
+///     | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0x08
+///     =================================
+///     T-States: 4
 pub fn ex_af_afp(cpu: &mut CPU) {
     fn_no_impl(cpu);
 }
@@ -1930,99 +2085,115 @@ pub fn ex_af_afp_txt(cpu: &mut CPU) {
     fn_no_impl(cpu);
 }
 
-// 0x09
-pub fn add_hl_bc(cpu: &mut CPU) {
-    bas_add_hl_Q(cpu);
-//    let bc = cpu.lee_bc();
-//    let hl = cpu.lee_hl();
-//
-//    let hl = cpu.suma_u16_mas_u16(hl, bc);
-//    cpu.escribe_hl(hl);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+/// 0x09   "add hl,bc"
+///     The contents of BC are added to the contents of HL and
+///     the result is stored in HL.
+///     S, Z, P/V are not affected.
+///     H is set if carry from bit 11; otherwise, it is reset.
+///     N is reset.
+///     C is set if carry from bit 15; otherwise, it is reset.
+///     =================================
+///     | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 1 | 0x09
+///     =================================
+///     T-States: 11
+pub fn add_hl_bc(cpu: &mut CPU) { bas_add_hl_Q(cpu); }
 
 pub fn add_hl_bc_txt(cpu: &mut CPU) {
     cpu.texto(&format!("ADD HL,BC"));
 }
 
-// 0x0A  ld a,(bc) 	00001010 	- 	- 	- 	- 	- 	- 	- 	- 	a := (bc)
+/// 0x0A   "ld a,(bc)" 	00001010 	- 	- 	- 	- 	- 	- 	- 	- 	a := (bc)
+///     The contents of the memory location specified by BC are loaded to A.
+///     =================================
+///     | 0 | 0 | 0 | 0 | 1 | 0 | 1 | 0 | 0x0A
+///     =================================
+///     T-States: 7
 pub fn ld_aObcO(cpu: &mut CPU) { fn_no_impl(cpu); }
 
 pub fn ld_aObcO_txt(cpu: &mut CPU) { fn_no_impl(cpu); }
 
-// 0x0B  dec Q 	00qq1011 	- 	- 	- 	- 	- 	- 	- 	- 	Q -= 1
+/// 0x0B   "dec bc"            dec Q 	00qq1011 	- 	- 	- 	- 	- 	- 	- 	- 	Q -= 1
+///     The contents of register pair BC are decremented.
+///     =================================
+///     | 0 | 0 | 0 | 0 | 1 | 0 | 1 | 1 | 0x0B
+///     =================================
+///     T-States: 6
 pub fn dec_bc(cpu: &mut CPU) {
     bas_dec_Q(cpu);
-//    let mut bc = cpu.lee_bc();
-//    bc = cpu.dec_16bits(bc);
-//
-//    cpu.escribe_bc(bc);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 pub fn dec_bc_txt(cpu: &mut CPU) { cpu.texto(&format!("DEC BC")); }
 
-// 0x0C  inc R 	00rrr100 	+ 	+ 	+ 	+ 	+ 	V 	0 	- 	R += 1
-pub fn inc_c(cpu: &mut CPU) {
-    bas_inc_R(cpu);
-//    cpu.c = cpu.inc_8bits(cpu.c);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+/// 0x0C   "inc c"             inc R 	00rrr100 	+ 	+ 	+ 	+ 	+ 	V 	0 	- 	R += 1
+///     Register C is incremented.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if carry from bit 3; otherwise, it is reset.
+///     P/V is set if r was 7Fh before operation; otherwise, it is reset.
+///     N is reset.
+///     C is not affected.
+///     =================================
+///     | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0x0C
+///     =================================
+///     T-States: 4
+pub fn inc_c(cpu: &mut CPU) { bas_inc_R(cpu); }
 
 pub fn inc_c_txt(cpu: &mut CPU) { cpu.texto(&format!("INC C")); }
 
-// 0x0D  dec R 	00rrr101 	+ 	+ 	+ 	+ 	+ 	V 	1 	- 	R -= 1
-pub fn dec_c(cpu: &mut CPU) {
-    bas_dec_R(cpu);
-//    cpu.c = cpu.dec_8bits(cpu.c);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+/// 0x0D  "dec c"                 dec R 	00rrr101 	+ 	+ 	+ 	+ 	+ 	V 	1 	- 	R -= 1
+///     Register C is decremented.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if borrow from bit 4, otherwise, it is reset.
+///     P/V is set if m was 80h before operation; otherwise, it is reset.
+///     N is set.
+///     C is not affected.
+///     =================================
+///     | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 1 | 0x0D
+///     =================================
+///     T-States: 4
+pub fn dec_c(cpu: &mut CPU) { bas_dec_R(cpu); }
 
-pub fn dec_c_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("DEC C"));
-}
+pub fn dec_c_txt(cpu: &mut CPU) { cpu.texto(&format!("DEC C")); }
 
-// 0x0E
-pub fn ld_c_n(cpu: &mut CPU) {
-    bas_ld_R_N(cpu);
-//    cpu.c = cpu.r1;
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+/// 0x0E   "ld c,N"
+///     The 8-bit integer N is loaded to C.
+///     =================================
+///     | 0 | 0 | 0 | 0 | 1 | 1 | 1 | 0 | 0x0E
+///     =================================
+///     |            8-bit              |
+///     =================================
+///     T-States: 7
+pub fn ld_c_n(cpu: &mut CPU) { bas_ld_R_N(cpu); }
 
 pub fn ld_c_n_txt(cpu: &mut CPU) { cpu.texto(&format!("LD C,#{:02X}", cpu.r1)); }
 
-// 0x0F
+/// 0x0F   "rrca"
+///     The contents of A are rotated right 1 bit position. Bit 0 is
+///     copied to the Carry flag and also to bit 7.
+///     S, Z, P/V are not affected.
+///     H, N are reset.
+///     C is data from bit 0 of A.
+///     =================================
+///     | 0 | 0 | 0 | 0 | 1 | 1 | 1 | 1 | 0x0F
+///     =================================
+///     T-States: 4
 pub fn rrca(cpu: &mut CPU) {
     let bit0: bool = (0b0000_0001 & cpu.a) != 0;
-//    if bit0 {
-//        cpu.set_c_flag();
-//    } else {
-//        cpu.reset_c_flag();
-//    }
+
     cpu.set_flag(FLAG_C, bit0);
 
     // Rotación
     let mut nuevo_valor = cpu.a >> 1;
     nuevo_valor = nuevo_valor & 0b0111_1111;
-    if bit0 {
-        nuevo_valor |= 0b1000_0000;
-    }
+
+    if bit0 { nuevo_valor |= 0b1000_0000; }
 
     //maneja flags
     cpu.flag_z_u8(nuevo_valor);
-    //cpu.reset_n_flag();
+
     cpu.set_flag(FLAG_N, false);
-    //cpu.reset_h_flag();
+
     cpu.set_flag(FLAG_H, false);
 
     cpu.t += cpu.get_t_instruccion();
@@ -2034,7 +2205,25 @@ pub fn rrca_txt(cpu: &mut CPU) {
 }
 // *************************** 1 ***********************************
 
-// 0x10
+/// 0x10   "djnz E"
+///     This instruction is similar to the conditional jump
+///     instructions except that value of B is used to determine
+///     branching. B is decremented, and if a nonzero value remains,
+///     the value of displacement E is added to PC. The next
+///     instruction is fetched from the location designated by
+///     the new contents of the PC. The jump is measured from the
+///     address of the instruction op code and contains a range of
+///     –126 to +129 bytes. The assembler automatically adjusts for
+///     the twice incremented PC. If the result of decrementing leaves
+///     B with a zero value, the next instruction executed is taken
+///     from the location following this instruction.
+///     =================================
+///     | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0x10
+///     =================================
+///     |             E-2               |
+///     =================================
+///     T-States: 13
+
 pub fn djnz_n(cpu: &mut CPU) {
     cpu.pc += cpu.get_bytes_instruccion();
     cpu.b = dec_8bits(cpu, cpu.b);
@@ -2048,94 +2237,118 @@ pub fn djnz_n(cpu: &mut CPU) {
 
 pub fn djnz_n_txt(cpu: &mut CPU) { cpu.texto(&format!("DJNZ")); }
 
-// 0x11 NN NN
-pub fn ld_de_nn(cpu: &mut CPU) {
-    bas_ld_Q_A(cpu);
-//    cpu.d = cpu.r2;
-//    cpu.e = cpu.r1;
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+/// 0x11   "ld de,NN"
+///     The 16-bit integer value is loaded to the DE register pair.
+///     =================================
+///     | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 1 | 0x11
+///     =================================
+///     |             N Low             |
+///     =================================
+///     |             N High            |
+///     =================================
+///     T-States: 10
+pub fn ld_de_nn(cpu: &mut CPU) { bas_ld_Q_A(cpu); }
 
 pub fn ld_de_nn_txt(cpu: &mut CPU) { cpu.texto(&format!("LD DE,#{:04X}", cpu.r1r2)); }
 
-// 0x12
+/// 0x12   "ld (de),a"
+///     The contents of the A are loaded to the memory location
+///     specified by the contents of the register pair DE.
+///     =================================
+///     | 0 | 0 | 0 | 1 | 0 | 0 | 1 | 0 | 0x12
+///     =================================
+///     T-States: 7
 pub fn ldOdeO_a(cpu: &mut CPU) { fn_no_impl(cpu); }
 
-// 0x13
-pub fn inc_de(cpu: &mut CPU) {
-    bas_inc_Q(cpu);
-//    let mut de = cpu.lee_de();
-//    de = cpu.inc_16bits(de);
-//
-//    cpu.escribe_de(de);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn ldOdeO_a_txt(cpu: &mut CPU) { fn_no_impl(cpu); }
+
+/// 0x13   "inc de"
+///     The contents of register pair DE are incremented.
+///     =================================
+///     | 0 | 0 | 0 | 1 | 0 | 0 | 1 | 1 | 0x13
+///     =================================
+///     T-States: 6
+pub fn inc_de(cpu: &mut CPU) { bas_inc_Q(cpu); }
 
 pub fn inc_de_txt(cpu: &mut CPU) {
     cpu.texto(&format!("INC DE"));
 }
 
-// 0x14
+/// 0x14   "inc d"
+///     Register D is incremented.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if carry from bit 3; otherwise, it is reset.
+///     P/V is set if r was 7Fh before operation; otherwise, it is reset.
+///     N is reset.
+///     C is not affected.
+///     =================================
+///     | 0 | 0 | 0 | 1 | 0 | 1 | 0 | 0 | 0x14
+///     =================================
+///     T-States: 4
 pub fn inc_d(cpu: &mut CPU) {
     bas_inc_R(cpu);
 }
 
 pub fn inc_d_txt(cpu: &mut CPU) { cpu.texto(&format!("INC D")); }
 
-// 0x15
+/// 0x15   "dec d"
+///     Register D is decremented.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if borrow from bit 4, otherwise, it is reset.
+///     P/V is set if m was 80h before operation; otherwise, it is reset.
+///     N is set.
+///     C is not affected.
+///     =================================
+///     | 0 | 0 | 0 | 1 | 0 | 1 | 0 | 1 | 0x15
+///     =================================
+///     T-States: 4
 pub fn dec_d(cpu: &mut CPU) {
     bas_dec_R(cpu);
 }
 
 pub fn dec_d_txt(cpu: &mut CPU) { cpu.texto(&format!("DEC D")); }
 
-// 0x16
-pub fn ld_d_n(cpu: &mut CPU) {
-    bas_ld_R_N(cpu);
-//    cpu.d = cpu.r1;
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+/// 0x16   "ld d,N"
+///     The 8-bit integer N is loaded to D.
+///     =================================
+///     | 0 | 0 | 0 | 1 | 0 | 1 | 1 | 0 | 0x16
+///     =================================
+///     |            8-bit              |
+///     =================================
+///     T-States: 7
+pub fn ld_d_n(cpu: &mut CPU) { bas_ld_R_N(cpu); }
 
 pub fn ld_d_n_txt(cpu: &mut CPU) {
     cpu.texto(&format!("LD D #{:02X}", cpu.r1));
 }
 
 
-// 0x17 C<-76543210<-
-//      |___________|
+/// 0x17   "rla"
+///     The contents of A are rotated left 1 bit position through the
+///     Carry flag. The previous contents of the Carry flag are copied
+///     to bit 0.
+///     S, Z, P/V are not affected.
+///     H, N are reset.
+///     C is data from bit 7 of A.
+///     =================================
+///     | 0 | 0 | 0 | 1 | 0 | 1 | 1 | 1 | 0x17
+///     =================================
+///     T-States: 4
 pub fn rla(cpu: &mut CPU) {
     let viejo_c_flag = cpu.get_c_flag();
-    let c_flag: bool = (0b1000_0000 & cpu.a) != 0;
-//    if c_flag {
-//        cpu.set_c_flag();
-//    } else {
-//        cpu.reset_c_flag();
-//    }
-    cpu.set_flag(FLAG_C, c_flag);
+    cpu.set_flag(FLAG_C, (0b1000_0000 & cpu.a) != 0);
 
     // Rotación
     let mut nuevo_valor = cpu.a << 1;
     nuevo_valor = nuevo_valor & 0b1111_1110;
-    if viejo_c_flag {
-        nuevo_valor |= 0b0000_0001;
-    }
+    if viejo_c_flag { nuevo_valor |= 0b0000_0001; }
 
-    //maneja flags
-//    if nuevo_valor == 0 {
-//        cpu.set_z_flag();
-//    } else {
-//        cpu.reset_z_flag();
-//    }
     cpu.set_flag(FLAG_Z, nuevo_valor == 0);
-    //cpu.reset_n_flag();
+
     cpu.set_flag(FLAG_N, false);
-    //cpu.reset_h_flag();
+
     cpu.set_flag(FLAG_H, false);
 
     cpu.t += cpu.get_t_instruccion();
@@ -2144,9 +2357,22 @@ pub fn rla(cpu: &mut CPU) {
 
 pub fn rla_txt(cpu: &mut CPU) { cpu.texto(&format!("RLA")); }
 
-// 0x18
+/// 0x18   "jr e"
+///     This instruction provides for unconditional branching
+///     to other segments of a program. The value of displacement E is
+///     added to PC and the next instruction is fetched from the location
+///     designated by the new contents of the PC. This jump is measured
+///     from the address of the instruction op code and contains a range
+///     of –126 to +129 bytes. The assembler automatically adjusts for
+///     the twice incremented PC.
+///     =================================
+///     | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 0x18
+///     =================================
+///     |             E-2               |
+///     =================================
+///     T-States: 12
 pub fn jr_n(cpu: &mut CPU) {
-    cpu.pc += 2;  // parece que hace falta TODO: comprobar
+    cpu.pc += 2;
     cpu.pc = suma_compl2_a_un_u16(cpu.pc, cpu.r1);
 
     cpu.t += cpu.get_t_instruccion();
@@ -2158,23 +2384,27 @@ pub fn jr_n_txt(cpu: &mut CPU) {
     cpu.texto(&format!("JR {:04X}", direccion));
 }
 
-// 0x19
-pub fn add_hl_de(cpu: &mut CPU) {
-    bas_add_hl_Q(cpu);
-//    let mut hl = cpu.lee_hl();
-//    let de = cpu.lee_de();
-//
-//    hl = cpu.suma_u16_mas_u16(hl, de);
-//
-//    cpu.escribe_hl(hl);
-//
-//    cpu.pc += cpu.get_bytes_instruccion();
-//    cpu.t += cpu.get_t_instruccion();
-}
+/// 0x19   "add hl,de"
+///     The contents of DE are added to the contents of HL and
+///     the result is stored in HL.
+///     S, Z, P/V are not affected.
+///     H is set if carry from bit 11; otherwise, it is reset.
+///     N is reset.
+///     C is set if carry from bit 15; otherwise, it is reset.
+///     =================================
+///     | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 1 | 0x19
+///     =================================
+///     T-States: 11
+pub fn add_hl_de(cpu: &mut CPU) { bas_add_hl_Q(cpu); }
 
 pub fn add_hl_de_txt(cpu: &mut CPU) { cpu.texto(&format!("ADD HL,DE")); }
 
-// 0x1A
+/// 0x1A   "ld a,(de)"
+///     The contents of the memory location specified by DE are loaded to A.
+///     =================================
+///     | 0 | 0 | 0 | 1 | 1 | 0 | 1 | 0 | 0x1A
+///     =================================
+///     T-States: 7
 pub fn ld_aOdeO(cpu: &mut CPU) {
     let direccion = cpu.lee_de();
     cpu.a = cpu.mem.lee_byte_de_mem(direccion);
@@ -2185,20 +2415,28 @@ pub fn ld_aOdeO(cpu: &mut CPU) {
 
 pub fn ld_aOdeO_txt(cpu: &mut CPU) { cpu.texto(&format!("LD A(DE)")); }
 
-// 0x1B
-pub fn dec_de(cpu: &mut CPU) {
-    bas_dec_Q(cpu);
-//    let mut de = cpu.lee_de();
-//    de = cpu.dec_16bits(de);
-//    cpu.escribe_de(de);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+/// 0x1B   "dec de"
+///     The contents of register pair DE are decremented.
+///     =================================
+///     | 0 | 0 | 0 | 1 | 1 | 0 | 1 | 1 | 0x1B
+///     =================================
+///     T-States: 6
+pub fn dec_de(cpu: &mut CPU) { bas_dec_Q(cpu); }
 
 pub fn dec_de_txt(cpu: &mut CPU) { cpu.texto(&format!("DEC DE")); }
 
-// 0x1C
+/// 0x1C   "inc e"
+///     Register E is incremented.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if carry from bit 3; otherwise, it is reset.
+///     P/V is set if r was 7Fh before operation; otherwise, it is reset.
+///     N is reset.
+///     C is not affected.
+///     =================================
+///     | 0 | 0 | 0 | 1 | 1 | 1 | 0 | 0 | 0x1C
+///     =================================
+///     T-States: 4
 pub fn inc_e(cpu: &mut CPU) {
     bas_inc_R(cpu);
 }
@@ -2207,14 +2445,32 @@ pub fn inc_e_txt(cpu: &mut CPU) {
     cpu.texto(&format!("INC E"));
 }
 
-// 0x1D
+/// 0x1D   "dec e"
+///     Register E is decremented.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if borrow from bit 4, otherwise, it is reset.
+///     P/V is set if m was 80h before operation; otherwise, it is reset.
+///     N is set.
+///     C is not affected.
+///     =================================
+///     | 0 | 0 | 0 | 1 | 1 | 1 | 0 | 1 | 0x1D
+///     =================================
+///     T-States: 4
 pub fn dec_e(cpu: &mut CPU) {
     bas_dec_R(cpu);
 }
 
 pub fn dec_e_txt(cpu: &mut CPU) { cpu.texto(&format!("DEC E")); }
 
-// 0x1E
+/// 0x1E   "ld e,N"
+///     The 8-bit integer N is loaded to E.
+///     =================================
+///     | 0 | 0 | 0 | 1 | 1 | 1 | 1 | 0 | 0x1E
+///     =================================
+///     |            8-bit              |
+///     =================================
+///     T-States: 7
 pub fn ld_e_n(cpu: &mut CPU) {
     bas_ld_R_N(cpu);
 }
@@ -2223,13 +2479,38 @@ pub fn ld_e_n_txt(cpu: &mut CPU) {
     cpu.texto(&format!("LD E,#{:02X}", cpu.r1));
 }
 
-// 0x1F
+/// 0x1F   "rra"
+///     The contents of A are rotated right 1 bit position through the
+///     Carry flag. The previous contents of the Carry flag are copied
+///     to bit 7.
+///     S, Z, P/V are not affected.
+///     H, N are reset.
+///     C is data from bit 0 of A.
+///     =================================
+///     | 0 | 0 | 0 | 1 | 0 | 1 | 1 | 1 | 0x1F
+///     =================================
+///     T-States: 4
 pub fn rra(cpu: &mut CPU) { fn_no_impl(cpu); }
 
 pub fn rra_txt(cpu: &mut CPU) { fn_no_impl(cpu); }
 
 // *************************** 2 ***********************************
-// 0x20 NN
+/// 0x20 NN   "JR NZ,E"
+///     This instruction provides for conditional branching to
+///     other segments of a program depending on the results of a test
+///     (Z flag is not set). If the test evaluates to *true*, the value of displacement
+///     E is added to PC and the next instruction is fetched from the
+///     location designated by the new contents of the PC. The jump is
+///     measured from the address of the instruction op code and contains
+///     a range of –126 to +129 bytes. The assembler automatically adjusts
+///     for the twice incremented PC.
+///     =================================
+///     | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0x20
+///     =================================
+///     |             E-2               |
+///     =================================
+///     T-States: Condition is met: 12
+///     Condition is not met: 7
 fn jr_nz_n(cpu: &mut CPU) {
     let salto = suma_compl2_a_un_u16(cpu.pc + 2, cpu.r1);
     if !cpu.get_z_flag() {
@@ -2247,15 +2528,17 @@ fn jr_nz_n_txt(cpu: &mut CPU) {
     cpu.texto(&format!("JR NZ #{:04X}", salto));
 }
 
-// 0x21 NN NN
-pub fn ld_hl_nn(cpu: &mut CPU) {
-    bas_ld_Q_A(cpu);
-//    cpu.h = cpu.r2;
-//    cpu.l = cpu.r1;
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+/// 0x21   "ld hl,NN"
+///     The 16-bit integer value is loaded to the HL register pair.
+///     =================================
+///     | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 1 | 0x21
+///     =================================
+///     |             N Low             |
+///     =================================
+///     |             N High            |
+///     =================================
+///     T-States: 10
+pub fn ld_hl_nn(cpu: &mut CPU) { bas_ld_Q_A(cpu); }
 
 pub fn ld_hl_nn_txt(cpu: &mut CPU) { cpu.texto(&format!("LD HL#{:04X}", cpu.r1r2)); }
 
@@ -2274,7 +2557,19 @@ pub fn ldiOhlO_aGB(cpu: &mut CPU) {
 
 pub fn ldiOhlO_aGB_txt(cpu: &mut CPU) { cpu.texto(&format!("LDI(HL),A")); }
 
-// 0x22 Difiere según procesador (Z80->LD  (nn),HL)
+/// 0x22 Difiere según procesador (Z80->LD  (nn),HL)
+///     "ld (NN),hl"
+///     The contents of the low-order portion of HL (L) are loaded to memory
+///     address (NN), and the contents of the high-order portion of HL (H)
+///     are loaded to the next highest memory address(NN + 1).
+///     =================================
+///     | 0 | 0 | 1 | 0 | 0 | 0 | 1 | 0 | 0x22
+///     =================================
+///     |           8-bit L             |
+///     =================================
+///     |           8-bit H             |
+///     =================================
+///     T-States: 16
 pub fn ldOnnO_hl(cpu: &mut CPU) {
     cpu.mem.escribe_byte_en_mem(cpu.r1r2, cpu.l);
     cpu.mem.escribe_byte_en_mem(cpu.r1r2 + 1, cpu.h);
@@ -2287,34 +2582,47 @@ pub fn ldOnnO_hl_txt(cpu: &mut CPU) {
     cpu.texto(&format!("LD(#{:04X}),HL", cpu.r1r2));
 }
 
-// 0x23
-pub fn inc_hl(cpu: &mut CPU) {
-    bas_inc_Q(cpu);
-//    let mut hl = cpu.lee_hl();
-//    hl = cpu.inc_16bits(hl);
-//    cpu.escribe_hl(hl);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+/// 0x23   "inc hl"
+///     The contents of register pair HL are incremented.
+///     =================================
+///     | 0 | 0 | 1 | 0 | 0 | 0 | 1 | 1 | 0x23
+///     =================================
+///     T-States: 6
+pub fn inc_hl(cpu: &mut CPU) { bas_inc_Q(cpu); }
 
 pub fn inc_hl_txt(cpu: &mut CPU) { cpu.texto(&format!("INC HL")); }
 
-// 0x24
-pub fn inc_h(cpu: &mut CPU) {
-    bas_inc_R(cpu);
-//    cpu.h = cpu.inc_8bits(cpu.h);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+/// 0x24   "inc h"
+///     Register H is incremented.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if carry from bit 3; otherwise, it is reset.
+///     P/V is set if r was 7Fh before operation; otherwise, it is reset.
+///     N is reset.
+///     C is not affected.
+///     =================================
+///     | 0 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 0x24
+///     =================================
+///     T-States: 4
+pub fn inc_h(cpu: &mut CPU) { bas_inc_R(cpu); }
 
 pub fn inc_h_txt(cpu: &mut CPU) {
     cpu.texto(&format!("INC H"));
 }
 
 
-// 0x25
+/// 0x25   "dec h"
+///     Register H is decremented.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if borrow from bit 4, otherwise, it is reset.
+///     P/V is set if m was 80h before operation; otherwise, it is reset.
+///     N is set.
+///     C is not affected.
+///     =================================
+///     | 0 | 0 | 1 | 0 | 0 | 1 | 0 | 1 | 0x25
+///     =================================
+///     T-States: 4
 pub fn dec_h(cpu: &mut CPU) {
     bas_dec_R(cpu);
 }
@@ -2324,25 +2632,81 @@ pub fn dec_h_txt(cpu: &mut CPU) {
 }
 
 
-// 0x26
-pub fn ld_h_n(cpu: &mut CPU) {
-    bas_ld_R_N(cpu);
-//    cpu.h = cpu.r1;
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+/// 0x26   "ld h,N"
+///     The 8-bit integer N is loaded to H.
+///     =================================
+///     | 0 | 0 | 1 | 0 | 0 | 1 | 1 | 0 | 0x26
+///     =================================
+///     |            8-bit              |
+///     =================================
+///     T-States: 7
+pub fn ld_h_n(cpu: &mut CPU) { bas_ld_R_N(cpu); }
 
 pub fn ld_h_n_txt(cpu: &mut CPU) {
     cpu.texto(&format!("LD H,#{:02X}", cpu.r1));
 }
 
-// 0x27
+/// 0x27   "daa"
+///     This instruction conditionally adjusts A for BCD addition
+///     and subtraction operations. For addition(ADD, ADC, INC) or
+///     subtraction(SUB, SBC, DEC, NEG), the following table indicates
+///     the operation being performed:
+///     ====================================================
+///     |Oper.|C before|Upper|H before|Lower|Number|C after|
+///     |     |DAA     |Digit|Daa     |Digit|Added |Daa    |
+///     ====================================================
+///     | ADD |   0    | 9-0 |   0    | 0-9 |  00  |   0   |
+///     |     |   0    | 0-8 |   0    | A-F |  06  |   0   |
+///     |     |   0    | 0-9 |   1    | 0-3 |  06  |   0   |
+///     |     |   0    | A-F |   0    | 0-9 |  60  |   1   |
+///     ----------------------------------------------------
+///     | ADC |   0    | 9-F |   0    | A-F |  66  |   1   |
+///     ----------------------------------------------------
+///     | INC |   0    | A-F |   1    | 0-3 |  66  |   1   |
+///     |     |   1    | 0-2 |   0    | 0-9 |  60  |   1   |
+///     |     |   1    | 0-2 |   0    | A-F |  66  |   1   |
+///     |     |   1    | 0-3 |   1    | 0-3 |  66  |   1   |
+///     ----------------------------------------------------
+///     | SUB |   0    | 0-9 |   0    | 0-9 |  00  |   0   |
+///     ----------------------------------------------------
+///     | SBC |   0    | 0-8 |   1    | 6-F |  FA  |   0   |
+///     ----------------------------------------------------
+///     | DEC |   1    | 7-F |   0    | 0-9 |  A0  |   1   |
+///     ----------------------------------------------------
+///     | NEG |   1    | 6-7 |   1    | 6-F |  9A  |   1   |
+///     ====================================================
+///     S is set if most-significant bit of the A is 1 after an
+///     operation; otherwise, it is reset.
+///     Z is set if A is 0 after an operation; otherwise, it is reset.
+///     H: see the DAA instruction table.
+///     P/V is set if A is at even parity after an operation;
+///     otherwise, it is reset.
+///     N is not affected.
+///     C: see the DAA instruction table.
+///     =================================
+///     | 0 | 0 | 1 | 0 | 0 | 1 | 1 | 1 | 0x27
+///     =================================
+///     T-States: 4
 pub fn daa(cpu: &mut CPU) { fn_no_impl(cpu); }
 
 pub fn daa_txt(cpu: &mut CPU) { fn_no_impl(cpu); }
 
-// 0x28
+/// 0x28   "JR Z,E"
+///     This instruction provides for conditional branching to
+///     other segments of a program depending on the results of a test
+///     (Z flag is set). If the test evaluates to *true*, the value of displacement
+///     E is added to PC and the next instruction is fetched from the
+///     location designated by the new contents of the PC. The jump is
+///     measured from the address of the instruction op code and contains
+///     a range of –126 to +129 bytes. The assembler automatically adjusts
+///     for the twice incremented PC.
+///     =================================
+///     | 0 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0x28
+///     =================================
+///     |             E-2               |
+///     =================================
+///     T-States: Condition is met: 12
+///     Condition is not met: 7
 pub fn jr_z_n(cpu: &mut CPU) {
     let salto = cpu.pc.wrapping_add(cpu.get_bytes_instruccion());
     if cpu.get_z_flag() {
@@ -2359,18 +2723,18 @@ pub fn jr_z_n_txt(cpu: &mut CPU) {
     cpu.texto(&format!("JR Z(#{:04X})", salto));
 }
 
-// 0x29
-pub fn add_hl_hl(cpu: &mut CPU) {
-    bas_add_hl_Q(cpu);
-//    let mut hl = cpu.lee_hl();
-//
-//    hl = cpu.suma_u16_mas_u16(hl, hl);
-//
-//    cpu.escribe_hl(hl);
-//
-//    cpu.pc += cpu.get_bytes_instruccion();
-//    cpu.t += cpu.get_t_instruccion();
-}
+/// 0x29   "add hl,hl"
+///     The contents of HL are added to the contents of HL and
+///     the result is stored in HL.
+///     S, Z, P/V are not affected.
+///     H is set if carry from bit 11; otherwise, it is reset.
+///     N is reset.
+///     C is set if carry from bit 15; otherwise, it is reset.
+///     =================================
+///     | 0 | 0 | 1 | 0 | 1 | 0 | 0 | 1 | 0x29
+///     =================================
+///     T-States: 11
+pub fn add_hl_hl(cpu: &mut CPU) { bas_add_hl_Q(cpu); }
 
 pub fn add_hl_hl_txt(cpu: &mut CPU) { cpu.texto(&format!("ADD HL,HL")); }
 
@@ -2388,7 +2752,20 @@ pub fn ldi_aOhlOGB(cpu: &mut CPU) {
 
 pub fn ldi_aOhlOGB_txt(cpu: &mut CPU) { cpu.texto(&format!("LDI A(HL)")); }
 
-// 0x2A NN NN    Difiere según procesador (Z80->LD HL,(NN)
+/// 0x2A NN NN    Difiere según procesador (Z80->LD HL,(NN)
+///     "ld hl,(NN)"
+///     The contents of memory address (NN) are loaded to the
+///     low-order portion of HL (L), and the contents of the next
+///     highest memory address (NN + 1) are loaded to the high-order
+///     portion of HL (H).
+///     =================================
+///     | 0 | 0 | 1 | 0 | 1 | 0 | 1 | 0 | 0x2A
+///     =================================
+///     |           8-bit L             |
+///     =================================
+///     |           8-bit H             |
+///     =================================
+///     T-States: 16
 pub fn ld_hlOnnO(cpu: &mut CPU) {
     cpu.l = cpu.mem.lee_byte_de_mem(cpu.r1r2);
     cpu.h = cpu.mem.lee_byte_de_mem(cpu.r1r2 + 1);
@@ -2399,41 +2776,74 @@ pub fn ld_hlOnnO(cpu: &mut CPU) {
 
 pub fn ld_hlOnnO_txt(cpu: &mut CPU) { cpu.texto(&format!("LD HL(#{:04X})", cpu.r1r2)); }
 
-// 0x2B
-pub fn dec_hl(cpu: &mut CPU) {
-    bas_dec_Q(cpu);
-//    let mut hl = cpu.lee_hl();
-//    hl = cpu.dec_16bits(hl);
-//    cpu.escribe_hl(hl);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+/// 0x2B   "dec hl"
+///     The contents of register pair HL are decremented.
+///     =================================
+///     | 0 | 0 | 1 | 0 | 1 | 0 | 1 | 1 | 0x2B
+///     =================================
+///     T-States: 6
+pub fn dec_hl(cpu: &mut CPU) { bas_dec_Q(cpu); }
 
 pub fn dec_hl_txt(cpu: &mut CPU) { cpu.texto(&format!("DEC HL")); }
 
-// 0x2C
+/// 0x2C   "inc l"
+///     Register L is incremented.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if carry from bit 3; otherwise, it is reset.
+///     P/V is set if r was 7Fh before operation; otherwise, it is reset.
+///     N is reset.
+///     C is not affected.
+///     =================================
+///     | 0 | 0 | 1 | 0 | 1 | 1 | 0 | 0 | 0x2C
+///     =================================
+///     T-States: 4
 pub fn inc_l(cpu: &mut CPU) {
     bas_inc_R(cpu);
 }
 
 pub fn inc_l_txt(cpu: &mut CPU) { cpu.texto(&format!("INC L")); }
 
-// 0x2D
+/// 0x2D   "dec l"
+///     Register L is decremented.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if borrow from bit 4, otherwise, it is reset.
+///     P/V is set if m was 80h before operation; otherwise, it is reset.
+///     N is set.
+///     C is not affected.
+///     =================================
+///     | 0 | 0 | 2 | 0 | 1 | 1 | 0 | 1 | 0x2D
+///     =================================
+///     T-States: 4
 pub fn dec_l(cpu: &mut CPU) {
     bas_dec_R(cpu);
 }
 
 pub fn dec_l_txt(cpu: &mut CPU) { cpu.texto(&format!("DEC L")); }
 
-// 0x2E
+/// 0x2E   "ld l,N"
+///     The 8-bit integer N is loaded to H.
+///     =================================
+///     | 0 | 0 | 1 | 0 | 1 | 1 | 1 | 0 | 0x2E
+///     =================================
+///     |            8-bit              |
+///     =================================
+///     T-States: 7
 pub fn ld_l_n(cpu: &mut CPU) {
     bas_ld_R_N(cpu);
 }
 
 pub fn ld_l_n_txt(cpu: &mut CPU) { cpu.texto(&format!("LD L#{:02X}", cpu.r1)); }
 
-// 0x2F
+/// 0x2F   "cpl"
+///     The contents of A are inverted (one's complement).
+///     S, Z, P/V, C are not affected.
+///     H and N are set.
+///     =================================
+///     | 0 | 0 | 1 | 0 | 1 | 1 | 1 | 1 | 0x2F
+///     =================================
+///     T-States: 4
 pub fn cpl(cpu: &mut CPU) {
     cpu.a = cpu.a ^ 0xFF;
 }
@@ -2442,7 +2852,22 @@ pub fn cpl_txt(cpu: &mut CPU) { cpu.texto(&format!("CPL")); }
 
 // *************************** 3 ***********************************
 
-// 0x30
+/// 0x30   "JR NC,E"
+///     This instruction provides for conditional branching to
+///     other segments of a program depending on the results of a test
+///     (C flag is not set). If the test evaluates to *true*, the value of displacement
+///     E is added to PC and the next instruction is fetched from the
+///     location designated by the new contents of the PC. The jump is
+///     measured from the address of the instruction op code and contains
+///     a range of –126 to +129 bytes. The assembler automatically adjusts
+///     for the twice incremented PC.
+///     =================================
+///     | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0x30
+///     =================================
+///     |             E-2               |
+///     =================================
+///     T-States: Condition is met: 12
+///     Condition is not met: 7
 pub fn jr_nc_n(cpu: &mut CPU) {
     let salto = cpu.pc.wrapping_add(cpu.get_bytes_instruccion());
     if !cpu.get_c_flag() {
@@ -2459,20 +2884,23 @@ pub fn jr_nc_n_txt(cpu: &mut CPU) {
     cpu.texto(&format!("JR NC #{:04X}", salto));
 }
 
-// 0x31
-pub fn ld_sp_nn(cpu: &mut CPU) {
-    bas_ld_Q_A(cpu);
-//    cpu.sp = cpu.r1r2; // LD SP,d16
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+/// 0x31   "ld sp,NN"
+///     The 16-bit integer value is loaded to the SP register pair.
+///     =================================
+///     | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 1 | 0x31
+///     =================================
+///     |             N Low             |
+///     =================================
+///     |             N High            |
+///     =================================
+///     T-States: 10
+pub fn ld_sp_nn(cpu: &mut CPU) { bas_ld_Q_A(cpu); }
 
 pub fn ld_sp_nn_txt(cpu: &mut CPU) {
     cpu.texto(&format!("LD SP#{:04X}", cpu.r1r2));
 }
 
-// 0x32 Difiere según procesador (LR35902->LDD  (HL),A)
+/// 0x32 Difiere según procesador (LR35902->LDD  (HL),A)
 pub fn lddOhlO_aGB(cpu: &mut CPU) {
     let mut hl = cpu.lee_hl();
     cpu.mem.escribe_byte_en_mem(hl, cpu.a);
@@ -2486,7 +2914,18 @@ pub fn lddOhlO_aGB(cpu: &mut CPU) {
 
 pub fn lddOhlO_aGB_txt(cpu: &mut CPU) { cpu.texto(&format!("LDD (HL),A")); }
 
-// 0x32 Difiere según procesador (Z80->LD  (nn),A)
+/// 0x32 Difiere según procesador (Z80->LD  (nn),A)
+///     "ld (NN),a"
+///     The contents of A are loaded to the memory address specified by
+///     the operand NN
+///     =================================
+///     | 0 | 0 | 1 | 1 | 1 | 0 | 1 | 0 | 0x32
+///     =================================
+///     |           8-bit L             |
+///     =================================
+///     |           8-bit H             |
+///     =================================
+///     T-States: 13
 pub fn ldOnnO_a(cpu: &mut CPU) {
     cpu.mem.escribe_byte_en_mem(cpu.r1r2, cpu.a);
 
@@ -2498,68 +2937,64 @@ pub fn ldOnnO_a_txt(cpu: &mut CPU) {
     cpu.texto(&format!("LD (#{:04X}),A", cpu.r1r2));
 }
 
-// 0x33
-pub fn inc_sp(cpu: &mut CPU) {
-    bas_inc_Q(cpu);
-//    cpu.sp = cpu.inc_16bits(cpu.sp);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+/// 0x33   "inc sp"
+///     The contents of register pair SP are incremented.
+///     =================================
+///     | 0 | 0 | 1 | 1 | 0 | 0 | 1 | 1 | 0x33
+///     =================================
+///     T-States: 6
+pub fn inc_sp(cpu: &mut CPU) { bas_inc_Q(cpu); }
 
 pub fn inc_sp_txt(cpu: &mut CPU) {
     cpu.texto(&format!("INC SP"));
 }
 
-// 0x34       inc (hl)
-pub fn inc_OhlO(cpu: &mut CPU) {
-    bas_inc_R(cpu);
-
-//    let hl = cpu.lee_hl();
-//    let valor = cpu.mem.lee_byte_de_mem(hl);
-//
-//
-//    let resultado = valor.wrapping_add(1);
-//    cpu.flag_v_u8_en_suma(valor, 1, resultado);
-//    cpu.mem.escribe_byte_en_mem(hl, resultado);
-//
-//    cpu.reset_n_flag();
-//    cpu.flag_s_u8(resultado);
-//    cpu.flag_z_u8(resultado);
-//    cpu.flag_h_u8(resultado);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+/// 0x34   "inc (hl)"
+///     The byte contained in the address specified by the contents HL
+///     is incremented.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if carry from bit 3; otherwise, it is reset.
+///     P/V is set if (HL) was 0x7F before operation; otherwise, it is reset.
+///     N is reset.
+///     C is not affected.
+///     =================================
+///     | 0 | 0 | 1 | 1 | 0 | 1 | 0 | 0 | 0x34
+///     =================================
+///     T-States: 11
+pub fn inc_OhlO(cpu: &mut CPU) { bas_inc_R(cpu); }
 
 pub fn inc_OhlO_txt(cpu: &mut CPU) {
     cpu.texto(&format!("INC(HL)"));
 }
 
-// 0x35
-pub fn dec_OhlO(cpu: &mut CPU) {
-    bas_dec_R(cpu);
-//    let hl = cpu.lee_hl();
-//    let valor = cpu.mem.lee_byte_de_mem(hl);
-//
-//    let resultado = valor.wrapping_sub(1);
-//    cpu.flag_v_u8_en_suma(valor, 1, resultado);
-//    cpu.mem.escribe_byte_en_mem(hl, resultado);
-//
-//    cpu.set_n_flag();
-//    cpu.flag_s_u8(resultado);
-//    cpu.flag_z_u8(resultado);
-//    cpu.flag_h_u8(resultado);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+/// 0x35   "dec (hl)"
+///     The byte contained in the address specified by the contents HL
+///     is decremented.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if borrow from bit 4; otherwise, it is reset.
+///     P/V is set if (HL) was 0x80 before operation; otherwise, it is reset.
+///     N is set.
+///     C is not affected.
+///     =================================
+///     | 0 | 0 | 1 | 1 | 0 | 1 | 0 | 0 | 0x35
+///     =================================
+///     T-States: 11
+pub fn dec_OhlO(cpu: &mut CPU) { bas_dec_R(cpu); }
 
 pub fn dec_OhlO_txt(cpu: &mut CPU) {
     cpu.texto(&format!("DEC(HL)"));
 }
 
-// 0x36 NN
+/// 0x36   "ld (hl),N"
+///     The N 8-bit value is loaded to the memory address specified by HL.
+///     =================================
+///     | 0 | 0 | 1 | 1 | 0 | 1 | 1 | 0 | 0x36
+///     =================================
+///     |            8-bit              |
+///     =================================
+///     T-States: 10
 pub fn ld_OhlO_n(cpu: &mut CPU) {
     let hl = cpu.lee_hl();
 
@@ -2571,13 +3006,16 @@ pub fn ld_OhlO_n(cpu: &mut CPU) {
 
 pub fn ld_OhlO_n_txt(cpu: &mut CPU) { cpu.texto(&format!("LD(HL)#{:02X}", cpu.r1)); }
 
-// 0x37
+/// 0x37   "scf"
+///     The Carry flag in F is set.
+///     Other flags are not affected.
+///     =================================
+///     | 0 | 0 | 1 | 1 | 0 | 1 | 1 | 1 | 0x37
+///     =================================
+///     T-States: 4
 pub fn scf(cpu: &mut CPU) {
-    //cpu.set_c_flag();
     cpu.set_flag(FLAG_C, true);
-    //cpu.reset_h_flag();
     cpu.set_flag(FLAG_H, false);
-    //cpu.reset_n_flag();
     cpu.set_flag(FLAG_N, false);
 
     cpu.t += cpu.get_t_instruccion();
@@ -2589,7 +3027,22 @@ pub fn scf_txt(cpu: &mut CPU) {
 }
 
 
-// 0x38
+/// 0x38  "JR C,E"
+///     This instruction provides for conditional branching to
+///     other segments of a program depending on the results of a test
+///     (C flag is set). If the test evaluates to *true*, the value of displacement
+///     E is added to PC and the next instruction is fetched from the
+///     location designated by the new contents of the PC. The jump is
+///     measured from the address of the instruction op code and contains
+///     a range of –126 to +129 bytes. The assembler automatically adjusts
+///     for the twice incremented PC.
+///     =================================
+///     | 0 | 0 | 1 | 1 | 1 | 0 | 0 | 0 | 0x38
+///     =================================
+///     |             E-2               |
+///     =================================
+///     T-States: Condition is met: 12
+///     Condition is not met: 7
 pub fn jr_c_n(cpu: &mut CPU) {
     let salto = cpu.pc.wrapping_add(cpu.get_bytes_instruccion());
 
@@ -2610,23 +3063,38 @@ pub fn jr_c_n_txt(cpu: &mut CPU) {
 }
 
 
-// 0x39
-pub fn add_hl_sp(cpu: &mut CPU) {
-    bas_add_hl_Q(cpu);
-}
+/// 0x39   "add hl,sp"
+///     The contents of SP are added to the contents of HL and
+///     the result is stored in HL.
+///     S, Z, P/V are not affected.
+///     H is set if carry from bit 11; otherwise, it is reset.
+///     N is reset.
+///     C is set if carry from bit 15; otherwise, it is reset.
+///     =================================
+///     | 0 | 0 | 1 | 1 | 1 | 0 | 0 | 1 | 0x39
+///     =================================
+///     T-States: 11
+pub fn add_hl_sp(cpu: &mut CPU) { bas_add_hl_Q(cpu); }
 
 pub fn add_hl_sp_txt(cpu: &mut CPU) { cpu.texto(&format!("ADD HL,SP")); }
 
 // 0x3A Difiere según procesador (LR35902->LDD A(HL))
-pub fn ldd_a_OhlOGB(cpu: &mut CPU) {
-    fn_no_impl(cpu);
-}
+pub fn ldd_a_OhlOGB(cpu: &mut CPU) { fn_no_impl(cpu); }
 
-pub fn ldd_a_OhlOGB_txt(cpu: &mut CPU) {
-    fn_no_impl(cpu);
-}
+pub fn ldd_a_OhlOGB_txt(cpu: &mut CPU) { fn_no_impl(cpu); }
 
-// 0x3A Difiere según procesador (Z80->LD a(NN))
+/// 0x3A Difiere según procesador (Z80->LD a(NN))
+///     "ld a,(NN)"
+///     The contents of the memory location specified by the operands
+///     NN are loaded to A.
+///     =================================
+///     | 0 | 0 | 1 | 1 | 0 | 0 | 1 | 0 | 0x3A
+///     =================================
+///     |           8-bit L             |
+///     =================================
+///     |           8-bit H             |
+///     =================================
+///     T-States: 13
 pub fn ld_a_OnnO(cpu: &mut CPU) {
     cpu.a = cpu.mem.lee_byte_de_mem(cpu.r1r2);
 
@@ -2634,818 +3102,414 @@ pub fn ld_a_OnnO(cpu: &mut CPU) {
     cpu.pc += cpu.get_bytes_instruccion();
 }
 
-pub fn ld_a_OnnO_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD A(#{:04X})", cpu.r1r2));
-}
+pub fn ld_a_OnnO_txt(cpu: &mut CPU) { cpu.texto(&format!("LD A(#{:04X})", cpu.r1r2)); }
 
-// 0x3B
-pub fn dec_sp(cpu: &mut CPU) {
-    bas_dec_Q(cpu);
-}
+/// 0x3B   "dec sp"
+///     The contents of register pair SP are decremented.
+///     =================================
+///     | 0 | 0 | 1 | 1 | 1 | 0 | 1 | 1 | 0x3B
+///     =================================
+///     T-States: 6
+pub fn dec_sp(cpu: &mut CPU) { bas_dec_Q(cpu); }
 
-pub fn dec_sp_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("DEC SP"));
-}
+pub fn dec_sp_txt(cpu: &mut CPU) { cpu.texto(&format!("DEC SP")); }
 
-// 0x3C
-pub fn inc_a(cpu: &mut CPU) {
-    bas_inc_R(cpu);
+/// 0x3C   "inc a"
+///     Register A is incremented.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if carry from bit 3; otherwise, it is reset.
+///     P/V is set if r was 7Fh before operation; otherwise, it is reset.
+///     N is reset.
+///     C is not affected.
+///     =================================
+///     | 0 | 0 | 1 | 1 | 1 | 1 | 0 | 0 | 0x3C
+///     =================================
+///     T-States: 4
+pub fn inc_a(cpu: &mut CPU) { bas_inc_R(cpu); }
 
+pub fn inc_a_txt(cpu: &mut CPU) { cpu.texto(&format!("INC A")); }
 
-//    cpu.a = cpu.inc_8bits(cpu.a);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+/// 0x3D   "dec a"
+///     Register A is decremented.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if borrow from bit 4, otherwise, it is reset.
+///     P/V is set if m was 80h before operation; otherwise, it is reset.
+///     N is set.
+///     C is not affected.
+///     =================================
+///     | 0 | 0 | 2 | 0 | 1 | 1 | 0 | 1 | 0x3D
+///     =================================
+///     T-States: 4
+pub fn dec_a(cpu: &mut CPU) { bas_dec_R(cpu); }
 
-pub fn inc_a_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("INC A"));
-}
+pub fn dec_a_txt(cpu: &mut CPU) { cpu.texto(&format!("DEC A")); }
 
-// 0x3D
-pub fn dec_a(cpu: &mut CPU) {
-    bas_dec_R(cpu);
-//    cpu.a = cpu.dec_8bits(cpu.a);
-////
-////    cpu.t += cpu.get_t_instruccion();
-////    cpu.pc += cpu.get_bytes_instruccion();
-}
+/// 0x3E   "ld a,N"
+///     The 8-bit integer N is loaded to A.
+///     =================================
+///     | 0 | 0 | 1 | 1 | 1 | 1 | 1 | 0 | 0x3E
+///     =================================
+///     |            8-bit              |
+///     =================================
+///     T-States: 7
+pub fn ld_a_n(cpu: &mut CPU) { bas_ld_R_N(cpu); }
 
-pub fn dec_a_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("DEC A"));
-}
+pub fn ld_a_n_txt(cpu: &mut CPU) { cpu.texto(&format!("LD A,#{:02X}", cpu.r1)); }
 
-// 0x3E
-pub fn ld_a_n(cpu: &mut CPU) {
-    bas_ld_R_N(cpu);
-//    cpu.a = cpu.r1;
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_a_n_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD A,#{:02X}", cpu.r1));
-}
-
-// 0x3F
+/// 0x3F   "ccf"
+///     The Carry flag in F is inverted.
+///     Other flags are not affected.
+///     =================================
+///     | 0 | 0 | 1 | 1 | 1 | 1 | 1 | 1 | 0x3f
+///     =================================
+///     T-States: 4 (4)
 pub fn ccf(cpu: &mut CPU) {
-//    if cpu.get_c_flag() {
-//        cpu.reset_c_flag();
-//
-//    } else {
-//        cpu.set_c_flag();
-//
-//    }
-    cpu.set_flag(FLAG_C, cpu.get_c_flag());
-
-    //cpu.reset_n_flag();
+    cpu.set_flag(FLAG_C, !cpu.get_c_flag());
     cpu.set_flag(FLAG_N, false);
 
     cpu.t += cpu.get_t_instruccion();
     cpu.pc += cpu.get_bytes_instruccion();
 }
 
-pub fn ccf_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("CCF"));
-}
+pub fn ccf_txt(cpu: &mut CPU) { cpu.texto(&format!("CCF")); }
 
 // *************************** 4 ***********************************
 // 0x40
-pub fn ld_b_b(cpu: &mut CPU) {
-    cpu.b = cpu.b;
+pub fn ld_b_b(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn ld_b_b_txt(cpu: &mut CPU) { cpu.texto(&format!("LD B,B")); }
 
-pub fn ld_b_b_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD B,B"));
-}
+/// 0x41   "ld b,c"
+///     The contents of C are loaded to B.
+///     =================================
+///     | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0x41
+///     =================================
+///     T-States: 4
+pub fn ld_b_c(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
-// 0x41
-pub fn ld_b_c(cpu: &mut CPU) {
-    cpu.b = cpu.c;
+pub fn ld_b_c_txt(cpu: &mut CPU) { cpu.texto(&format!("LD B,C")); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
+/// 0x42   "ld b,d"
+///     The contents of D are loaded to B.
+///     =================================
+///     | 0 | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0x42
+///     =================================
+///     T-States: 4
+pub fn ld_b_d(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
-pub fn ld_b_c_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD B,C"));
-}
-
-// 0x42
-pub fn ld_b_d(cpu: &mut CPU) {
-    cpu.b = cpu.d;
-
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_b_d_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD B,D"));
-}
+pub fn ld_b_d_txt(cpu: &mut CPU) { cpu.texto(&format!("LD B,D")); }
 
 // 0x43
-pub fn ld_b_e(cpu: &mut CPU) {
-    cpu.b = cpu.e;
+pub fn ld_b_e(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_b_e_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD B,E"));
-}
+pub fn ld_b_e_txt(cpu: &mut CPU) { cpu.texto(&format!("LD B,E")); }
 
 // 0x44
-pub fn ld_b_h(cpu: &mut CPU) {
-    cpu.b = cpu.h;
+pub fn ld_b_h(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_b_h_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD B,H"));
-}
+pub fn ld_b_h_txt(cpu: &mut CPU) { cpu.texto(&format!("LD B,H")); }
 
 // 0x45
-pub fn ld_b_l(cpu: &mut CPU) {
-    cpu.b = cpu.l;
+pub fn ld_b_l(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_b_l_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD B,L"));
-}
+pub fn ld_b_l_txt(cpu: &mut CPU) { cpu.texto(&format!("LD B,L")); }
 
 // 0x46
-pub fn ld_b_OhlO(cpu: &mut CPU) {
-    let hl = cpu.lee_hl();
-    cpu.b = cpu.mem.lee_byte_de_mem(hl);
+pub fn ld_b_OhlO(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_b_OhlO_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD B,(HL)"));
-}
+pub fn ld_b_OhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("LD B,(HL)")); }
 
 
 // 0x47
-pub fn ld_b_a(cpu: &mut CPU) {
-    cpu.b = cpu.a;
+pub fn ld_b_a(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_b_a_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD B,A"));
-}
+pub fn ld_b_a_txt(cpu: &mut CPU) { cpu.texto(&format!("LD B,A")); }
 
 // 0x48
-pub fn ld_c_b(cpu: &mut CPU) {
-    cpu.c = cpu.b;
+pub fn ld_c_b(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_c_b_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD C,B"));
-}
+pub fn ld_c_b_txt(cpu: &mut CPU) { cpu.texto(&format!("LD C,B")); }
 
 // 0x49
-pub fn ld_c_c(cpu: &mut CPU) {
-    cpu.c = cpu.c;
+pub fn ld_c_c(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_c_c_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD C,C"));
-}
+pub fn ld_c_c_txt(cpu: &mut CPU) { cpu.texto(&format!("LD C,C")); }
 
 // 0x4A
-pub fn ld_c_d(cpu: &mut CPU) {
-    cpu.c = cpu.d;
+pub fn ld_c_d(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_c_d_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD C,D"));
-}
+pub fn ld_c_d_txt(cpu: &mut CPU) { cpu.texto(&format!("LD C,D")); }
 
 // 0x4B
-pub fn ld_c_e(cpu: &mut CPU) {
-    cpu.c = cpu.e;
+pub fn ld_c_e(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_c_e_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD C,E"));
-}
+pub fn ld_c_e_txt(cpu: &mut CPU) { cpu.texto(&format!("LD C,E")); }
 
 // 0x4C
-pub fn ld_c_h(cpu: &mut CPU) {
-    cpu.c = cpu.h;
+pub fn ld_c_h(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_c_h_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD C,H"));
-}
+pub fn ld_c_h_txt(cpu: &mut CPU) { cpu.texto(&format!("LD C,H")); }
 
 // 0x4D
-pub fn ld_c_l(cpu: &mut CPU) {
-    cpu.c = cpu.l;
+pub fn ld_c_l(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_c_l_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD C,E"));
-}
+pub fn ld_c_l_txt(cpu: &mut CPU) { cpu.texto(&format!("LD C,E")); }
 
 // 0x4E
-pub fn ld_c_OhlO(cpu: &mut CPU) {
-    let hl = cpu.lee_hl();
-    cpu.c = cpu.mem.lee_byte_de_mem(hl);
+pub fn ld_c_OhlO(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
-    cpu.t += 7;
-    cpu.pc += 1;
-}
-
-pub fn ld_c_OhlO_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD C,(HL)"));
-}
+pub fn ld_c_OhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("LD C,(HL)")); }
 
 // 0x4F
-pub fn ld_c_a(cpu: &mut CPU) {
-    cpu.c = cpu.a;
+pub fn ld_c_a(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_c_a_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD C,A"));
-}
+pub fn ld_c_a_txt(cpu: &mut CPU) { cpu.texto(&format!("LD C,A")); }
 
 // *************************** 5 ***********************************
 // 0x50
-pub fn ld_d_b(cpu: &mut CPU) {
-    cpu.d = cpu.b;
-
-    cpu.pc += cpu.get_bytes_instruccion();
-    cpu.t += cpu.get_t_instruccion();
-}
+pub fn ld_d_b(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_d_b_txt(cpu: &mut CPU) { cpu.texto(&format!("LD D,B")); }
 
 // 0x51
-pub fn ld_d_c(cpu: &mut CPU) {
-    cpu.d = cpu.c;
-
-    cpu.pc += cpu.get_bytes_instruccion();
-    cpu.t += cpu.get_t_instruccion();
-}
+pub fn ld_d_c(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_d_c_txt(cpu: &mut CPU) { cpu.texto(&format!("LD D,C")); }
 
 // 0x52
-pub fn ld_d_d(cpu: &mut CPU) {
-    cpu.d = cpu.d;
-
-    cpu.pc += cpu.get_bytes_instruccion();
-    cpu.t += cpu.get_t_instruccion();
-}
+pub fn ld_d_d(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_d_d_txt(cpu: &mut CPU) { cpu.texto(&format!("LD D,D")); }
 
 // 0x53
-pub fn ld_d_e(cpu: &mut CPU) {
-    cpu.d = cpu.e;
-
-    cpu.pc += cpu.get_bytes_instruccion();
-    cpu.t += cpu.get_t_instruccion();
-}
+pub fn ld_d_e(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_d_e_txt(cpu: &mut CPU) { cpu.texto(&format!("LD D,E")); }
 
 // 0x54
-pub fn ld_d_h(cpu: &mut CPU) {
-    cpu.d = cpu.h;
-
-    cpu.pc += cpu.get_bytes_instruccion();
-    cpu.t += cpu.get_t_instruccion();
-}
+pub fn ld_d_h(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_d_h_txt(cpu: &mut CPU) { cpu.texto(&format!("LD D,H")); }
 
 // 0x55
-pub fn ld_d_l(cpu: &mut CPU) {
-    cpu.d = cpu.l;
-
-    cpu.pc += cpu.get_bytes_instruccion();
-    cpu.t += cpu.get_t_instruccion();
-}
+pub fn ld_d_l(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_d_l_txt(cpu: &mut CPU) { cpu.texto(&format!("LD D,L")); }
 
 // 0x56
-pub fn ld_d_OhlO(cpu: &mut CPU) {
-    let hl = cpu.lee_hl();
-    cpu.d = cpu.mem.lee_byte_de_mem(hl);
-
-    cpu.pc += cpu.get_bytes_instruccion();
-    cpu.t += cpu.get_t_instruccion();
-}
+pub fn ld_d_OhlO(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_d_OhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("LD D(HL)")); }
 
 // 0x57
-pub fn ld_d_a(cpu: &mut CPU) {
-    cpu.d = cpu.a;
-
-    cpu.pc += cpu.get_bytes_instruccion();
-    cpu.t += cpu.get_t_instruccion();
-}
+pub fn ld_d_a(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_d_a_txt(cpu: &mut CPU) { cpu.texto(&format!("LD D,A")); }
 
 // 0x58
-pub fn ld_e_b(cpu: &mut CPU) {
-    cpu.e = cpu.b;
-
-    cpu.pc += cpu.get_bytes_instruccion();
-    cpu.t += cpu.get_t_instruccion();
-}
+pub fn ld_e_b(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_e_b_txt(cpu: &mut CPU) { cpu.texto(&format!("LD E,B")); }
 
 // 0x59
-pub fn ld_e_c(cpu: &mut CPU) {
-    cpu.e = cpu.c;
-
-    cpu.pc += cpu.get_bytes_instruccion();
-    cpu.t += cpu.get_t_instruccion();
-}
+pub fn ld_e_c(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_e_c_txt(cpu: &mut CPU) { cpu.texto(&format!("LD E,C")); }
 
 // 0x5A
-pub fn ld_e_d(cpu: &mut CPU) {
-    cpu.e = cpu.d;
-
-    cpu.pc += cpu.get_bytes_instruccion();
-    cpu.t += cpu.get_t_instruccion();
-}
+pub fn ld_e_d(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_e_d_txt(cpu: &mut CPU) { cpu.texto(&format!("LD E,D")); }
 
 // 0x5B
-pub fn ld_e_e(cpu: &mut CPU) {
-    cpu.e = cpu.e;
-
-    cpu.pc += cpu.get_bytes_instruccion();
-    cpu.t += cpu.get_t_instruccion();
-}
+pub fn ld_e_e(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_e_e_txt(cpu: &mut CPU) { cpu.texto(&format!("LD E,E")); }
 
 // 0x5C
-pub fn ld_e_h(cpu: &mut CPU) {
-    cpu.e = cpu.h;
-
-    cpu.t += 4;
-    cpu.pc += 1;
-}
+pub fn ld_e_h(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_e_h_txt(cpu: &mut CPU) { cpu.texto(&format!("LD E,H")); }
 
 // 0x5D
-pub fn ld_e_l(cpu: &mut CPU) {
-    cpu.e = cpu.l;
-
-    cpu.pc += cpu.get_bytes_instruccion();
-    cpu.t += cpu.get_t_instruccion();
-}
+pub fn ld_e_l(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_e_l_txt(cpu: &mut CPU) { cpu.texto(&format!("LD E,L")); }
 
 // 0x5E
-pub fn ld_e_OhlO(cpu: &mut CPU) {
-    let hl = cpu.lee_hl();
-    cpu.e = cpu.mem.lee_byte_de_mem(hl);
-
-    cpu.pc += cpu.get_bytes_instruccion();
-    cpu.t += cpu.get_t_instruccion();
-}
+pub fn ld_e_OhlO(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_e_OhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("LD E,(HL)")); }
 
 // 0x5F
-pub fn ld_e_a(cpu: &mut CPU) {
-    cpu.e = cpu.a;
-
-    cpu.pc += cpu.get_bytes_instruccion();
-    cpu.t += cpu.get_t_instruccion();
-}
+pub fn ld_e_a(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_e_a_txt(cpu: &mut CPU) { cpu.texto(&format!("LD E,A")); }
 
 // *************************** 6 ***********************************
 // 0x60
-pub fn ld_h_b(cpu: &mut CPU) {
-    cpu.h = cpu.b;
+pub fn ld_h_b(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_h_b_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD H,B"));
-}
+pub fn ld_h_b_txt(cpu: &mut CPU) { cpu.texto(&format!("LD H,B")); }
 
 // 0x61
-pub fn ld_h_c(cpu: &mut CPU) {
-    cpu.h = cpu.c;
+pub fn ld_h_c(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_h_c_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD H,C"));
-}
+pub fn ld_h_c_txt(cpu: &mut CPU) { cpu.texto(&format!("LD H,C")); }
 
 // 0x62
-pub fn ld_h_d(cpu: &mut CPU) {
-    cpu.h = cpu.d;
+pub fn ld_h_d(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_h_d_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD H,D"));
-}
+pub fn ld_h_d_txt(cpu: &mut CPU) { cpu.texto(&format!("LD H,D")); }
 
 // 0x63
-pub fn ld_h_e(cpu: &mut CPU) {
-    cpu.h = cpu.e;
+pub fn ld_h_e(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_h_e_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD H,E"));
-}
+pub fn ld_h_e_txt(cpu: &mut CPU) { cpu.texto(&format!("LD H,E")); }
 
 
 // 0x64
-pub fn ld_h_h(cpu: &mut CPU) {
-    cpu.h = cpu.h;
+pub fn ld_h_h(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_h_h_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD H,H"));
-}
+pub fn ld_h_h_txt(cpu: &mut CPU) { cpu.texto(&format!("LD H,H")); }
 
 // 0x65
-pub fn ld_h_l(cpu: &mut CPU) {
-    cpu.h = cpu.l;
+pub fn ld_h_l(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_h_l_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD H,L"));
-}
+pub fn ld_h_l_txt(cpu: &mut CPU) { cpu.texto(&format!("LD H,L")); }
 
 // 0x66
-pub fn ld_h_OhlO(cpu: &mut CPU) {
-    let hl = cpu.lee_hl();
-    cpu.h = cpu.mem.lee_byte_de_mem(hl);
+pub fn ld_h_OhlO(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_h_OhlO_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD H,(HL)"));
-}
+pub fn ld_h_OhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("LD H,(HL)")); }
 
 // 0x67
-pub fn ld_h_a(cpu: &mut CPU) {
-    cpu.h = cpu.a;
+pub fn ld_h_a(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_h_a_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD H,A"));
-}
+pub fn ld_h_a_txt(cpu: &mut CPU) { cpu.texto(&format!("LD H,A")); }
 
 // 0x68
-pub fn ld_l_b(cpu: &mut CPU) {
-    cpu.l = cpu.b;
+pub fn ld_l_b(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_l_b_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD L,B"));
-}
+pub fn ld_l_b_txt(cpu: &mut CPU) { cpu.texto(&format!("LD L,B")); }
 
 // 0x69
-pub fn ld_l_c(cpu: &mut CPU) {
-    cpu.l = cpu.c;
+pub fn ld_l_c(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_l_c_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD L,C"));
-}
+pub fn ld_l_c_txt(cpu: &mut CPU) { cpu.texto(&format!("LD L,C")); }
 
 // 0x6A
-pub fn ld_l_d(cpu: &mut CPU) {
-    cpu.l = cpu.d;
+pub fn ld_l_d(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_l_d_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD L,D"));
-}
+pub fn ld_l_d_txt(cpu: &mut CPU) { cpu.texto(&format!("LD L,D")); }
 
 // 0x6B
-pub fn ld_l_e(cpu: &mut CPU) {
-    cpu.l = cpu.e;
+pub fn ld_l_e(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_l_e_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD L,E"));
-}
+pub fn ld_l_e_txt(cpu: &mut CPU) { cpu.texto(&format!("LD L,E")); }
 
 // 0x6C
-pub fn ld_l_h(cpu: &mut CPU) {
-    cpu.l = cpu.h;
+pub fn ld_l_h(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_l_h_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD L,H"));
-}
+pub fn ld_l_h_txt(cpu: &mut CPU) { cpu.texto(&format!("LD L,H")); }
 
 // 0x6D
-pub fn ld_l_l(cpu: &mut CPU) {
-    cpu.l = cpu.l;
+pub fn ld_l_l(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_l_l_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD L,L"));
-}
+pub fn ld_l_l_txt(cpu: &mut CPU) { cpu.texto(&format!("LD L,L")); }
 
 // 0x6E
-pub fn ld_l_OhlO(cpu: &mut CPU) {
-    let hl = cpu.lee_hl();
-    cpu.l = cpu.mem.lee_byte_de_mem(hl);
+pub fn ld_l_OhlO(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_l_OhlO_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD L,(HL)"));
-}
+pub fn ld_l_OhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("LD L,(HL)")); }
 
 // 0x6F
-pub fn ld_l_a(cpu: &mut CPU) {
-    cpu.l = cpu.a;
+pub fn ld_l_a(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_l_a_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD L,A"));
-}
+pub fn ld_l_a_txt(cpu: &mut CPU) { cpu.texto(&format!("LD L,A")); }
 
 // *************************** 7 ***********************************
 // 0x70
-pub fn ldOhlO_b(cpu: &mut CPU) {
-    let hl = cpu.lee_hl();
-    cpu.mem.escribe_byte_en_mem(hl, cpu.b);
-
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn ldOhlO_b(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ldOhlO_b_txt(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),B")); }
 
 // 0x71
-pub fn ldOhlO_c(cpu: &mut CPU) {
-    let hl = cpu.lee_hl();
-    cpu.mem.escribe_byte_en_mem(hl, cpu.c);
-
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn ldOhlO_c(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),B")); }
 
 pub fn ldOhlO_c_txt(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),C")); }
 
 // 0x72
-pub fn ldOhlO_d(cpu: &mut CPU) {
-    let hl = cpu.lee_hl();
-    cpu.mem.escribe_byte_en_mem(hl, cpu.d);
-
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn ldOhlO_d(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),B")); }
 
 pub fn ldOhlO_d_txt(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),D")); }
 
 // 0x73
-pub fn ldOhlO_e(cpu: &mut CPU) {
-    let hl = cpu.lee_hl();
-    cpu.mem.escribe_byte_en_mem(hl, cpu.e);
-
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn ldOhlO_e(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),B")); }
 
 pub fn ldOhlO_e_txt(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),E")); }
 
 // 0x74
-pub fn ldOhlO_h(cpu: &mut CPU) {
-    let hl = cpu.lee_hl();
-    cpu.mem.escribe_byte_en_mem(hl, cpu.h);
-
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn ldOhlO_h(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),B")); }
 
 pub fn ldOhlO_h_txt(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),H")); }
 
 // 0x75
-pub fn ldOhlO_l(cpu: &mut CPU) {
-    let hl = cpu.lee_hl();
-    cpu.mem.escribe_byte_en_mem(hl, cpu.l);
-
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn ldOhlO_l(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),B")); }
 
 pub fn ldOhlO_l_txt(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),L")); }
 
-
+// 0x76 halt
 // 0x77
-pub fn ldOhlO_a(cpu: &mut CPU) {
-    let hl = cpu.lee_hl();
-    cpu.mem.escribe_byte_en_mem(hl, cpu.a);
-
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn ldOhlO_a(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),B")); }
 
 pub fn ldOhlO_a_txt(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),A")); }
 
 // 0x78
-pub fn ld_a_b(cpu: &mut CPU) {
-    cpu.a = cpu.b;
+pub fn ld_a_b(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),B")); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_a_b_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD A,B"));
-}
+pub fn ld_a_b_txt(cpu: &mut CPU) { cpu.texto(&format!("LD A,B")); }
 
 // 0x79
-pub fn ld_a_c(cpu: &mut CPU) {
-    cpu.a = cpu.c;
+pub fn ld_a_c(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),B")); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_a_c_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD A,C"));
-}
+pub fn ld_a_c_txt(cpu: &mut CPU) { cpu.texto(&format!("LD A,C")); }
 
 // 0x7A
-pub fn ld_a_d(cpu: &mut CPU) {
-    cpu.a = cpu.d;
+pub fn ld_a_d(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),B")); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_a_d_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD A,D"));
-}
+pub fn ld_a_d_txt(cpu: &mut CPU) { cpu.texto(&format!("LD A,D")); }
 
 // 0x7B
-pub fn ld_a_e(cpu: &mut CPU) {
-    cpu.a = cpu.e;
+pub fn ld_a_e(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),B")); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_a_e_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD A,E"));
-}
+pub fn ld_a_e_txt(cpu: &mut CPU) { cpu.texto(&format!("LD A,E")); }
 
 // 0x7C
-pub fn ld_a_h(cpu: &mut CPU) {
-    cpu.a = cpu.h;
+pub fn ld_a_h(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),B")); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_a_h_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD A,H"));
-}
+pub fn ld_a_h_txt(cpu: &mut CPU) { cpu.texto(&format!("LD A,H")); }
 
 // 0x7D
-pub fn ld_a_l(cpu: &mut CPU) {
-    cpu.a = cpu.l;
+pub fn ld_a_l(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),B")); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_a_l_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD A,L"));
-}
+pub fn ld_a_l_txt(cpu: &mut CPU) { cpu.texto(&format!("LD A,L")); }
 
 // 0x7E
-pub fn ld_a_OhlO(cpu: &mut CPU) {
-    let hl = cpu.lee_hl();
-    cpu.a = cpu.mem.lee_byte_de_mem(hl);
+pub fn ld_a_OhlO(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),B")); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_a_OhlO_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD A,(HL)"));
-}
+pub fn ld_a_OhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("LD A,(HL)")); }
 
 // 0x7F
-pub fn ld_a_a(cpu: &mut CPU) {
-    cpu.a = cpu.a;
+pub fn ld_a_a(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),B")); }
 
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn ld_a_a_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD A,A"));
-}
+pub fn ld_a_a_txt(cpu: &mut CPU) { cpu.texto(&format!("LD A,A")); }
 
 // *************************** 8 ***********************************
 //0x80
-pub fn add_a_b(cpu: &mut CPU) {
-    bas_add_a_R(cpu);
-}
+pub fn add_a_b(cpu: &mut CPU) { bas_add_a_R(cpu); }
 
 pub fn add_a_b_txt(cpu: &mut CPU) { cpu.texto(&format!("ADD A,B")); }
 
@@ -3462,9 +3526,7 @@ pub fn add_a_d(cpu: &mut CPU) { bas_add_a_R(cpu); }
 pub fn add_a_d_txt(cpu: &mut CPU) { cpu.texto(&format!("ADD A,D")); }
 
 //0x83
-pub fn add_a_e(cpu: &mut CPU) {
-    bas_add_a_R(cpu);
-}
+pub fn add_a_e(cpu: &mut CPU) { bas_add_a_R(cpu); }
 
 
 pub fn add_a_e_txt(cpu: &mut CPU) { cpu.texto(&format!("ADD A,E")); }
@@ -3488,13 +3550,7 @@ pub fn add_a_OhlO(cpu: &mut CPU) { bas_add_a_R(cpu); }
 pub fn add_a_OhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("ADD A,(HL)")); }
 
 //0x87
-pub fn add_a_a(cpu: &mut CPU) {
-    bas_add_a_R(cpu);
-//    cpu.a = cpu.suma_u8_mas_u8(cpu.a, cpu.a);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn add_a_a(cpu: &mut CPU) { bas_add_a_R(cpu); }
 
 
 pub fn add_a_a_txt(cpu: &mut CPU) { cpu.texto(&format!("ADD A,A")); }
@@ -3550,92 +3606,42 @@ pub fn adc_a_a_txt(cpu: &mut CPU) { fn_no_impl(cpu); }
 
 // *************************** 9 ***********************************
 // 0x90
-pub fn sub_b(cpu: &mut CPU) {
-    bas_sub_R(cpu);
-//    cpu.a = cpu.resta_u8_menos_u8(cpu.a, cpu.b);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn sub_b(cpu: &mut CPU) { bas_sub_R(cpu); }
 
 pub fn sub_b_txt(cpu: &mut CPU) { cpu.texto(&format!("SUB B")); }
 
 // 0x91
-pub fn sub_c(cpu: &mut CPU) {
-    bas_sub_R(cpu);
-//    cpu.a = cpu.resta_u8_menos_u8(cpu.a, cpu.c);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn sub_c(cpu: &mut CPU) { bas_sub_R(cpu); }
 
 pub fn sub_c_txt(cpu: &mut CPU) { cpu.texto(&format!("SUB C")); }
 
 // 0x92
-pub fn sub_d(cpu: &mut CPU) {
-    bas_sub_R(cpu);
-//    cpu.a = cpu.resta_u8_menos_u8(cpu.a, cpu.d);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn sub_d(cpu: &mut CPU) { bas_sub_R(cpu); }
 
 pub fn sub_d_txt(cpu: &mut CPU) { cpu.texto(&format!("SUB D")); }
 
 // 0x93
-pub fn sub_e(cpu: &mut CPU) {
-    bas_sub_R(cpu);
-//    cpu.a = cpu.resta_u8_menos_u8(cpu.a, cpu.e);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn sub_e(cpu: &mut CPU) { bas_sub_R(cpu); }
 
 pub fn sub_e_txt(cpu: &mut CPU) { cpu.texto(&format!("SUB E")); }
 
 // 0x94
-pub fn sub_h(cpu: &mut CPU) {
-    bas_sub_R(cpu);
-//    cpu.a = cpu.resta_u8_menos_u8(cpu.a, cpu.h);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn sub_h(cpu: &mut CPU) { bas_sub_R(cpu); }
 
 pub fn sub_h_txt(cpu: &mut CPU) { cpu.texto(&format!("SUB H")); }
 
 // 0x95
-pub fn sub_l(cpu: &mut CPU) {
-    bas_sub_R(cpu);
-//    cpu.a = cpu.resta_u8_menos_u8(cpu.a, cpu.l);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn sub_l(cpu: &mut CPU) { bas_sub_R(cpu); }
 
 pub fn sub_l_txt(cpu: &mut CPU) { cpu.texto(&format!("SUB L")); }
 
 // 0x96
-pub fn subOhlO(cpu: &mut CPU) {
-    bas_sub_R(cpu);
-//    let hl = cpu.lee_hl();
-//    let dato = cpu.mem.lee_byte_de_mem(hl);
-//    cpu.a = cpu.resta_u8_menos_u8(cpu.a, dato);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn subOhlO(cpu: &mut CPU) { bas_sub_R(cpu); }
 
 pub fn subOhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("SUB(HL)")); }
 
 // 0x97
-pub fn sub_a(cpu: &mut CPU) {
-    bas_sub_R(cpu);
-//    cpu.a = cpu.resta_u8_menos_u8(cpu.a, cpu.a);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn sub_a(cpu: &mut CPU) { bas_sub_R(cpu); }
 
 pub fn sub_a_txt(cpu: &mut CPU) { cpu.texto(&format!("SUB A")); }
 
@@ -3676,13 +3682,7 @@ pub fn and_OhlO(cpu: &mut CPU) { bas_and_R(cpu); }
 pub fn and_OhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("AND(HL)")); }
 
 // 0xA7
-pub fn and_a(cpu: &mut CPU) {
-    bas_and_R(cpu);
-//    cpu.a = cpu.and_u8_con_u8(cpu.a, cpu.a);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn and_a(cpu: &mut CPU) { bas_and_R(cpu); }
 
 pub fn and_a_txt(cpu: &mut CPU) { cpu.texto(&format!("AND A")); }
 
@@ -3717,26 +3717,12 @@ pub fn xor_l(cpu: &mut CPU) { bas_xor_R(cpu); }
 pub fn xor_l_txt(cpu: &mut CPU) { cpu.texto(&format!("XOR L")); }
 
 // 0xAE
-pub fn xor_OhlO(cpu: &mut CPU) {
-    bas_xor_R(cpu);
-//    let hl = cpu.lee_hl();
-//    let dato = cpu.mem.lee_byte_de_mem(hl);
-//    cpu.a = cpu.xor_u8_con_u8(cpu.a, dato);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn xor_OhlO(cpu: &mut CPU) { bas_xor_R(cpu); }
 
 pub fn xor_OhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("XOR(HL)")); }
 
 // 0xAF Xor consigo mismo pone a 0 y modifica flags
-pub fn xor_a(cpu: &mut CPU) {
-    bas_xor_R(cpu);
-//    cpu.a = cpu.xor_u8_con_u8(cpu.a, cpu.a);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn xor_a(cpu: &mut CPU) { bas_xor_R(cpu); }
 
 pub fn xor_a_txt(cpu: &mut CPU) { cpu.texto(&format!("XOR A")); }
 
@@ -3757,13 +3743,7 @@ pub fn or_d(cpu: &mut CPU) { bas_or_R(cpu); }
 pub fn or_d_txt(cpu: &mut CPU) { cpu.texto(&format!("OR D")); }
 
 // 0xB3
-pub fn or_e(cpu: &mut CPU) {
-    bas_or_R(cpu);
-//    cpu.a = cpu.or_u8_con_u8(cpu.a, cpu.e);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn or_e(cpu: &mut CPU) { bas_or_R(cpu); }
 
 pub fn or_e_txt(cpu: &mut CPU) { cpu.texto(&format!("OR E")); }
 
@@ -3788,106 +3768,56 @@ pub fn or_a(cpu: &mut CPU) { bas_or_R(cpu); }
 pub fn or_a_txt(cpu: &mut CPU) { cpu.texto(&format!("OR A")); }
 
 // 0xB8
-pub fn cp_b(cpu: &mut CPU) {
-    bas_cp_R(cpu);
-//    let _ = cpu.resta_u8_menos_u8(cpu.a, cpu.b);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn cp_b(cpu: &mut CPU) { bas_cp_R(cpu); }
 
 pub fn cp_b_txt(cpu: &mut CPU) {
     cpu.texto(&format!("CP B"));
 }
 
 // 0xB9
-pub fn cp_c(cpu: &mut CPU) {
-    bas_cp_R(cpu);
-//    let _ = cpu.resta_u8_menos_u8(cpu.a, cpu.c);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn cp_c(cpu: &mut CPU) { bas_cp_R(cpu); }
 
 pub fn cp_c_txt(cpu: &mut CPU) {
     cpu.texto(&format!("CP C"));
 }
 
 // 0xBA
-pub fn cp_d(cpu: &mut CPU) {
-    bas_cp_R(cpu);
-//    let _ = cpu.resta_u8_menos_u8(cpu.a, cpu.d);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn cp_d(cpu: &mut CPU) { bas_cp_R(cpu); }
 
 pub fn cp_d_txt(cpu: &mut CPU) {
     cpu.texto(&format!("CP D"));
 }
 
 // 0xBB
-pub fn cp_e(cpu: &mut CPU) {
-    bas_cp_R(cpu);
-//    let _ = cpu.resta_u8_menos_u8(cpu.a, cpu.e);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn cp_e(cpu: &mut CPU) { bas_cp_R(cpu); }
 
 pub fn cp_e_txt(cpu: &mut CPU) {
     cpu.texto(&format!("CP E"));
 }
 
 // 0xBC
-pub fn cp_h(cpu: &mut CPU) {
-    bas_cp_R(cpu);
-//    let _ = cpu.resta_u8_menos_u8(cpu.a, cpu.h);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn cp_h(cpu: &mut CPU) { bas_cp_R(cpu); }
 
 pub fn cp_h_txt(cpu: &mut CPU) {
     cpu.texto(&format!("CP H"));
 }
 
 // 0xBD
-pub fn cp_l(cpu: &mut CPU) {
-    bas_cp_R(cpu);
-//    let _ = cpu.resta_u8_menos_u8(cpu.a, cpu.l);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn cp_l(cpu: &mut CPU) { bas_cp_R(cpu); }
 
 pub fn cp_l_txt(cpu: &mut CPU) {
     cpu.texto(&format!("CP L"));
 }
 
 // 0xBE
-pub fn cpOhlO(cpu: &mut CPU) {
-    bas_cp_R(cpu);
-//    let hl = cpu.lee_hl();
-//    let dato = cpu.mem.lee_byte_de_mem(hl);
-//    let _ = cpu.resta_u8_menos_u8(cpu.a, dato);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn cpOhlO(cpu: &mut CPU) { bas_cp_R(cpu); }
 
 pub fn cpOhlO_txt(cpu: &mut CPU) {
     cpu.texto(&format!("CP (HL)"));
 }
 
 // 0xBF
-pub fn cp_a(cpu: &mut CPU) {
-    bas_cp_R(cpu);
-//    let _ = cpu.resta_u8_menos_u8(cpu.a, cpu.a);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn cp_a(cpu: &mut CPU) { bas_cp_R(cpu); }
 
 pub fn cp_a_txt(cpu: &mut CPU) {
     cpu.texto(&format!("CP A"));
