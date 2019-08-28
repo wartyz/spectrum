@@ -218,29 +218,17 @@ fn sbc_hl_de(cpu: &mut CPU) {
     let mut hl = cpu.lee_hl();
     let de = cpu.lee_de();
 
-    if cpu.get_c_flag() {  // C
+    if cpu.get_c_flag() {
         hl = hl.wrapping_sub(de.wrapping_add(1));
     } else {
         hl = hl.wrapping_sub(de);
     }
-    let hltupla = cpu.desconcatena_un_u16_en_dos_u8(hl);
+    let hltupla = desconcatena_un_u16_en_dos_u8(hl);
     cpu.h = hltupla.0;
     cpu.l = hltupla.1;
 
-    // Z
-//    if hl == 0 {
-//        cpu.set_z_flag();
-//    } else {
-//        cpu.reset_z_flag();
-//    }
-    cpu.set_flag(FLAG_Z, hl == 0);
-    // C
-//    if hl < de {
-//        cpu.set_c_flag();
-//    } else {
-//        cpu.reset_c_flag();
-//    }
-    cpu.set_flag(FLAG_C, hl < de);
+    cpu.set_flag(FLAG_Z, hl == 0); // Z
+    cpu.set_flag(FLAG_C, hl < de); // C
     // P/V
     if overflow_en_resta_u16(hl, de, hl) {
         //cpu.set_pv_flag();
@@ -250,7 +238,6 @@ fn sbc_hl_de(cpu: &mut CPU) {
     }
 
     // N
-    //cpu.set_n_flag();
     cpu.set_flag(FLAG_N, true);
 
     cpu.t += 15;
@@ -372,9 +359,9 @@ pub fn ldir(cpu: &mut CPU) {
     let dedec = inc_16bits(cpu, de);
     let bcdec = dec_16bits(bc);
 
-    let hl_tupla = cpu.desconcatena_un_u16_en_dos_u8(hldec);
-    let de_tupla = cpu.desconcatena_un_u16_en_dos_u8(dedec);
-    let bc_tupla = cpu.desconcatena_un_u16_en_dos_u8(bcdec);
+    let hl_tupla = desconcatena_un_u16_en_dos_u8(hldec);
+    let de_tupla = desconcatena_un_u16_en_dos_u8(dedec);
+    let bc_tupla = desconcatena_un_u16_en_dos_u8(bcdec);
 
     cpu.h = hl_tupla.0;
     cpu.l = hl_tupla.1;
@@ -418,9 +405,9 @@ pub fn lddr(cpu: &mut CPU) {
     let dedec = dec_16bits(de);
     let bcdec = dec_16bits(bc);
 
-    let hl_tupla = cpu.desconcatena_un_u16_en_dos_u8(hldec);
-    let de_tupla = cpu.desconcatena_un_u16_en_dos_u8(dedec);
-    let bc_tupla = cpu.desconcatena_un_u16_en_dos_u8(bcdec);
+    let hl_tupla = desconcatena_un_u16_en_dos_u8(hldec);
+    let de_tupla = desconcatena_un_u16_en_dos_u8(dedec);
+    let bc_tupla = desconcatena_un_u16_en_dos_u8(bcdec);
 
     cpu.h = hl_tupla.0;
     cpu.l = hl_tupla.1;

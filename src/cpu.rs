@@ -10,6 +10,7 @@ use crate::instrucciones_ed::*;
 use crate::instrucciones_fd::*;
 use crate::instrucciones_fdcb::*;
 use crate::procesador::PROCESADOR;
+use crate::operaciones_binarias::*;
 
 use super::constantes::*;
 
@@ -130,14 +131,6 @@ pub struct CPU {
 //// FLAGS EN Z80 ****************************
 //// Bit           7  6  5  4  3   2   1  0
 //// Posicion      S  Z  X  H  X  P/V  N  C   (X = no usado)
-//// Mascaras de flags
-//pub const FLAG_C: u8 = 1u8 << 0;
-//pub const FLAG_N: u8 = 1u8 << 1;
-//pub const FLAG_PV: u8 = 1u8 << 2;
-//pub const FLAG_H: u8 = 1u8 << 4;
-//pub const FLAG_Z: u8 = 1u8 << 6;
-//pub const FLAG_S: u8 = 1u8 << 7;
-
 
 impl CPU {
     pub fn new(mem: MEM, procesador: PROCESADOR) -> CPU {
@@ -222,7 +215,6 @@ impl CPU {
     pub fn get_flag(&self, bit_mask: u8) -> bool {
         (self.f & bit_mask) != 0
     }
-
     pub fn get_s_flag(&self) -> bool { self.get_flag(FLAG_S) }
     pub fn get_z_flag(&self) -> bool {
         self.get_flag(FLAG_Z)
@@ -236,9 +228,7 @@ impl CPU {
     pub fn get_n_flag(&self) -> bool {
         self.get_flag(FLAG_N)
     }
-    pub fn get_c_flag(&self) -> bool {
-        self.get_flag(FLAG_C)
-    }
+    pub fn get_c_flag(&self) -> bool { self.get_flag(FLAG_C) }
 
 
     // FUNCIONES ARITMETICAS **************************************
@@ -286,136 +276,92 @@ impl CPU {
     }
 
 
-    // Pone los flags segun lo que se le envie *********************************
-    pub fn flag_s_u8(&mut self, valor: u8) { // Signo
-        self.set_flag(FLAG_S, valor & FLAG_S != 0);
-    }
-
-    pub fn flag_s_u16(&mut self, valor: u16) { // Signo
-        self.set_flag(FLAG_S, valor & 0b1000_0000_0000_0000 != 0);
-    }
-
-    pub fn flag_z_u8(&mut self, valor: u8) { // Zero
-        self.set_flag(FLAG_Z, valor == 0);
-    }
-
-    pub fn flag_z_u16(&mut self, valor: u16) { // Zero
-        self.set_flag(FLAG_S, valor == 0);
-    }
-
-
-    pub fn concatena_dos_u8_en_un_u16(&mut self, hight: u8, low: u8) -> u16 {
-        ((hight as u16) << 8) | (low as u16)
-    }
-
-    pub fn desconcatena_un_u16_en_dos_u8(&mut self, valor: u16) -> (u8, u8) {
-        let hight = ((valor & 0b1111_1111_0000_0000) >> 8) as u8;
-        let low = (valor & 0b0000_0000_1111_1111) as u8;
-        (hight, low)
-    }
-
-
-    // Devuelve el valor de un bit en una posición de un u8
-    pub fn get_bitu8(&self, valor: u8, posicion: u8) -> bool {
-        valor & (1u8 << posicion) != 0
-    }
-
     // Devuelve registros multiples concatenando los registros simples
-    pub fn lee_af(&mut self) -> u16 {
-        self.concatena_dos_u8_en_un_u16(self.a, self.f)
-    }
+    pub fn lee_af(&mut self) -> u16 { concatena_dos_u8_en_un_u16(self.a, self.f) }
 
-    pub fn lee_afp(&mut self) -> u16 {
-        self.concatena_dos_u8_en_un_u16(self.ap, self.fp)
-    }
+    pub fn lee_afp(&mut self) -> u16 { concatena_dos_u8_en_un_u16(self.ap, self.fp) }
 
-    pub fn lee_bc(&mut self) -> u16 {
-        self.concatena_dos_u8_en_un_u16(self.b, self.c)
-    }
+    pub fn lee_bc(&mut self) -> u16 { concatena_dos_u8_en_un_u16(self.b, self.c) }
 
     pub fn lee_bcp(&mut self) -> u16 {
-        self.concatena_dos_u8_en_un_u16(self.bp, self.cp)
+        concatena_dos_u8_en_un_u16(self.bp, self.cp)
     }
 
     pub fn lee_de(&mut self) -> u16 {
-        self.concatena_dos_u8_en_un_u16(self.d, self.e)
+        concatena_dos_u8_en_un_u16(self.d, self.e)
     }
 
-    pub fn lee_dep(&mut self) -> u16 { self.concatena_dos_u8_en_un_u16(self.dp, self.ep) }
+    pub fn lee_dep(&mut self) -> u16 { concatena_dos_u8_en_un_u16(self.dp, self.ep) }
 
-    pub fn lee_hl(&mut self) -> u16 {
-        self.concatena_dos_u8_en_un_u16(self.h, self.l)
-    }
+    pub fn lee_hl(&mut self) -> u16 { concatena_dos_u8_en_un_u16(self.h, self.l) }
 
-    pub fn lee_hlp(&mut self) -> u16 {
-        self.concatena_dos_u8_en_un_u16(self.hp, self.lp)
-    }
+    pub fn lee_hlp(&mut self) -> u16 { concatena_dos_u8_en_un_u16(self.hp, self.lp) }
 
     pub fn lee_ix(&mut self) -> u16 {
-        self.concatena_dos_u8_en_un_u16(self.ixh, self.ixl)
+        concatena_dos_u8_en_un_u16(self.ixh, self.ixl)
     }
 
     pub fn lee_iy(&mut self) -> u16 {
-        self.concatena_dos_u8_en_un_u16(self.iyh, self.iyl)
+        concatena_dos_u8_en_un_u16(self.iyh, self.iyl)
     }
 
     // Recibe un u16 de registros en pareja y escribe en cada uno de ellos
     pub fn escribe_af(&mut self, af: u16) {
-        let hltupla = self.desconcatena_un_u16_en_dos_u8(af);
+        let hltupla = desconcatena_un_u16_en_dos_u8(af);
         self.a = hltupla.1;
         self.f = hltupla.0;
     }
 
     pub fn escribe_afp(&mut self, afp: u16) {
-        let hltupla = self.desconcatena_un_u16_en_dos_u8(afp);
+        let hltupla = desconcatena_un_u16_en_dos_u8(afp);
         self.ap = hltupla.1;
         self.fp = hltupla.0;
     }
 
     pub fn escribe_bc(&mut self, bc: u16) {
-        let hltupla = self.desconcatena_un_u16_en_dos_u8(bc);
+        let hltupla = desconcatena_un_u16_en_dos_u8(bc);
         self.c = hltupla.1;
         self.b = hltupla.0;
     }
 
     pub fn escribe_bcp(&mut self, bcp: u16) {
-        let hltupla = self.desconcatena_un_u16_en_dos_u8(bcp);
+        let hltupla = desconcatena_un_u16_en_dos_u8(bcp);
         self.cp = hltupla.1;
         self.bp = hltupla.0;
     }
 
     pub fn escribe_de(&mut self, de: u16) {
-        let hltupla = self.desconcatena_un_u16_en_dos_u8(de);
+        let hltupla = desconcatena_un_u16_en_dos_u8(de);
         self.e = hltupla.1;
         self.d = hltupla.0;
     }
 
     pub fn escribe_dep(&mut self, dep: u16) {
-        let hltupla = self.desconcatena_un_u16_en_dos_u8(dep);
+        let hltupla = desconcatena_un_u16_en_dos_u8(dep);
         self.ep = hltupla.1;
         self.dp = hltupla.0;
     }
 
     pub fn escribe_hl(&mut self, hl: u16) {
-        let hltupla = self.desconcatena_un_u16_en_dos_u8(hl);
+        let hltupla = desconcatena_un_u16_en_dos_u8(hl);
         self.l = hltupla.1;
         self.h = hltupla.0;
     }
 
     pub fn escribe_hlp(&mut self, hlp: u16) {
-        let hltupla = self.desconcatena_un_u16_en_dos_u8(hlp);
+        let hltupla = desconcatena_un_u16_en_dos_u8(hlp);
         self.lp = hltupla.1;
         self.hp = hltupla.0;
     }
 
     pub fn escribe_ix(&mut self, ix: u16) {
-        let hltupla = self.desconcatena_un_u16_en_dos_u8(ix);
+        let hltupla = desconcatena_un_u16_en_dos_u8(ix);
         self.ixl = hltupla.1;
         self.ixh = hltupla.0;
     }
 
     pub fn escribe_iy(&mut self, iy: u16) {
-        let hltupla = self.desconcatena_un_u16_en_dos_u8(iy);
+        let hltupla = desconcatena_un_u16_en_dos_u8(iy);
         self.iyl = hltupla.1;
         self.iyh = hltupla.0;
     }
@@ -423,7 +369,8 @@ impl CPU {
     // FUNCIONES DE STACK ********************************************************
     /// Pone en el stack un valor de 16 bits y modifica el puntero
     pub fn push(&mut self, addr: u16) {
-        let addr_tupla = self.desconcatena_un_u16_en_dos_u8(addr);
+        println!("push pc = {:04X}  sp = {:04X}", self.pc, self.sp);
+        let addr_tupla = desconcatena_un_u16_en_dos_u8(addr);
 
         self.mem.escribe_byte_en_mem(self.sp, addr_tupla.0);
         self.sp -= 1;
@@ -433,12 +380,13 @@ impl CPU {
 
     /// Saca del stack un valor de 16 bits y modifica el puntero
     pub fn pop(&mut self) -> u16 {
+        println!("pop pc = {:04X}  sp = {:04X}", self.pc, self.sp);
         self.sp += 1;
         let addr_0 = self.mem.lee_byte_de_mem(self.sp);
         self.sp += 1;
         let addr_1 = self.mem.lee_byte_de_mem(self.sp);
 
-        let addr = self.concatena_dos_u8_en_un_u16(addr_1, addr_0);
+        let addr = concatena_dos_u8_en_un_u16(addr_1, addr_0);
         addr
     }
 
@@ -524,7 +472,7 @@ impl CPU {
 //self.funciones[self.r0 as usize](self);
         let f: Funcion = self.funciones[self.r0 as usize];
         let ff = f.get_puntero_a_funcion();
-// DESCOMENTAR ESTA LINEA PARA VER EL DEBUG DE LAS INSTRUCCIONES
+        //DESCOMENTAR ESTA LINEA PARA VER EL DEBUG DE LAS INSTRUCCIONES
 //        println!("PC = #{:04X}  r0 = #{:02X}  r1 = #{:02X}  r2 = #{:02X}   r3 = #{:02X}",
 //                 self.pc, self.r0, self.r1, self.r2, self.r3);
 

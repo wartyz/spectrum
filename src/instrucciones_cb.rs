@@ -363,8 +363,22 @@ pub fn bas_set_B_R(cpu: &mut CPU, valor: u8, bit: u8) -> u8 {
 
 // O = ()  p = '
 // *************************** 0 ***********************************
-// 0xCB00
-
+/// 0xCB00   "rlc b"
+/// The contents of register B are rotated left 1 bit position. The
+/// contents of bit 7 are copied to the Carry flag and also to bit 0.
+///
+/// S is set if result is negative; otherwise, it is reset.
+/// Z is set if result is 0; otherwise, it is reset.
+/// P/V is set if parity even; otherwise, it is reset.
+/// H, N are reset.
+/// C is data from bit 7 of the original register value.
+///
+/// =================================
+/// | 1 | 1 | 0 | 0 | 1 | 0 | 1 | 1 | 0xCB
+/// =================================
+/// | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0x00
+/// =================================
+/// T-States: 8
 pub fn rlc_b(cpu: &mut CPU) {
     cpu.t += cpu.get_t_instruccion();
     cpu.pc += cpu.get_bytes_instruccion();
@@ -372,55 +386,354 @@ pub fn rlc_b(cpu: &mut CPU) {
 
 pub fn rlc_b_txt(cpu: &mut CPU) { cpu.texto(&format!("opcode = #CB{:02X}", cpu.r1)); }
 
-// 0xCB01
+/// 0xCB01   "rlc c"
+/// The contents of register C are rotated left 1 bit position. The
+/// contents of bit 7 are copied to the Carry flag and also to bit 0.
+///
+/// S is set if result is negative; otherwise, it is reset.
+/// Z is set if result is 0; otherwise, it is reset.
+/// P/V is set if parity even; otherwise, it is reset.
+/// H, N are reset.
+/// C is data from bit 7 of the original register value.
+///
+/// =================================
+/// | 1 | 1 | 0 | 0 | 1 | 0 | 1 | 1 | 0xCB
+/// =================================
+/// | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0x01
+/// =================================
+/// T-States:8
 pub fn rlc_c(cpu: &mut CPU) {}
 
-// 0xCB02
+pub fn rlc_c_txt(cpu: &mut CPU) {}
+
+/// 0xCB02   "rlc d"
+/// The contents of register D are rotated left 1 bit position. The
+/// contents of bit 7 are copied to the Carry flag and also to bit 0.
+///
+/// S is set if result is negative; otherwise, it is reset.
+/// Z is set if result is 0; otherwise, it is reset.
+/// P/V is set if parity even; otherwise, it is reset.
+/// H, N are reset.
+/// C is data from bit 7 of the original register value.
+///
+/// =================================
+/// | 1 | 1 | 0 | 0 | 1 | 0 | 1 | 1 | 0xCB
+/// =================================
+/// | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0x02
+/// =================================
+/// T-States: 8
 pub fn rlc_d(cpu: &mut CPU) {}
 
+pub fn rlc_d_txt(cpu: &mut CPU) {}
 
-// 0xCB03
+
+/// 0xCB03   "rlc e"
+/// The contents of register E are rotated left 1 bit position. The
+/// contents of bit 7 are copied to the Carry flag and also to bit 0.
+///
+/// S is set if result is negative; otherwise, it is reset.
+/// Z is set if result is 0; otherwise, it is reset.
+/// P/V is set if parity even; otherwise, it is reset.
+/// H, N are reset.
+/// C is data from bit 7 of the original register value.
+///
+/// =================================
+/// | 1 | 1 | 0 | 0 | 1 | 0 | 1 | 1 | 0xCB
+/// =================================
+/// | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 0x03
+/// =================================
+/// T-States: 8
 pub fn rlc_e(cpu: &mut CPU) {}
 
+pub fn rlc_e_txt(cpu: &mut CPU) {}
 
-// 0xCB04
+
+/// 0xCB04   "rlc h"
+/// The contents of register H are rotated left 1 bit position. The
+/// contents of bit 7 are copied to the Carry flag and also to bit 0.
+///
+/// S is set if result is negative; otherwise, it is reset.
+/// Z is set if result is 0; otherwise, it is reset.
+/// P/V is set if parity even; otherwise, it is reset.
+/// H, N are reset.
+/// C is data from bit 7 of the original register value.
+///
+/// =================================
+/// | 1 | 1 | 0 | 0 | 1 | 0 | 1 | 1 | 0xCB
+/// =================================
+/// | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0x04
+/// =================================
+/// T-States: 8
 pub fn rlc_h(cpu: &mut CPU) {}
 
+pub fn rlc_h_txt(cpu: &mut CPU) {}
 
-// 0xCB05
+/// 0xCB05   "rlc l"
+/// The contents of register L are rotated left 1 bit position. The
+/// contents of bit 7 are copied to the Carry flag and also to bit 0.
+///
+/// S is set if result is negative; otherwise, it is reset.
+/// Z is set if result is 0; otherwise, it is reset.
+/// P/V is set if parity even; otherwise, it is reset.
+/// H, N are reset.
+/// C is data from bit 7 of the original register value.
+///
+/// =================================
+/// | 1 | 1 | 0 | 0 | 1 | 0 | 1 | 1 | 0xCB
+/// =================================
+/// | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 1 | 0x05
+/// =================================
+/// T-States: 8
 pub fn rlc_l(cpu: &mut CPU) {}
 
-// 0xCB06
+pub fn rlc_l_txt(cpu: &mut CPU) {}
+
+/// 0xCB06   "rlc (hl)"
+/// The contents of the memory address specified by the contents
+/// of HL are rotated left 1 bit position.The contents of bit 7
+/// are copied to the Carry flag and also to bit 0.
+///
+/// S is set if result is negative; otherwise, it is reset.
+/// Z is set if result is 0; otherwise, it is reset.
+/// P/V is set if parity even; otherwise, it is reset.
+/// H, N are reset.
+/// C is data from bit 7 of the source byte.
+///
+/// =================================
+/// | 1 | 1 | 0 | 0 | 1 | 0 | 1 | 1 | 0xCB
+/// =================================
+/// | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 0x06
+/// =================================
+/// T-States: 15
 pub fn rlc_OhlO(cpu: &mut CPU) {}
 
+pub fn rlc_OhlO_txt(cpu: &mut CPU) {}
+
+/// 0xCB07   "rlc a"
+/// The contents of register A are rotated left 1 bit position. The
+/// contents of bit 7 are copied to the Carry flag and also to bit 0.
+///
+/// S is set if result is negative; otherwise, it is reset.
+/// Z is set if result is 0; otherwise, it is reset.
+/// P/V is set if parity even; otherwise, it is reset.
+/// H, N are reset.
+/// C is data from bit 7 of the original register value.
+///
+/// =================================
+/// | 1 | 1 | 0 | 0 | 1 | 0 | 1 | 1 | 0xCB
+/// =================================
+/// | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 1 | 0x07
+/// =================================
+/// T-States: 8
 pub fn rlc_a(cpu: &mut CPU) {}
 
+pub fn rlc_a_txt(cpu: &mut CPU) {}
+
+/// 0xCB08   "rrc b"
+/// The contents of register B are rotated right 1 bit position.
+/// The contents of bit 0 are copied to the Carry flag and also
+/// to bit 7.
+///
+/// S is set if result is negative; otherwise, it is reset.
+/// Z is set if result is 0; otherwise, it is reset.
+/// P/V is set if parity even; otherwise, it is reset.
+/// H, N are reset.
+/// C is data from bit 0 of the original register value.
+///
+/// =================================
+/// | 1 | 1 | 0 | 0 | 1 | 0 | 1 | 1 | 0xCB
+/// =================================
+/// | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0x08
+/// =================================
+/// T-States: 8
 pub fn rrc_b(cpu: &mut CPU) {}
 
+pub fn rrc_b_txt(cpu: &mut CPU) {}
+
+/// 0xCB09   "rrc c"
+/// The contents of register C are rotated right 1 bit position.
+/// The contents of bit 0 are copied to the Carry flag and also
+/// to bit 7.
+///
+/// S is set if result is negative; otherwise, it is reset.
+/// Z is set if result is 0; otherwise, it is reset.
+/// P/V is set if parity even; otherwise, it is reset.
+/// H, N are reset.
+/// C is data from bit 0 of the original register value.
+///
+/// =================================
+/// | 1 | 1 | 0 | 0 | 1 | 0 | 1 | 1 | 0xCB
+/// =================================
+/// | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 1 | 0x09
+/// =================================
+/// T-States: 8
 pub fn rrc_c(cpu: &mut CPU) {}
 
+pub fn rrc_c_txt(cpu: &mut CPU) {}
+
+/// 0xCD0A   "rrc d" operation
+/// The contents of register D are rotated right 1 bit position.
+/// The contents of bit 0 are copied to the Carry flag and also
+/// to bit 7.
+///
+/// S is set if result is negative; otherwise, it is reset.
+/// Z is set if result is 0; otherwise, it is reset.
+/// P/V is set if parity even; otherwise, it is reset.
+/// H, N are reset.
+/// C is data from bit 0 of the original register value.
+///
+/// =================================
+/// | 1 | 1 | 0 | 0 | 1 | 0 | 1 | 1 | 0xCB
+/// =================================
+/// | 0 | 0 | 0 | 0 | 1 | 0 | 1 | 0 | 0x0A
+/// =================================
+/// T-States: 4, 4 (8)
 pub fn rrc_d(cpu: &mut CPU) {}
 
+pub fn rrc_d_txt(cpu: &mut CPU) {}
+
+/// 0xCB0B   "rrc e" operation
+/// The contents of register E are rotated right 1 bit position.
+/// The contents of bit 0 are copied to the Carry flag and also
+/// to bit 7.
+///
+/// S is set if result is negative; otherwise, it is reset.
+/// Z is set if result is 0; otherwise, it is reset.
+/// P/V is set if parity even; otherwise, it is reset.
+/// H, N are reset.
+/// C is data from bit 0 of the original register value.
+///
+/// =================================
+/// | 1 | 1 | 0 | 0 | 1 | 0 | 1 | 1 | 0xCB
+/// =================================
+/// | 0 | 0 | 0 | 0 | 1 | 0 | 1 | 1 | 0x0B
+/// =================================
+/// T-States: 8
 pub fn rrc_e(cpu: &mut CPU) {}
 
+pub fn rrc_e_txt(cpu: &mut CPU) {}
+
+/// 0xCB0C   "rrc h"
+/// The contents of register H are rotated right 1 bit position.
+/// The contents of bit 0 are copied to the Carry flag and also
+/// to bit 7.
+///
+/// S is set if result is negative; otherwise, it is reset.
+/// Z is set if result is 0; otherwise, it is reset.
+/// P/V is set if parity even; otherwise, it is reset.
+/// H, N are reset.
+/// C is data from bit 0 of the original register value.
+///
+/// =================================
+/// | 1 | 1 | 0 | 0 | 1 | 0 | 1 | 1 | 0xCB
+/// =================================
+/// | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0x0C
+/// =================================
+/// T-States: 8
 pub fn rrc_h(cpu: &mut CPU) {}
 
+pub fn rrc_h_txt(cpu: &mut CPU) {}
+
+/// 0xCB0D   "rrc l"
+/// The contents of register L are rotated right 1 bit position.
+/// The contents of bit 0 are copied to the Carry flag and also
+/// to bit 7.
+///
+/// S is set if result is negative; otherwise, it is reset.
+/// Z is set if result is 0; otherwise, it is reset.
+/// P/V is set if parity even; otherwise, it is reset.
+/// H, N are reset.
+/// C is data from bit 0 of the original register value.
+///
+/// =================================
+/// | 1 | 1 | 0 | 0 | 1 | 0 | 1 | 1 | 0xCB
+/// =================================
+/// | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 1 | 0x0D
+/// =================================
+/// T-States: 8
 pub fn rrc_l(cpu: &mut CPU) {}
 
+pub fn rrc_l_txt(cpu: &mut CPU) {}
+
+/// 0xCB0E   "rrc (hl)"
+/// The contents of the memory address specified by the contents
+/// of HL are rotated right 1 bit position. The contents of bit 0
+/// are copied to the Carry flag and also to bit 7.
+///
+/// S is set if result is negative; otherwise, it is reset.
+/// Z is set if result is 0; otherwise, it is reset.
+/// P/V is set if parity even; otherwise, it is reset.
+/// H, N are reset.
+/// C is data from bit 0 of the source byte.
+///
+/// =================================
+/// | 1 | 1 | 0 | 0 | 1 | 0 | 1 | 1 | 0xCB
+/// =================================
+/// | 0 | 0 | 0 | 0 | 1 | 1 | 1 | 0 | 0x0E
+/// =================================
+/// T-States: 15
 pub fn rrcOhlO(cpu: &mut CPU) {}
 
+pub fn rrcOhlO_txt(cpu: &mut CPU) {}
+
+/// 0xCB0F   "rrc a"
+/// The contents of register A are rotated right 1 bit position.
+/// The contents of bit 0 are copied to the Carry flag and also
+/// to bit 7.
+///
+/// S is set if result is negative; otherwise, it is reset.
+/// Z is set if result is 0; otherwise, it is reset.
+/// P/V is set if parity even; otherwise, it is reset.
+/// H, N are reset.
+/// C is data from bit 0 of the original register value.
+///
+/// =================================
+/// | 1 | 1 | 0 | 0 | 1 | 0 | 1 | 1 | 0xCB
+/// =================================
+/// | 0 | 0 | 0 | 0 | 1 | 1 | 1 | 1 | 0x0F
+/// =================================
+/// T-States: 8
 pub fn rrc_a(cpu: &mut CPU) {}
 
+pub fn rrc_a_txt(cpu: &mut CPU) {}
+
 // *************************** 1 ***********************************
-// 0xCB11     RL C
+/// 0xCB10   "rl b"
+/// The contents of Register B are rotated left 1 bit position. The
+/// contents of bit 7 are copied to the Carry flag, and the previous
+/// contents of the Carry flag are copied to bit 0.
+///
+/// S, Z, P/V are not affected.
+/// H, N are reset.
+/// C is data from bit 7 of the original register value.
+///
+/// =================================
+/// | 1 | 1 | 0 | 0 | 1 | 0 | 1 | 1 | 0xCB
+/// =================================
+/// | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0x10
+/// =================================
+/// T-States: 8
+pub fn rl_b(cpu: &mut CPU) {}
+
+pub fn rl_b_txt(cpu: &mut CPU) {}
+
+/// 0xCB11   "rl c"
+/// The contents of Register C are rotated left 1 bit position. The
+/// contents of bit 7 are copied to the Carry flag, and the previous
+/// contents of the Carry flag are copied to bit 0.
+///
+/// S, Z, P/V are not affected.
+/// H, N are reset.
+/// C is data from bit 7 of the original register value.
+///
+/// =================================
+/// | 1 | 1 | 0 | 0 | 1 | 0 | 1 | 1 | 0xCB
+/// =================================
+/// | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 1 | 0x11
+/// =================================
+/// T-States: 8
 pub fn rl_c(cpu: &mut CPU) {
     let viejo_c_flag = cpu.get_c_flag();
-//    let c_flag: bool = (0b1000_0000 & cpu.c) != 0;
-//    if c_flag {
-//        cpu.set_c_flag();
-//    } else {
-//        cpu.reset_c_flag();
-//    }
     cpu.set_flag(FLAG_C, (0b1000_0000 & cpu.c) != 0);
 
     // Rotación
@@ -430,17 +743,9 @@ pub fn rl_c(cpu: &mut CPU) {
         nuevo_valor |= 0b0000_0001;
     }
 
-    //maneja flags
-//    if nuevo_valor == 0 {
-//        cpu.set_z_flag();
-//    } else {
-//        cpu.reset_z_flag();
-//    }
     cpu.set_flag(FLAG_Z, nuevo_valor == 0);
     cpu.set_flag(FLAG_N, false);
     cpu.set_flag(FLAG_H, false);
-//    cpu.reset_n_flag();
-//    cpu.reset_h_flag();
 
     cpu.t += cpu.get_t_instruccion();
     cpu.pc += cpu.get_bytes_instruccion();
@@ -450,15 +755,123 @@ pub fn rl_c_txt(cpu: &mut CPU) {
     cpu.texto(&format!("RL C"));
 }
 
-// 0xCB17     RL A
+/// 0xCB12   "rl d" operation
+/// The contents of Register D are rotated left 1 bit position. The
+/// contents of bit 7 are copied to the Carry flag, and the previous
+/// contents of the Carry flag are copied to bit 0.
+///
+/// S, Z, P/V are not affected.
+/// H, N are reset.
+/// C is data from bit 7 of the original register value.
+///
+/// =================================
+/// | 1 | 1 | 0 | 0 | 1 | 0 | 1 | 1 | 0xCB
+/// =================================
+/// | 0 | 0 | 0 | 1 | 0 | 0 | 1 | 0 | 0x12
+/// =================================
+/// T-States: 4, 4 (8)
+pub fn rl_d(cpu: &mut CPU) {}
+
+pub fn rl_d_txt(cpu: &mut CPU) {}
+
+/// 0xCB13   "rl e"
+/// The contents of Register E are rotated left 1 bit position. The
+/// contents of bit 7 are copied to the Carry flag, and the previous
+/// contents of the Carry flag are copied to bit 0.
+///
+/// S, Z, P/V are not affected.
+/// H, N are reset.
+/// C is data from bit 7 of the original register value.
+///
+/// =================================
+/// | 1 | 1 | 0 | 0 | 1 | 0 | 1 | 1 | 0xCB
+/// =================================
+/// | 0 | 0 | 0 | 1 | 0 | 0 | 1 | 1 | 0x13
+/// =================================
+/// T-States: 8
+pub fn rl_e(cpu: &mut CPU) {}
+
+pub fn rl_e_txt(cpu: &mut CPU) {}
+
+/// 0xCB14   "rl h" operation
+/// </summary>
+/// <remarks>
+///
+/// The contents of Register H are rotated left 1 bit position. The
+/// contents of bit 7 are copied to the Carry flag, and the previous
+/// contents of the Carry flag are copied to bit 0.
+///
+/// S, Z, P/V are not affected.
+/// H, N are reset.
+/// C is data from bit 7 of the original register value.
+///
+/// =================================
+/// | 1 | 1 | 0 | 0 | 1 | 0 | 1 | 1 | 0xCB
+/// =================================
+/// | 0 | 0 | 0 | 1 | 0 | 1 | 0 | 0 | 0x14
+/// =================================
+/// T-States: 8
+pub fn rl_h(cpu: &mut CPU) {}
+
+pub fn rl_h_txt(cpu: &mut CPU) {}
+
+/// 0xCB15   "rl l"
+/// The contents of Register L are rotated left 1 bit position. The
+/// contents of bit 7 are copied to the Carry flag, and the previous
+/// contents of the Carry flag are copied to bit 0.
+///
+/// S, Z, P/V are not affected.
+/// H, N are reset.
+/// C is data from bit 7 of the original register value.
+///
+/// =================================
+/// | 1 | 1 | 0 | 0 | 1 | 0 | 1 | 1 | 0xCB
+/// =================================
+/// | 0 | 0 | 0 | 1 | 0 | 1 | 0 | 1 | 0x15
+/// =================================
+/// T-States: 8
+pub fn rl_l(cpu: &mut CPU) {}
+
+pub fn rl_l_txt(cpu: &mut CPU) {}
+
+/// 0xCB16   "rl (hl)"
+/// The contents of the memory address specified by the contents
+/// of HL are rotated left 1 bit position. The contents of bit 7
+/// are copied to the Carry flag, and the previous contents of the
+/// Carry flag are copied to bit 0.
+///
+/// S, Z, P/V are not affected.
+/// H, N are reset.
+/// C is data from bit 7 of the source byte.
+///
+/// =================================
+/// | 1 | 1 | 0 | 0 | 1 | 0 | 1 | 1 | 0xCB
+/// =================================
+/// | 0 | 0 | 0 | 1 | 0 | 1 | 1 | 0 | 0x16
+/// =================================
+/// T-States: 15
+pub fn rl_OhlO(cpu: &mut CPU) {}
+
+pub fn rl_OhlO_txt(cpu: &mut CPU) {}
+
+/// 0xCB17   "rl a"
+/// The contents of Register A are rotated left 1 bit position. The
+/// contents of bit 7 are copied to the Carry flag, and the previous
+/// contents of the Carry flag are copied to bit 0.
+///
+/// S, Z, P/V are not affected.
+/// H, N are reset.
+/// C is data from bit 7 of the original register value.
+///
+/// =================================
+/// | 1 | 1 | 0 | 0 | 1 | 0 | 1 | 1 | 0xCB
+/// =================================
+/// | 0 | 0 | 0 | 1 | 0 | 1 | 1 | 1 | 0x17
+/// =================================
+/// T-States: 8
 pub fn rl_a(cpu: &mut CPU) {
     let viejo_c_flag = cpu.get_c_flag();
-//    let c_flag: bool = (0b1000_0000 & cpu.a) != 0;
-//    if c_flag {
-//        cpu.set_c_flag();
-//    } else {
-//        cpu.reset_c_flag();
-//    }
+
     cpu.set_flag(FLAG_C, (0b1000_0000 & cpu.c) != 0);
     // Rotación
     let mut nuevo_valor = cpu.a << 1;
@@ -468,13 +881,7 @@ pub fn rl_a(cpu: &mut CPU) {
     }
 
     //maneja flags
-//    if nuevo_valor == 0 {
-//        cpu.set_z_flag();
-//    } else {
-//        cpu.reset_z_flag();
-//    }
-//    cpu.reset_n_flag();
-//    cpu.reset_h_flag();
+
     cpu.set_flag(FLAG_Z, nuevo_valor == 0);
     cpu.set_flag(FLAG_N, false);
     cpu.set_flag(FLAG_H, false);
@@ -517,62 +924,32 @@ pub fn sll_l_txt(cpu: &mut CPU) {
 
 // *************************** 7 ***********************************
 // 0xCB70
-pub fn bit_6_b(cpu: &mut CPU) {
-    bas_bit_B_R(cpu, cpu.b, 6);
-//    cpu.bit(cpu.b, 6);
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn bit_6_b(cpu: &mut CPU) { bas_bit_B_R(cpu, cpu.b, 6); }
 
 pub fn bit_6_b_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 6,B")); }
 
 // 0xCB71
-pub fn bit_6_c(cpu: &mut CPU) {
-    bas_bit_B_R(cpu, cpu.c, 6);
-//    cpu.bit(cpu.c, 6);
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn bit_6_c(cpu: &mut CPU) { bas_bit_B_R(cpu, cpu.c, 6); }
 
 pub fn bit_6_c_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 6,C")); }
 
 // 0xCB72
-pub fn bit_6_d(cpu: &mut CPU) {
-    bas_bit_B_R(cpu, cpu.d, 6);
-//    cpu.bit(cpu.d, 6);
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn bit_6_d(cpu: &mut CPU) { bas_bit_B_R(cpu, cpu.d, 6); }
 
 pub fn bit_6_d_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 6,D")); }
 
 // 0xCB73
-pub fn bit_6_e(cpu: &mut CPU) {
-    bas_bit_B_R(cpu, cpu.e, 6);
-//    cpu.bit(cpu.e, 6);
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn bit_6_e(cpu: &mut CPU) { bas_bit_B_R(cpu, cpu.e, 6); }
 
 pub fn bit_6_e_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 6,E")); }
 
 // 0xCB74
-pub fn bit_6_h(cpu: &mut CPU) {
-    bas_bit_B_R(cpu, cpu.h, 6);
-//    cpu.bit(cpu.h, 6);
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn bit_6_h(cpu: &mut CPU) { bas_bit_B_R(cpu, cpu.h, 6); }
 
 pub fn bit_6_h_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 6,H")); }
 
 // 0xCB75
-pub fn bit_6_l(cpu: &mut CPU) {
-    bas_bit_B_R(cpu, cpu.l, 6);
-//    cpu.bit(cpu.l, 6);
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn bit_6_l(cpu: &mut CPU) { bas_bit_B_R(cpu, cpu.l, 6); }
 
 pub fn bit_6_l_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 6,L")); }
 
@@ -581,85 +958,44 @@ pub fn bit_6_OhlO(cpu: &mut CPU) {
     let hl = cpu.lee_hl();
     let dato = cpu.mem.lee_byte_de_mem(hl);
     bas_bit_B_R(cpu, dato, 6);
-
-
-//    cpu.bit(dato, 6);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 pub fn bit_6_OhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 6,(HL)")); }
 
 // 0xCB77
-pub fn bit_6_a(cpu: &mut CPU) {
-    bas_bit_B_R(cpu, cpu.a, 6);
-//    cpu.bit(cpu.a, 6);
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn bit_6_a(cpu: &mut CPU) { bas_bit_B_R(cpu, cpu.a, 6); }
 
 pub fn bit_6_a_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 6,A")); }
 
 // 0xCB78
-pub fn bit_7_b(cpu: &mut CPU) {
-    bas_bit_B_R(cpu, cpu.b, 7);
-//    cpu.bit(cpu.b, 7);
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn bit_7_b(cpu: &mut CPU) { bas_bit_B_R(cpu, cpu.b, 7); }
 
 pub fn bit_7_b_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 7,B")); }
 
 // 0xCB79
-pub fn bit_7_c(cpu: &mut CPU) {
-    bas_bit_B_R(cpu, cpu.c, 7);
-//    cpu.bit(cpu.c, 7);
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn bit_7_c(cpu: &mut CPU) { bas_bit_B_R(cpu, cpu.c, 7); }
 
 pub fn bit_7_c_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 7,C")); }
 
 // 0xCB7A
-pub fn bit_7_d(cpu: &mut CPU) {
-    bas_bit_B_R(cpu, cpu.d, 7);
-//    cpu.bit(cpu.d, 7);
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn bit_7_d(cpu: &mut CPU) { bas_bit_B_R(cpu, cpu.d, 7); }
 
 pub fn bit_7_d_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 7,D")); }
 
 // 0xCB7B
-pub fn bit_7_e(cpu: &mut CPU) {
-    bas_bit_B_R(cpu, cpu.e, 7);
-//    cpu.bit(cpu.e, 7);
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn bit_7_e(cpu: &mut CPU) { bas_bit_B_R(cpu, cpu.e, 7); }
 
 pub fn bit_7_e_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 7,E")); }
 
 
 // 0xCB7C     BIT 7, H
-pub fn bit_7_h(cpu: &mut CPU) {
-    bas_bit_B_R(cpu, cpu.h, 7);
-//    cpu.bit(cpu.h, 7);
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn bit_7_h(cpu: &mut CPU) { bas_bit_B_R(cpu, cpu.h, 7); }
 
 
 pub fn bit_7_h_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 7,H")); }
 // 0xCB7D
 
-pub fn bit_7_l(cpu: &mut CPU) {
-    bas_bit_B_R(cpu, cpu.l, 7);
-//    cpu.bit(cpu.l, 7);
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn bit_7_l(cpu: &mut CPU) { bas_bit_B_R(cpu, cpu.l, 7); }
 
 pub fn bit_7_l_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 7,L")); }
 
@@ -668,91 +1004,45 @@ pub fn bit_7_OhlO(cpu: &mut CPU) {
     let hl = cpu.lee_hl();
     let dato = cpu.mem.lee_byte_de_mem(hl);
     bas_bit_B_R(cpu, dato, 7);
-//    cpu.bit(dato, 7);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 pub fn bit_7_OhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 7,(HL)")); }
 
 // 0xCB7F
-pub fn bit_7_a(cpu: &mut CPU) {
-    bas_bit_B_R(cpu, cpu.a, 7);
-//    cpu.bit(cpu.a, 7);
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn bit_7_a(cpu: &mut CPU) { bas_bit_B_R(cpu, cpu.a, 7); }
 
 pub fn bit_7_a_txt(cpu: &mut CPU) { cpu.texto(&format!("BIT 7,A")); }
 
 // *************************** 8 ***********************************
 //0xCB80
-pub fn res_0_b(cpu: &mut CPU) {
-    cpu.b = bas_res_B_R(cpu, cpu.b, 0);
-//    cpu.b = cpu.reset_bitu8(cpu.b, 5);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn res_0_b(cpu: &mut CPU) { cpu.b = bas_res_B_R(cpu, cpu.b, 0); }
 
 pub fn res_0_b_txt(cpu: &mut CPU) { cpu.texto(&format!("RES 0,B")); }
 
 //0xCB81
-pub fn res_0_c(cpu: &mut CPU) {
-    cpu.c = bas_res_B_R(cpu, cpu.c, 0);
-//    cpu.c = cpu.reset_bitu8(cpu.c, 0);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn res_0_c(cpu: &mut CPU) { cpu.c = bas_res_B_R(cpu, cpu.c, 0); }
 
 pub fn res_0_c_txt(cpu: &mut CPU) { cpu.texto(&format!("RES 0,C")); }
 
 //0xCB82
-pub fn res_0_d(cpu: &mut CPU) {
-    cpu.d = bas_res_B_R(cpu, cpu.d, 0);
-//    cpu.d = cpu.reset_bitu8(cpu.d, 0);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn res_0_d(cpu: &mut CPU) { cpu.d = bas_res_B_R(cpu, cpu.d, 0); }
 
 pub fn res_0_d_txt(cpu: &mut CPU) { cpu.texto(&format!("RES 0,D")); }
 
 //0xCB83
-pub fn res_0_e(cpu: &mut CPU) {
-    cpu.e = bas_res_B_R(cpu, cpu.e, 0);
-//    cpu.e = cpu.reset_bitu8(cpu.e, 0);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn res_0_e(cpu: &mut CPU) { cpu.e = bas_res_B_R(cpu, cpu.e, 0); }
 
 pub fn res_0_e_txt(cpu: &mut CPU) { cpu.texto(&format!("RES 0,E")); }
 
 //0xCB84
-pub fn res_0_h(cpu: &mut CPU) {
-    cpu.h = bas_res_B_R(cpu, cpu.h, 0);
-//    cpu.h = cpu.reset_bitu8(cpu.h, 0);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn res_0_h(cpu: &mut CPU) { cpu.h = bas_res_B_R(cpu, cpu.h, 0); }
 
 pub fn res_0_h_txt(cpu: &mut CPU) { cpu.texto(&format!("RES 0,H")); }
 
 //0xCB85
-pub fn res_0_l(cpu: &mut CPU) {
-    cpu.l = bas_res_B_R(cpu, cpu.l, 0);
-//    cpu.l = cpu.reset_bitu8(cpu.l, 0);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn res_0_l(cpu: &mut CPU) { cpu.l = bas_res_B_R(cpu, cpu.l, 0); }
 
 pub fn res_0_l_txt(cpu: &mut CPU) { cpu.texto(&format!("RES 0,L")); }
-
 
 //0xCB86
 pub fn res_0_OhlO(cpu: &mut CPU) {
@@ -760,24 +1050,13 @@ pub fn res_0_OhlO(cpu: &mut CPU) {
     let mut dato = cpu.mem.lee_byte_de_mem(hl);
 
     dato = bas_res_B_R(cpu, dato, 0);
-
-//    dato = cpu.reset_bitu8(dato, 0);
     cpu.mem.escribe_byte_en_mem(hl, dato);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 pub fn res_0_OhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("RES 0,(HL)")); }
 
 //0xCB87
-pub fn res_0_a(cpu: &mut CPU) {
-    cpu.a = bas_res_B_R(cpu, cpu.a, 0);
-//    cpu.a = cpu.reset_bitu8(cpu.a, 0);
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
-}
+pub fn res_0_a(cpu: &mut CPU) { cpu.a = bas_res_B_R(cpu, cpu.a, 0); }
 
 pub fn res_0_a_txt(cpu: &mut CPU) { cpu.texto(&format!("RES 0,A")); }
 
@@ -860,13 +1139,7 @@ pub fn res_5_OhlO(cpu: &mut CPU) {
 
     dato = bas_res_B_R(cpu, dato, 5);
 
-//    dato = cpu.reset_bitu8(dato, 5);
     cpu.mem.escribe_byte_en_mem(hl, dato);
-
-
-//
-//    cpu.t += cpu.get_t_instruccion();
-//    cpu.pc += cpu.get_bytes_instruccion();
 }
 
 pub fn res_5_OhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("RES 5,(HL)")); }
@@ -914,8 +1187,6 @@ pub fn set_0_OhlO(cpu: &mut CPU) {
     let mut dato = cpu.mem.lee_byte_de_mem(hl);
 
     dato = bas_set_B_R(cpu, dato, 0);
-
-//    dato = cpu.reset_bitu8(dato, 5);
     cpu.mem.escribe_byte_en_mem(hl, dato);
 }
 

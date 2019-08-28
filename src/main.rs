@@ -25,11 +25,11 @@ use main::hardware::Hardware;
 use std::{thread, time};
 
 fn main() {
-    let procesador = PROCESADOR::SharpLr35902; // <---------------- OJO ------
+    let procesador = PROCESADOR::Z80; // <---------------- OJO ------
 
 
     // Lee el fichero ROM
-    let mut f = File::open("src/ROMS/Tetris (World).gb").unwrap();
+    let mut f = File::open("src/ROMS/ZXSpectrum48.rom").unwrap();
     let mut rom_file = Vec::<u8>::new();
     f.read_to_end(&mut rom_file).unwrap();
 
@@ -66,7 +66,7 @@ fn main() {
 
     loop {
         //if window.is_open() && window.is_key_down(Key::T) {
-        if cpu.pc > 0x0000 { // BreakPoint
+        if cpu.pc == 0x0EDF { // BreakPoint
             cpu.establece_debug();
 
 

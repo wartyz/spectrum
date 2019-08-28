@@ -29,7 +29,7 @@ use crate::cpu::CPU;
 use crate::constantes::*;
 use crate::operaciones_binarias::*;
 
-
+// OJO!!! La función la dice el cuarto byte !!!!!!!!!!!!!!!!!!!!!!
 pub fn mete_funciones_fdcb(cpu: &mut CPU) {
     // *************************** 0 ***********************************
     cpu.funciones_fdcb[0x00 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
@@ -220,7 +220,7 @@ pub fn mete_funciones_fdcb(cpu: &mut CPU) {
     cpu.funciones_fdcb[0xAB as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
     cpu.funciones_fdcb[0xAC as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
     cpu.funciones_fdcb[0xAD as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
-    cpu.funciones_fdcb[0xAE as usize].set_punt_y_val_a_fn(res_5_OiymnO, res_5_OiymnO, 4, 23);
+    cpu.funciones_fdcb[0xAE as usize].set_punt_y_val_a_fn(res_5_OiymnO, res_5_OiymnO_txt, 4, 23);
     cpu.funciones_fdcb[0xAF as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
     // *************************** B ***********************************
     cpu.funciones_fdcb[0xB0 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
@@ -288,7 +288,7 @@ pub fn mete_funciones_fdcb(cpu: &mut CPU) {
     cpu.funciones_fdcb[0xEB as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
     cpu.funciones_fdcb[0xEC as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
     cpu.funciones_fdcb[0xED as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
-    cpu.funciones_fdcb[0xEE as usize].set_punt_y_val_a_fn(set5_OiymnO, set5_OiymnO, 4, 23);
+    cpu.funciones_fdcb[0xEE as usize].set_punt_y_val_a_fn(set5_OiymnO, set5_OiymnO_txt, 4, 23);
     cpu.funciones_fdcb[0xEF as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
     // *************************** F ***********************************
     cpu.funciones_fdcb[0xF0 as usize].set_punt_y_val_a_fn(fnFDCB_no_impl, fnFDCB_no_impl, 0, 0);
@@ -521,9 +521,7 @@ pub fn res_7_OiymnO_txt(cpu: &mut CPU) { cpu.texto(&format!("RESET 7(IY+#{:02X})
 
 // *************************** C ***********************************
 // 0xFDCBNNC6
-pub fn set0_OiymnO(cpu: &mut CPU) {
-    bas_set_B_OImDO_iy(cpu);
-}
+pub fn set0_OiymnO(cpu: &mut CPU) { bas_set_B_OImDO_iy(cpu); }
 
 pub fn set0_OiymnO_txt(cpu: &mut CPU) {
     cpu.texto(&format!("SET 0(IY+#{:02X})", cpu.r2));
@@ -541,15 +539,13 @@ pub fn set1_OiymnO_txt(cpu: &mut CPU) {
 // *************************** D ***********************************
 // *************************** E ***********************************
 // 0xFDCBNNE6
-pub fn set4_OiymnO(cpu: &mut CPU) {
-    bas_set_B_OImDO_iy(cpu);
-}
+pub fn set4_OiymnO(cpu: &mut CPU) { bas_set_B_OImDO_iy(cpu); }
 
 pub fn set4_OiymnO_txt(cpu: &mut CPU) {
     cpu.texto(&format!("SET 4(IY+#{:02X})", cpu.r2));
 }
 
-// 0xFDCBNNCE  TODO:hacer una funcion global
+// 0xFDCBNNEE
 pub fn set5_OiymnO(cpu: &mut CPU) {
     bas_set_B_OImDO_iy(cpu);
 }
@@ -559,7 +555,7 @@ pub fn set5_OiymnO_txt(cpu: &mut CPU) {
 }
 
 // *************************** F ***********************************
-// 0xFDCBNNF6 TODO:hacer una funcion global
+// 0xFDCBNNF6
 pub fn set6_OiymnO(cpu: &mut CPU) {
     bas_set_B_OImDO_iy(cpu);
 }
@@ -568,7 +564,7 @@ pub fn set6_OiymnO_txt(cpu: &mut CPU) {
     cpu.texto(&format!("SET 6(IY+#{:02X})", cpu.r2));
 }
 
-// 0xFDCBNNFE  TODO:hacer una funcion global
+// 0xFDCBNNFE
 pub fn set7_OiymnO(cpu: &mut CPU) {
     bas_set_B_OImDO_iy(cpu);
 }

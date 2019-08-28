@@ -1,6 +1,8 @@
 #![allow(non_snake_case)]
 
 /*
+saco texto de
+https://github.com/Dotneteer/spectnetide/blob/master/Core/Spect.Net.SpectrumEmu/Cpu/Z80Operations.cs
 Las instrucciones especiales de GameBoy acaban en GB
 Opcode  LR35902            Z-80
 ------  --------------     ----------
@@ -803,8 +805,9 @@ pub fn bas_cp_R(cpu: &mut CPU) {
 
     //cpu.set_n_flag();
     cpu.set_flag(FLAG_N, true);
-    cpu.flag_s_u8(kk);
-    cpu.flag_z_u8(kk);
+    //cpu.flag_s_u8(kk);
+    cpu.set_flag(FLAG_S, kk & FLAG_S != 0);
+    cpu.set_flag(FLAG_Z, kk == 0);
 
 
     cpu.t += cpu.get_t_instruccion();
@@ -923,8 +926,9 @@ pub fn bas_dec_R(cpu: &mut CPU) {
 
     //cpu.set_n_flag();
     cpu.set_flag(FLAG_N, true);
-    cpu.flag_s_u8(kk);
-    cpu.flag_z_u8(kk);
+    //cpu.flag_s_u8(kk);
+    cpu.set_flag(FLAG_S, kk & FLAG_S != 0);
+    cpu.set_flag(FLAG_Z, kk == 0);
 
 
     cpu.t += cpu.get_t_instruccion();
@@ -1089,8 +1093,9 @@ pub fn bas_inc_R(cpu: &mut CPU) {
 
     //cpu.reset_n_flag();
     cpu.set_flag(FLAG_N, false);
-    cpu.flag_s_u8(kk);
-    cpu.flag_z_u8(kk);
+    //cpu.flag_s_u8(kk);
+    cpu.set_flag(FLAG_S, kk & FLAG_S != 0);
+    cpu.set_flag(FLAG_Z, kk == 0);
     //cpu.flag_h_u8(kk);
 
 
@@ -1512,8 +1517,10 @@ pub fn bas_or_R(cpu: &mut CPU) {
         _ => panic!("Instruccion en bas_or_R no reconocida"),
     }
 
-    cpu.flag_s_u8(cpu.a);
-    cpu.flag_z_u8(cpu.a);
+    //cpu.flag_s_u8(cpu.a);
+    cpu.set_flag(FLAG_S, cpu.a & FLAG_S != 0);
+    cpu.set_flag(FLAG_Z, cpu.a == 0);
+    //cpu.flag_z_u8(cpu.a);
     flag_p_u8(cpu, cpu.a); // Como paridad
     //cpu.reset_h_flag();
     cpu.set_flag(FLAG_H, false);
@@ -1854,8 +1861,10 @@ pub fn bas_sub_R(cpu: &mut CPU) {
 
     //cpu.set_n_flag();
     cpu.set_flag(FLAG_N, true);
-    cpu.flag_s_u8(kk);
-    cpu.flag_z_u8(kk);
+    //cpu.flag_s_u8(kk);
+    cpu.set_flag(FLAG_S, kk & FLAG_S != 0);
+    //cpu.flag_z_u8(kk);
+    cpu.set_flag(FLAG_Z, kk == 0);
 
     cpu.t += cpu.get_t_instruccion();
     cpu.pc += cpu.get_bytes_instruccion();
@@ -1905,8 +1914,10 @@ pub fn bas_xor_R(cpu: &mut CPU) {
         _ => panic!("Instruccion en bas_xor_R no reconocida"),
     }
 
-    cpu.flag_s_u8(cpu.a);
-    cpu.flag_z_u8(cpu.a);
+    //cpu.flag_s_u8(cpu.a);
+    cpu.set_flag(FLAG_S, cpu.a & FLAG_S != 0);
+    //cpu.flag_z_u8(cpu.a);
+    cpu.set_flag(FLAG_Z, cpu.a == 0);
     flag_p_u8(cpu, cpu.a); // Como paridad
     //cpu.reset_h_flag();
     cpu.set_flag(FLAG_H, false);
@@ -2190,8 +2201,8 @@ pub fn rrca(cpu: &mut CPU) {
     if bit0 { nuevo_valor |= 0b1000_0000; }
 
     //maneja flags
-    cpu.flag_z_u8(nuevo_valor);
-
+    //cpu.flag_z_u8(nuevo_valor);
+    cpu.set_flag(FLAG_Z, nuevo_valor == 0);
     cpu.set_flag(FLAG_N, false);
 
     cpu.set_flag(FLAG_H, false);
@@ -2235,7 +2246,11 @@ pub fn djnz_n(cpu: &mut CPU) {
     }
 }
 
-pub fn djnz_n_txt(cpu: &mut CPU) { cpu.texto(&format!("DJNZ")); }
+pub fn djnz_n_txt(cpu: &mut CPU) {
+    let mut d = cpu.pc + cpu.get_bytes_instruccion();
+    let direccion = suma_compl2_a_un_u16(d, cpu.r1);
+    cpu.texto(&format!("DJNZ {:04X}", direccion));
+}
 
 /// 0x11   "ld de,NN"
 ///     The 16-bit integer value is loaded to the DE register pair.
@@ -3201,631 +3216,1698 @@ pub fn ld_b_d(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_b_d_txt(cpu: &mut CPU) { cpu.texto(&format!("LD B,D")); }
 
-// 0x43
+/// 0x43   "ld b,e"
+///     The contents of E are loaded to B.
+///     =================================
+///     | 0 | 1 | 0 | 0 | 0 | 0 | 1 | 1 | 0x43
+///     =================================
+///     T-States: 4
 pub fn ld_b_e(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_b_e_txt(cpu: &mut CPU) { cpu.texto(&format!("LD B,E")); }
 
-// 0x44
+/// 0x44   "ld b,h"
+///     The contents of H are loaded to B.
+///     =================================
+///     | 0 | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0x44
+///     =================================
+///     T-States: 4
 pub fn ld_b_h(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_b_h_txt(cpu: &mut CPU) { cpu.texto(&format!("LD B,H")); }
 
-// 0x45
+/// 0x45   "ld b,l"
+///     The contents of L are loaded to B.
+///     =================================
+///     | 0 | 1 | 0 | 0 | 0 | 1 | 0 | 1 | 0x45
+///     =================================
+///     T-States: 4
 pub fn ld_b_l(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_b_l_txt(cpu: &mut CPU) { cpu.texto(&format!("LD B,L")); }
 
-// 0x46
+/// 0x46   "ld b,(hl)"
+///     The 8-bit contents of memory location (HL) are loaded to B.
+///     =================================
+///     | 0 | 1 | 0 | 0 | 0 | 1 | 1 | 0 | 0x46
+///     =================================
+///     T-States: 7
 pub fn ld_b_OhlO(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_b_OhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("LD B,(HL)")); }
 
 
-// 0x47
+/// 0x47   "ld b,a"
+///     The contents of A are loaded to B.
+///     =================================
+///     | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0x47
+///     =================================
+///     T-States: 4
 pub fn ld_b_a(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_b_a_txt(cpu: &mut CPU) { cpu.texto(&format!("LD B,A")); }
 
-// 0x48
+/// 0x48   "ld c,b"
+///     The contents of B are loaded to C.
+///     =================================
+///     | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 0x48
+///     =================================
+///     T-States: 4
 pub fn ld_c_b(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_c_b_txt(cpu: &mut CPU) { cpu.texto(&format!("LD C,B")); }
 
-// 0x49
+/// 0x49   "ld c,c"
 pub fn ld_c_c(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_c_c_txt(cpu: &mut CPU) { cpu.texto(&format!("LD C,C")); }
 
-// 0x4A
+/// 0x4A   "ld c,d"
+///     The contents of D are loaded to C.
+///     =================================
+///     | 0 | 1 | 0 | 0 | 1 | 0 | 1 | 0 | 0x4A
+///     =================================
+///     T-States: 4
 pub fn ld_c_d(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_c_d_txt(cpu: &mut CPU) { cpu.texto(&format!("LD C,D")); }
 
-// 0x4B
+/// 0x4B   "ld c,e"
+///     The contents of E are loaded to C.
+///     =================================
+///     | 0 | 1 | 0 | 0 | 1 | 0 | 1 | 1 | 0x4B
+///     =================================
+///     T-States: 4
 pub fn ld_c_e(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_c_e_txt(cpu: &mut CPU) { cpu.texto(&format!("LD C,E")); }
 
-// 0x4C
+/// 0x4C   "ld c,h"
+///     The contents of H are loaded to C.
+///     =================================
+///     | 0 | 1 | 0 | 0 | 1 | 1 | 0 | 0 | 0x4C
+///     =================================
+///     T-States: 4
 pub fn ld_c_h(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_c_h_txt(cpu: &mut CPU) { cpu.texto(&format!("LD C,H")); }
 
-// 0x4D
+/// 0x4D   "ld c,l"
+///     The contents of L are loaded to C.
+///     =================================
+///     | 0 | 1 | 0 | 0 | 1 | 1 | 0 | 1 | 0x4D
+///     =================================
+///     T-States: 4
 pub fn ld_c_l(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_c_l_txt(cpu: &mut CPU) { cpu.texto(&format!("LD C,E")); }
 
-// 0x4E
+/// 0x4E   "ld c,(hl)"
+///     The 8-bit contents of memory location (HL) are loaded to C.
+///     =================================
+///     | 0 | 1 | 0 | 0 | 1 | 1 | 1 | 0 | 0x4E
+///     =================================
+///     T-States: 7
 pub fn ld_c_OhlO(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_c_OhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("LD C,(HL)")); }
 
-// 0x4F
+/// 0x4F   "ld c,a"
+///     The contents of A are loaded to C.
+///     =================================
+///     | 0 | 1 | 0 | 0 | 1 | 1 | 1 | 1 | 0x4F
+///     =================================
+///     T-States: 4
 pub fn ld_c_a(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_c_a_txt(cpu: &mut CPU) { cpu.texto(&format!("LD C,A")); }
 
 // *************************** 5 ***********************************
-// 0x50
+/// 0x50   "ld d,b"
+///     The contents of B are loaded to D.
+///     =================================
+///     | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0x50
+///     =================================
+///     T-States: 4
 pub fn ld_d_b(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_d_b_txt(cpu: &mut CPU) { cpu.texto(&format!("LD D,B")); }
 
-// 0x51
+/// 0x51   "ld d,c"
+///     The contents of C are loaded to D.
+///     =================================
+///     | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 1 | 0x51
+///     =================================
+///     T-States: 4
 pub fn ld_d_c(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_d_c_txt(cpu: &mut CPU) { cpu.texto(&format!("LD D,C")); }
 
-// 0x52
+// 0x52"ld d,d"
 pub fn ld_d_d(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_d_d_txt(cpu: &mut CPU) { cpu.texto(&format!("LD D,D")); }
 
-// 0x53
+/// 0x53   "ld d,e"
+///     The contents of E are loaded to D.
+///     =================================
+///     | 0 | 1 | 0 | 1 | 0 | 0 | 1 | 1 | 0x53
+///     =================================
+///     T-States: 4
 pub fn ld_d_e(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_d_e_txt(cpu: &mut CPU) { cpu.texto(&format!("LD D,E")); }
 
-// 0x54
+/// 0x54   "ld d,h"
+///     The contents of H are loaded to D.
+///     =================================
+///     | 0 | 1 | 0 | 1 | 0 | 1 | 0 | 0 | 0x54
+///     =================================
+///     T-States: 4
 pub fn ld_d_h(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_d_h_txt(cpu: &mut CPU) { cpu.texto(&format!("LD D,H")); }
 
-// 0x55
+/// 0x55   "ld d,l"
+///     The contents of L are loaded to D.
+///     =================================
+///     | 0 | 1 | 0 | 1 | 0 | 1 | 0 | 1 | 0x55
+///     =================================
+///     T-States: 4
 pub fn ld_d_l(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_d_l_txt(cpu: &mut CPU) { cpu.texto(&format!("LD D,L")); }
 
-// 0x56
+/// 0x56   "ld d,(hl)"
+///     The 8-bit contents of memory location (HL) are loaded to D.
+///     =================================
+///     | 0 | 1 | 0 | 1 | 0 | 1 | 1 | 0 | 0x56
+///     =================================
+///     T-States: 7
 pub fn ld_d_OhlO(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_d_OhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("LD D(HL)")); }
 
-// 0x57
+/// 0x57   "ld d,a"
+///     The contents of A are loaded to D.
+///     =================================
+///     | 0 | 1 | 0 | 1 | 0 | 1 | 1 | 1 | 0x57
+///     =================================
+///     T-States: 4
 pub fn ld_d_a(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_d_a_txt(cpu: &mut CPU) { cpu.texto(&format!("LD D,A")); }
 
-// 0x58
+/// 0x58   "ld e,b"
+///     The contents of B are loaded to E.
+///     =================================
+///     | 0 | 1 | 0 | 1 | 1 | 0 | 0 | 0 | 0x58
+///     =================================
+///     T-States: 4
 pub fn ld_e_b(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_e_b_txt(cpu: &mut CPU) { cpu.texto(&format!("LD E,B")); }
 
-// 0x59
+/// 0x59   "ld e,c"
+///     The contents of C are loaded to E.
+///     =================================
+///     | 0 | 1 | 0 | 1 | 1 | 0 | 0 | 1 | 0x59
+///     =================================
+///     T-States: 4
 pub fn ld_e_c(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_e_c_txt(cpu: &mut CPU) { cpu.texto(&format!("LD E,C")); }
 
-// 0x5A
+/// 0x5A   "ld e,d"
+///     The contents of D are loaded to E.
+///     =================================
+///     | 0 | 1 | 0 | 1 | 1 | 0 | 1 | 0 | 0x5A
+///     =================================
+///     T-States: 4
 pub fn ld_e_d(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_e_d_txt(cpu: &mut CPU) { cpu.texto(&format!("LD E,D")); }
 
-// 0x5B
+// 0x5B   "ld e,e"
 pub fn ld_e_e(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_e_e_txt(cpu: &mut CPU) { cpu.texto(&format!("LD E,E")); }
 
-// 0x5C
+/// 0x5C   "ld e,h"
+///     The contents of H are loaded to E.
+///     =================================
+///     | 0 | 1 | 0 | 1 | 1 | 1 | 0 | 0 | 0x5C
+///     =================================
+///     T-States: 4
 pub fn ld_e_h(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_e_h_txt(cpu: &mut CPU) { cpu.texto(&format!("LD E,H")); }
 
-// 0x5D
+/// 0x5D   "ld e,l"
+///     The contents of L are loaded to E.
+///     =================================
+///     | 0 | 1 | 0 | 1 | 1 | 0 | 1 | 1 | 0x5D
+///     =================================
+///     T-States: 4
 pub fn ld_e_l(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_e_l_txt(cpu: &mut CPU) { cpu.texto(&format!("LD E,L")); }
 
-// 0x5E
+/// 0x5E   "ld e,(hl)"
+///     The 8-bit contents of memory location (HL) are loaded to E.
+///     =================================
+///     | 0 | 1 | 0 | 1 | 1 | 1 | 1 | 0 | 0x5E
+///     =================================
+///     T-States: 7
 pub fn ld_e_OhlO(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_e_OhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("LD E,(HL)")); }
 
-// 0x5F
+/// 0x5F   "ld e,a"
+///     The contents of A are loaded to E.
+///     =================================
+///     | 0 | 1 | 0 | 1 | 1 | 1 | 1 | 1 | 0x5F
+///     =================================
+///     T-States: 4
 pub fn ld_e_a(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_e_a_txt(cpu: &mut CPU) { cpu.texto(&format!("LD E,A")); }
 
 // *************************** 6 ***********************************
-// 0x60
+/// 0x60   "ld h,b"
+///     The contents of B are loaded to H.
+///     =================================
+///     | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0x60
+///     =================================
+///     T-States: 4
 pub fn ld_h_b(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_h_b_txt(cpu: &mut CPU) { cpu.texto(&format!("LD H,B")); }
 
-// 0x61
+/// 0x61   "ld h,c"
+///     The contents of C are loaded to H.
+///     =================================
+///     | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 1 | 0x61
+///     =================================
+///     T-States: 4
 pub fn ld_h_c(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_h_c_txt(cpu: &mut CPU) { cpu.texto(&format!("LD H,C")); }
 
-// 0x62
+/// 0x62   "ld h,d"
+///     The contents of D are loaded to H.
+///     =================================
+///     | 0 | 1 | 1 | 0 | 0 | 0 | 1 | 0 | 0x62
+///     =================================
+///     T-States: 4
 pub fn ld_h_d(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_h_d_txt(cpu: &mut CPU) { cpu.texto(&format!("LD H,D")); }
 
-// 0x63
+/// 0x63   "ld h,e"
+///     The contents of E are loaded to H.
+///     =================================
+///     | 0 | 1 | 1 | 0 | 0 | 0 | 1 | 1 | 0x63
+///     =================================
+///     T-States: 4
 pub fn ld_h_e(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_h_e_txt(cpu: &mut CPU) { cpu.texto(&format!("LD H,E")); }
 
 
-// 0x64
+/// 0x64"ld h,h"
 pub fn ld_h_h(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_h_h_txt(cpu: &mut CPU) { cpu.texto(&format!("LD H,H")); }
 
-// 0x65
+/// 0x65   "ld h,l"
+///     The contents of L are loaded to H.
+///     =================================
+///     | 0 | 1 | 1 | 0 | 0 | 1 | 0 | 1 | 0x65
+///     =================================
+///     T-States: 4
 pub fn ld_h_l(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_h_l_txt(cpu: &mut CPU) { cpu.texto(&format!("LD H,L")); }
 
-// 0x66
+/// 0x66   "ld h,(hl)"
+///     The 8-bit contents of memory location (HL) are loaded to H.
+///     =================================
+///     | 0 | 1 | 1 | 0 | 0 | 1 | 1 | 0 | 0x66
+///     =================================
+///     T-States: 7
 pub fn ld_h_OhlO(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_h_OhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("LD H,(HL)")); }
 
-// 0x67
+/// 0x67   "ld h,a"
+///     The contents of A are loaded to H.
+///     =================================
+///     | 0 | 1 | 1 | 0 | 0 | 1 | 1 | 1 | 0x67
+///     =================================
+///     T-States: 4
 pub fn ld_h_a(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_h_a_txt(cpu: &mut CPU) { cpu.texto(&format!("LD H,A")); }
 
-// 0x68
+/// 0x68   "ld l,b"
+///     The contents of B are loaded to L.
+///     =================================
+///     | 0 | 1 | 1 | 0 | 1 | 0 | 0 | 0 | 0x68
+///     =================================
+///     T-States: 4
 pub fn ld_l_b(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_l_b_txt(cpu: &mut CPU) { cpu.texto(&format!("LD L,B")); }
 
-// 0x69
+/// 0x69   "ld l,c"
+///     The contents of C are loaded to L.
+///     =================================
+///     | 0 | 1 | 1 | 0 | 1 | 0 | 0 | 1 | 0x69
+///     =================================
+///     T-States: 4
 pub fn ld_l_c(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_l_c_txt(cpu: &mut CPU) { cpu.texto(&format!("LD L,C")); }
 
-// 0x6A
+/// 0x6A   "ld l,d"
+///     The contents of D are loaded to L.
+///     =================================
+///     | 0 | 1 | 1 | 0 | 1 | 0 | 1 | 0 | 0x6A
+///     =================================
+///     T-States: 4
 pub fn ld_l_d(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_l_d_txt(cpu: &mut CPU) { cpu.texto(&format!("LD L,D")); }
 
-// 0x6B
+/// 0x6B   "ld l,e"
+///     The contents of E are loaded to L.
+///     =================================
+///     | 0 | 1 | 1 | 0 | 1 | 0 | 1 | 1 | 0x6B
+///     =================================
+///     T-States: 4
 pub fn ld_l_e(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_l_e_txt(cpu: &mut CPU) { cpu.texto(&format!("LD L,E")); }
 
-// 0x6C
+/// 0x6C   "ld l,h"
+///     The contents of H are loaded to L.
+///     =================================
+///     | 0 | 1 | 1 | 0 | 1 | 1 | 0 | 0 | 0x6C
+///     =================================
+///     T-States: 4
 pub fn ld_l_h(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_l_h_txt(cpu: &mut CPU) { cpu.texto(&format!("LD L,H")); }
 
-// 0x6D
+/// 0x6D   "ld l,l"
 pub fn ld_l_l(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_l_l_txt(cpu: &mut CPU) { cpu.texto(&format!("LD L,L")); }
 
-// 0x6E
+/// 0x6E   "ld l,(hl)"
+///     The 8-bit contents of memory location (HL) are loaded to L.
+///     =================================
+///     | 0 | 1 | 1 | 0 | 1 | 1 | 1 | 0 | 0x6E
+///     =================================
+///     T-States: 7
 pub fn ld_l_OhlO(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_l_OhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("LD L,(HL)")); }
 
-// 0x6F
+/// 0x6F   "ld l,a"
+///     The contents of A are loaded to L.
+///     =================================
+///     | 0 | 1 | 1 | 0 | 1 | 1 | 1 | 1 | 0x6F
+///     =================================
+///     T-States: 4
 pub fn ld_l_a(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_l_a_txt(cpu: &mut CPU) { cpu.texto(&format!("LD L,A")); }
 
 // *************************** 7 ***********************************
-// 0x70
+/// 0x70   "ld (hl),b"
+///     The contents of B are loaded to the memory location specified
+///     by the contents of HL.
+///     =================================
+///     | 0 | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 0x70
+///     =================================
+///     T-States: 4, 3 (7)
 pub fn ldOhlO_b(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ldOhlO_b_txt(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),B")); }
 
-// 0x71
-pub fn ldOhlO_c(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),B")); }
+/// 0x71   "ld (hl),c"
+///     The contents of C are loaded to the memory location specified
+///     by the contents of HL.
+///     =================================
+///     | 0 | 1 | 1 | 1 | 0 | 0 | 0 | 1 | 0x71
+///     =================================
+///     T-States: 7
+pub fn ldOhlO_c(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ldOhlO_c_txt(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),C")); }
 
-// 0x72
-pub fn ldOhlO_d(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),B")); }
+/// 0x72   "ld (hl),d"
+///     The contents of D are loaded to the memory location specified
+///     by the contents of HL.
+///     =================================
+///     | 0 | 1 | 1 | 1 | 0 | 0 | 1 | 0 | 0x72
+///     =================================
+///     T-States: 7
+pub fn ldOhlO_d(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ldOhlO_d_txt(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),D")); }
 
-// 0x73
-pub fn ldOhlO_e(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),B")); }
+/// 0x73   "ld (hl),e"
+///     The contents of E are loaded to the memory location specified
+///     by the contents of HL.
+///     =================================
+///     | 0 | 1 | 1 | 1 | 0 | 0 | 1 | 1 | 0x73
+///     =================================
+///     T-States: 7
+pub fn ldOhlO_e(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ldOhlO_e_txt(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),E")); }
 
-// 0x74
-pub fn ldOhlO_h(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),B")); }
+/// 0x74   "ld (hl),h" operation
+///     The contents of H are loaded to the memory location specified
+///     by the contents of HL.
+///     =================================
+///     | 0 | 1 | 1 | 1 | 0 | 1 | 0 | 0 | 0x74
+///     =================================
+///     T-States: 7
+pub fn ldOhlO_h(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ldOhlO_h_txt(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),H")); }
 
-// 0x75
-pub fn ldOhlO_l(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),B")); }
+/// 0x75   "ld (hl),l"
+///     The contents of L are loaded to the memory location specified
+///     by the contents of HL.
+///     =================================
+///     | 0 | 1 | 1 | 1 | 0 | 1 | 0 | 1 | 0x75
+///     =================================
+///     T-States: 7
+pub fn ldOhlO_l(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ldOhlO_l_txt(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),L")); }
 
-// 0x76 halt
-// 0x77
-pub fn ldOhlO_a(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),B")); }
+/// 0x76   "halt"
+///     The HALT instruction suspends CPU operation until a subsequent
+///     interrupt or reset is received.While in the HALT state,
+///     the processor executes NOPs to maintain memory refresh logic.
+///     =================================
+///     | 0 | 1 | 1 | 1 | 0 | 1 | 1 | 0 | 0x76
+///     =================================
+///     T-States: 4
+
+/// 0x77   "ld (hl),a"
+///     The contents of A are loaded to the memory location specified
+///     by the contents of HL.
+///     =================================
+///     | 0 | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 0x77
+///     =================================
+///     T-States: 7
+pub fn ldOhlO_a(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ldOhlO_a_txt(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),A")); }
 
-// 0x78
-pub fn ld_a_b(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),B")); }
+/// 0x78   "ld a,b"
+///     The contents of B are loaded to A.
+///     =================================
+///     | 0 | 1 | 1 | 1 | 1 | 0 | 0 | 0 | 0x78
+///     =================================
+///     T-States: 4
+pub fn ld_a_b(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_a_b_txt(cpu: &mut CPU) { cpu.texto(&format!("LD A,B")); }
 
-// 0x79
-pub fn ld_a_c(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),B")); }
+/// 0x79   "ld a,c"
+///     The contents of C are loaded to A.
+///     =================================
+///     | 0 | 1 | 1 | 1 | 1 | 0 | 0 | 1 | 0x79
+///     =================================
+///     T-States: 4
+pub fn ld_a_c(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_a_c_txt(cpu: &mut CPU) { cpu.texto(&format!("LD A,C")); }
 
-// 0x7A
-pub fn ld_a_d(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),B")); }
+/// 0x7A   "ld a,d"
+///     The contents of D are loaded to A.
+///     =================================
+///     | 0 | 1 | 1 | 1 | 1 | 0 | 1 | 0 | 0x7A
+///     =================================
+///     T-States: 4
+pub fn ld_a_d(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_a_d_txt(cpu: &mut CPU) { cpu.texto(&format!("LD A,D")); }
 
-// 0x7B
-pub fn ld_a_e(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),B")); }
+/// 0x7B   "ld a,e"
+///     The contents of E are loaded to A.
+///     =================================
+///     | 0 | 1 | 1 | 1 | 1 | 0 | 1 | 1 | 0x7B
+///     =================================
+///     T-States: 4
+pub fn ld_a_e(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_a_e_txt(cpu: &mut CPU) { cpu.texto(&format!("LD A,E")); }
 
-// 0x7C
-pub fn ld_a_h(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),B")); }
+/// 0x7C   "ld a,h"
+///     The contents of H are loaded to A.
+///     =================================
+///     | 0 | 1 | 1 | 1 | 1 | 1 | 0 | 0 | 0x7C
+///     =================================
+///     T-States: 4
+pub fn ld_a_h(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_a_h_txt(cpu: &mut CPU) { cpu.texto(&format!("LD A,H")); }
 
-// 0x7D
-pub fn ld_a_l(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),B")); }
+/// 0x7D   "ld a,l"
+///     The contents of L are loaded to A.
+///     =================================
+///     | 0 | 1 | 1 | 1 | 1 | 1 | 0 | 1 | 0x7D
+///     =================================
+///     T-States: 4
+pub fn ld_a_l(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_a_l_txt(cpu: &mut CPU) { cpu.texto(&format!("LD A,L")); }
 
-// 0x7E
-pub fn ld_a_OhlO(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),B")); }
+/// 0x7E   "ld a,(hl)"
+///     The 8-bit contents of memory location (HL) are loaded to A.
+///     =================================
+///     | 0 | 1 | 1 | 1 | 1 | 1 | 1 | 0 | 0x7E
+///     =================================
+///     T-States: 7
+pub fn ld_a_OhlO(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_a_OhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("LD A,(HL)")); }
 
-// 0x7F
-pub fn ld_a_a(cpu: &mut CPU) { cpu.texto(&format!("LD(HL),B")); }
+/// 0x7F   "ld a,a"
+pub fn ld_a_a(cpu: &mut CPU) { bas_ld_R1_R2(cpu); }
 
 pub fn ld_a_a_txt(cpu: &mut CPU) { cpu.texto(&format!("LD A,A")); }
 
 // *************************** 8 ***********************************
-//0x80
+/// 0x80   "add a,b"
+///     The contents of B are added to the contents of A, and the result is
+///     stored in A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if carry from bit 3; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is set if carry from bit 7; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0x80
+///     =================================
+///     T-States: 4
 pub fn add_a_b(cpu: &mut CPU) { bas_add_a_R(cpu); }
 
 pub fn add_a_b_txt(cpu: &mut CPU) { cpu.texto(&format!("ADD A,B")); }
 
-//0x81
+/// 0x81   "add a,c"
+///     The contents of C are added to the contents of A, and the result is
+///     stored in A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if carry from bit 3; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is set if carry from bit 7; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0x81
+///     =================================
+///     T-States: 4
 pub fn add_a_c(cpu: &mut CPU) { bas_add_a_R(cpu); }
-
 
 pub fn add_a_c_txt(cpu: &mut CPU) { cpu.texto(&format!("ADD A,C")); }
 
-//0x82
+/// 0x82   "add a,d"
+///     The contents of D are added to the contents of A, and the result is
+///     stored in A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if carry from bit 3; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is set if carry from bit 7; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0x82
+///     =================================
+///     T-States: 4
 pub fn add_a_d(cpu: &mut CPU) { bas_add_a_R(cpu); }
-
 
 pub fn add_a_d_txt(cpu: &mut CPU) { cpu.texto(&format!("ADD A,D")); }
 
-//0x83
+/// 0x83   "add a,e"
+///     The contents of E are added to the contents of A, and the result is
+///     stored in A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if carry from bit 3; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is set if carry from bit 7; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 0x83
+///     =================================
+///     T-States: 4
 pub fn add_a_e(cpu: &mut CPU) { bas_add_a_R(cpu); }
-
 
 pub fn add_a_e_txt(cpu: &mut CPU) { cpu.texto(&format!("ADD A,E")); }
 
-//0x84
+/// 0x84   "add a,h"
+///     The contents of H are added to the contents of A, and the result is
+///     stored in A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if carry from bit 3; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is set if carry from bit 7; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0x84
+///     =================================
+///     T-States: 4
 pub fn add_a_h(cpu: &mut CPU) { bas_add_a_R(cpu); }
-
 
 pub fn add_a_h_txt(cpu: &mut CPU) { cpu.texto(&format!("ADD A,H")); }
 
-//0x85
+/// 0x85   "add a,l"
+///     The contents of L are added to the contents of A, and the result is
+///     stored in A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if carry from bit 3; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is set if carry from bit 7; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 1 | 0x85
+///     =================================
+///     T-States: 4
 pub fn add_a_l(cpu: &mut CPU) { bas_add_a_R(cpu); }
-
 
 pub fn add_a_l_txt(cpu: &mut CPU) { cpu.texto(&format!("ADD A,L")); }
 
-//0x86
+/// 0x86   "add a,(hl)"
+///     The byte at the memory address specified by the contents of HL
+///     is added to the contents of A, and the result is stored in A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if carry from bit 3; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is set if carry from bit 7; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 0x86
+///     =================================
+///     T-States: 4, 3 (7)
 pub fn add_a_OhlO(cpu: &mut CPU) { bas_add_a_R(cpu); }
-
 
 pub fn add_a_OhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("ADD A,(HL)")); }
 
-//0x87
+/// 0x87   "add a,a"
+///     The contents of B are added to the contents of A, and the result is
+///     stored in A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if carry from bit 3; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is set if carry from bit 7; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 0 | 0 | 0 | 1 | 1 | 1 | 0x87
+///     =================================
+///     T-States: 4
 pub fn add_a_a(cpu: &mut CPU) { bas_add_a_R(cpu); }
-
 
 pub fn add_a_a_txt(cpu: &mut CPU) { cpu.texto(&format!("ADD A,A")); }
 
-//0x88
+/// 0x88   "adc a,b"
+///     The contents of B and the C flag are added to the contents of A,
+///     and the result is stored in A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if carry from bit 3; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is set if carry from bit 7; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0x88
+///     =================================
+///     T-States: 4
 pub fn adc_a_b(cpu: &mut CPU) { fn_no_impl(cpu); }
-
 
 pub fn adc_a_b_txt(cpu: &mut CPU) { fn_no_impl(cpu); }
 
-//0x89
+/// 0x89   "adc a,c"
+///     The contents of C and the C flag are added to the contents of A,
+///     and the result is stored in A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if carry from bit 3; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is set if carry from bit 7; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 1 | 0x89
+///     =================================
+///     T-States: 4
 pub fn adc_a_c(cpu: &mut CPU) { fn_no_impl(cpu); }
-
 
 pub fn adc_a_c_txt(cpu: &mut CPU) { fn_no_impl(cpu); }
 
-//0x8A
+/// 0x8A   "adc a,d"
+///     The contents of D and the C flag are added to the contents of A,
+///     and the result is stored in A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if carry from bit 3; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is set if carry from bit 7; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 0 | 0 | 1 | 0 | 1 | 0 | 0x8A
+///     =================================
+///     T-States: 4
 pub fn adc_a_d(cpu: &mut CPU) { fn_no_impl(cpu); }
-
 
 pub fn adc_a_d_txt(cpu: &mut CPU) { fn_no_impl(cpu); }
 
-//0x8B
+/// 0x8Badc   "a,e"
+///     The contents of E and the C flag are added to the contents of A,
+///     and the result is stored in A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if carry from bit 3; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is set if carry from bit 7; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 0 | 0 | 1 | 0 | 1 | 1 | 0x8B
+///     =================================
+///     T-States: 4
 pub fn adc_a_e(cpu: &mut CPU) { fn_no_impl(cpu); }
-
 
 pub fn adc_a_e_txt(cpu: &mut CPU) { fn_no_impl(cpu); }
 
-//0x8C
+/// 0x8C   "adc a,h"
+///     The contents of H and the C flag are added to the contents of A,
+///     and the result is stored in A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if carry from bit 3; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is set if carry from bit 7; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0x8C
+///     =================================
+///     T-States: 4
 pub fn adc_a_h(cpu: &mut CPU) { fn_no_impl(cpu); }
-
 
 pub fn adc_a_h_txt(cpu: &mut CPU) { fn_no_impl(cpu); }
 
-//0x8D
+/// 0x8D   "adc a,l"
+///     The contents of L and the C flag are added to the contents of A,
+///     and the result is stored in A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if carry from bit 3; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is set if carry from bit 7; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 0 | 0 | 1 | 1 | 0 | 1 | 0x8D
+///     =================================
+///     T-States: 4
 pub fn adc_a_l(cpu: &mut CPU) { fn_no_impl(cpu); }
-
 
 pub fn adc_a_l_txt(cpu: &mut CPU) { fn_no_impl(cpu); }
 
-//0x8E
+/// 0x8E   "adc a,(hl)"
+///     The byte at the memory address specified by the contents of HL
+///     and the C flag is added to the contents of A, and the
+///     result is stored in A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if carry from bit 3; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is set if carry from bit 7; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 0 | 0 | 1 | 1 | 1 | 0 | 0x8E
+///     =================================
+///     T-States: 7
 pub fn adc_a_OhlO(cpu: &mut CPU) { fn_no_impl(cpu); }
-
 
 pub fn adc_a_OhlO_txt(cpu: &mut CPU) { fn_no_impl(cpu); }
 
-//0x8F
+/// 0x8F   "adc a,a"
+///     The contents of A and the C flag are added to the contents of A,
+///     and the result is stored in A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if carry from bit 3; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is set if carry from bit 7; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 0 | 0 | 1 | 1 | 1 | 1 | 0x8F
+///     =================================
+///     T-States: 4
 pub fn adc_a_a(cpu: &mut CPU) { fn_no_impl(cpu); }
-
 
 pub fn adc_a_a_txt(cpu: &mut CPU) { fn_no_impl(cpu); }
 
 
 // *************************** 9 ***********************************
-// 0x90
+/// 0x90   "sub b"
+///     The contents of B are subtracted from the contents of A, and the result is
+///     stored in A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if borrow from bit 4; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is set.
+///     C is set if borrow; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0x90
+///     =================================
+///     T-States: 4
 pub fn sub_b(cpu: &mut CPU) { bas_sub_R(cpu); }
 
 pub fn sub_b_txt(cpu: &mut CPU) { cpu.texto(&format!("SUB B")); }
 
-// 0x91
+/// 0x91   "sub c"
+///     The contents of C are subtracted from the contents of A, and the result is
+///     stored in A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if borrow from bit 4; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is set.
+///     C is set if borrow; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 1 | 0x91
+///     =================================
+///     T-States: 4
 pub fn sub_c(cpu: &mut CPU) { bas_sub_R(cpu); }
 
 pub fn sub_c_txt(cpu: &mut CPU) { cpu.texto(&format!("SUB C")); }
 
-// 0x92
+/// 0x92   "sub d"
+///     The contents of D are subtracted from the contents of A, and the result is
+///     stored in A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if borrow from bit 4; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is set.
+///     C is set if borrow; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 0 | 1 | 0 | 0 | 1 | 0 | 0x92
+///     =================================
+///     T-States: 4
 pub fn sub_d(cpu: &mut CPU) { bas_sub_R(cpu); }
 
 pub fn sub_d_txt(cpu: &mut CPU) { cpu.texto(&format!("SUB D")); }
 
-// 0x93
+/// 0x93   "sub e"
+///     The contents of E are subtracted from the contents of A, and the result is
+///     stored in A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if borrow from bit 4; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is set.
+///     C is set if borrow; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 0 | 1 | 0 | 0 | 1 | 1 | 0x93
+///     =================================
+///     T-States: 4
 pub fn sub_e(cpu: &mut CPU) { bas_sub_R(cpu); }
 
 pub fn sub_e_txt(cpu: &mut CPU) { cpu.texto(&format!("SUB E")); }
 
-// 0x94
+/// 0x94   "sub h"
+///     The contents of H are subtracted from the contents of A, and the result is
+///     stored in A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if borrow from bit 4; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is set.
+///     C is set if borrow; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 0 | 1 | 0 | 1 | 0 | 0 | 0x94
+///     =================================
+///     T-States: 4
 pub fn sub_h(cpu: &mut CPU) { bas_sub_R(cpu); }
 
 pub fn sub_h_txt(cpu: &mut CPU) { cpu.texto(&format!("SUB H")); }
 
-// 0x95
+/// 0x95   "sub l"
+///     The contents of L are subtracted from the contents of A, and the result is
+///     stored in A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if borrow from bit 4; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is set.
+///     C is set if borrow; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 0 | 1 | 0 | 1 | 0 | 1 | 0x95
+///     =================================
+///     T-States: 4
 pub fn sub_l(cpu: &mut CPU) { bas_sub_R(cpu); }
 
 pub fn sub_l_txt(cpu: &mut CPU) { cpu.texto(&format!("SUB L")); }
 
-// 0x96
+/// 0x96   "sub (hl)"
+///     The byte at the memory address specified by the contents of HL
+///     is subtracted from the contents of A, and the
+///     result is stored in A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if borrow from bit 4; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is set.
+///     C is set if borrow; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 0 | 1 | 0 | 1 | 1 | 0 | 0x96
+///     =================================
+///     T-States: 7
 pub fn subOhlO(cpu: &mut CPU) { bas_sub_R(cpu); }
 
 pub fn subOhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("SUB(HL)")); }
 
-// 0x97
+/// 0x97   "sub a"
+///     The contents of A are subtracted from the contents of A, and the result is
+///     stored in A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if borrow from bit 4; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is set.
+///     C is set if borrow; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 0 | 1 | 0 | 1 | 1 | 1 | 0x97
+///     =================================
+///     T-States: 4
 pub fn sub_a(cpu: &mut CPU) { bas_sub_R(cpu); }
 
 pub fn sub_a_txt(cpu: &mut CPU) { cpu.texto(&format!("SUB A")); }
 
+/// 0x98   "sbc b"
+///     The contents of B and the C flag are subtracted from the contents of A,
+///     and the result is stored in A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if borrow from bit 4; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is set.
+///     C is set if borrow; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 0x98
+///     =================================
+///     T-States: 4
+
+/// 0x99   "sbc c"
+///     The contents of C and the C flag are subtracted from the contents of A,
+///     and the result is stored in A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if borrow from bit 4; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is set.
+///     C is set if borrow; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 0 | 1 | 1 | 0 | 0 | 1 | 0x99
+///     =================================
+///     T-States: 4
+
+/// 0x9A   "sbc d"
+///     The contents of D and the C flag are subtracted from the contents of A,
+///     and the result is stored in A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if borrow from bit 4; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is set.
+///     C is set if borrow; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 0 | 1 | 1 | 0 | 1 | 0 | 0x9A
+///     =================================
+///     T-States: 4
+
+/// 0x9B   "sbc e"
+///     The contents of E and the C flag are subtracted from the contents of A,
+///     and the result is stored in A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if borrow from bit 4; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is set.
+///     C is set if borrow; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 0 | 1 | 1 | 0 | 1 | 1 | 0x9B
+///     =================================
+///     T-States: 4
+
+/// 0x9C   "sbc h"
+///     The contents of H and the C flag are subtracted from the contents of A,
+///     and the result is stored in A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if borrow from bit 4; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is set.
+///     C is set if borrow; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 0 | 1 | 1 | 1 | 0 | 0 | 0x9C
+///     =================================
+///     T-States: 4
+
+/// 0x9D   "sbc l"
+///     The contents of L and the C flag are subtracted from the contents of A,
+///     and the result is stored in A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if borrow from bit 4; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is set.
+///     C is set if borrow; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 0 | 1 | 1 | 1 | 0 | 1 | 0x9D
+///     =================================
+///     T-States: 4
+
+/// 0x9E   "sbc (hl)"
+///     The byte at the memory address specified by the contents of HL
+///     and the C flag is subtracted from the contents of A, and the
+///     result is stored in A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if borrow from bit 4; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is set.
+///     C is set if borrow; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 0 | 1 | 1 | 1 | 1 | 0 | 0x9E
+///     =================================
+///     T-States: 7
+
+/// 0x9F   "sbc a"
+///     The contents of A and the C flag are subtracted from the contents of A,
+///     and the result is stored in A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if borrow from bit 4; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is set.
+///     C is set if borrow; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 0 | 1 | 1 | 1 | 1 | 1 | 0x9F
+///     =================================
+///     T-States: 4
 // *************************** A ***********************************
-// 0xA0
+/// 0xA0   "and b"
+///     A logical AND operation is performed between B and the byte contained in A;
+///     the result is stored in the Accumulator.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set.
+///     P/V is reset if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is reset.
+///     =================================
+///     | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0xA0
+///     =================================
+///     T-States: 4
 pub fn and_b(cpu: &mut CPU) { bas_and_R(cpu); }
 
 pub fn and_b_txt(cpu: &mut CPU) { cpu.texto(&format!("AND B")); }
 
-// 0xA1
+/// 0xA1   "and c"
+///     A logical AND operation is performed between C and the byte contained in A;
+///     the result is stored in the Accumulator.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set.
+///     P/V is reset if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is reset.
+///     =================================
+///     | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 1 | 0xA1
+///     =================================
+///     T-States: 4
 pub fn and_c(cpu: &mut CPU) { bas_and_R(cpu); }
 
 pub fn and_c_txt(cpu: &mut CPU) { cpu.texto(&format!("AND C")); }
 
-// 0xA2
+/// 0xA2   "and d"
+///     A logical AND operation is performed between D and the byte contained in A;
+///     the result is stored in the Accumulator.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set.
+///     P/V is reset if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is reset.
+///     =================================
+///     | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0xA2
+///     =================================
+///     T-States: 4
 pub fn and_d(cpu: &mut CPU) { bas_and_R(cpu); }
 
 pub fn and_d_txt(cpu: &mut CPU) { cpu.texto(&format!("AND D")); }
 
-// 0xA3
+/// 0xA3   "and e"
+///     A logical AND operation is performed between E and the byte contained in A;
+///     the result is stored in the Accumulator.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set.
+///     P/V is reset if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is reset.
+///     =================================
+///     | 1 | 0 | 1 | 0 | 0 | 0 | 1 | 1 | 0xA3
+///     =================================
+///     T-States: 4
 pub fn and_e(cpu: &mut CPU) { bas_and_R(cpu); }
 
 pub fn and_e_txt(cpu: &mut CPU) { cpu.texto(&format!("AND E")); }
 
-// 0xA4
+/// 0xA4   "and h"
+///     A logical AND operation is performed between H and the byte contained in A;
+///     the result is stored in the Accumulator.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set.
+///     P/V is reset if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is reset.
+///     =================================
+///     | 1 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 0xA4
+///     =================================
+///     T-States: 4
 pub fn and_h(cpu: &mut CPU) { bas_and_R(cpu); }
 
 pub fn and_h_txt(cpu: &mut CPU) { cpu.texto(&format!("AND H")); }
 
-// 0xA5
+/// 0xA5   "and l"
+///     A logical AND operation is performed between L and the byte contained in A;
+///     the result is stored in the Accumulator.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set.
+///     P/V is reset if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is reset.
+///     =================================
+///     | 1 | 0 | 1 | 0 | 0 | 1 | 0 | 1 | 0xA5
+///     =================================
+///     T-States: 4
 pub fn and_l(cpu: &mut CPU) { bas_and_R(cpu); }
 
 pub fn and_l_txt(cpu: &mut CPU) { cpu.texto(&format!("AND L")); }
 
-// 0xA6
+/// 0xA6   "and (hl)"
+///     A logical AND operation is performed between the byte at the
+///     memory address specified by the contents of HL and the byte
+///     contained in A; the result is stored in the Accumulator.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set.
+///     P/V is reset if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is reset.
+///     =================================
+///     | 1 | 0 | 1 | 0 | 0 | 1 | 1 | 0 | 0xA6
+///     =================================
+///     T-States: 7
 pub fn and_OhlO(cpu: &mut CPU) { bas_and_R(cpu); }
 
 pub fn and_OhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("AND(HL)")); }
 
-// 0xA7
+/// 0xA7   "and A"
+///     A logical AND operation is performed between A and the byte contained in A;
+///     the result is stored in the Accumulator.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set.
+///     P/V is reset if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is reset.
+///     =================================
+///     | 1 | 0 | 1 | 0 | 0 | 1 | 1 | 1 | 0xA7
+///     =================================
+///     T-States: 4
 pub fn and_a(cpu: &mut CPU) { bas_and_R(cpu); }
 
 pub fn and_a_txt(cpu: &mut CPU) { cpu.texto(&format!("AND A")); }
 
-// 0xA8
+/// 0xA8   "xor b"
+///     A logical XOR operation is performed between B and the byte contained in A;
+///     the result is stored in the Accumulator.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is reset.
+///     P/V is reset if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is reset.
+///     =================================
+///     | 1 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0xA8
+///     =================================
+///     T-States: 4
 pub fn xor_b(cpu: &mut CPU) { bas_xor_R(cpu); }
 
 pub fn xor_b_txt(cpu: &mut CPU) { cpu.texto(&format!("XOR B")); }
 
-// 0xA9
+/// 0xA9   "xor c"
+///     A logical XOR operation is performed between C and the byte contained in A;
+///     the result is stored in the Accumulator.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is reset.
+///     P/V is reset if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is reset.
+///     =================================
+///     | 1 | 0 | 1 | 0 | 1 | 0 | 0 | 1 | 0xA9
+///     =================================
+///     T-States: 4
 pub fn xor_c(cpu: &mut CPU) { bas_xor_R(cpu); }
 
 pub fn xor_c_txt(cpu: &mut CPU) { cpu.texto(&format!("XOR C")); }
 
-// 0xAA
+/// 0xAA   "xor d"
+///     A logical XOR operation is performed between D and the byte contained in A;
+///     the result is stored in the Accumulator.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is reset.
+///     P/V is reset if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is reset.
+///     =================================
+///     | 1 | 0 | 1 | 0 | 1 | 0 | 1 | 0 | 0xAA
+///     =================================
+///     T-States: 4
 pub fn xor_d(cpu: &mut CPU) { bas_xor_R(cpu); }
 
 pub fn xor_d_txt(cpu: &mut CPU) { cpu.texto(&format!("XOR D")); }
 
-// 0xAB
+/// 0xAB   "xor e"
+///     A logical XOR operation is performed between E and the byte contained in A;
+///     the result is stored in the Accumulator.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is reset.
+///     P/V is reset if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is reset.
+///     =================================
+///     | 1 | 0 | 1 | 0 | 1 | 0 | 1 | 1 | 0xAB
+///     =================================
+///     T-States: 4
 pub fn xor_e(cpu: &mut CPU) { bas_xor_R(cpu); }
 
 pub fn xor_e_txt(cpu: &mut CPU) { cpu.texto(&format!("XOR E")); }
 
-// 0xAC
+/// 0xAC   "xor h"
+///     A logical XOR operation is performed between H and the byte contained in A;
+///     the result is stored in the Accumulator.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is reset.
+///     P/V is reset if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is reset.
+///     =================================
+///     | 1 | 0 | 1 | 0 | 1 | 1 | 0 | 0 | 0xAC
+///     =================================
+///     T-States: 4
 pub fn xor_h(cpu: &mut CPU) { bas_xor_R(cpu); }
 
 pub fn xor_h_txt(cpu: &mut CPU) { cpu.texto(&format!("XOR H")); }
 
-// 0xAD
+/// 0xAD   "xor l"
+///     A logical XOR operation is performed between L and the byte contained in A;
+///     the result is stored in the Accumulator.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is reset.
+///     P/V is reset if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is reset.
+///     =================================
+///     | 1 | 0 | 1 | 0 | 1 | 1 | 0 | 1 | 0xAD
+///     =================================
+///     T-States: 4
 pub fn xor_l(cpu: &mut CPU) { bas_xor_R(cpu); }
 
 pub fn xor_l_txt(cpu: &mut CPU) { cpu.texto(&format!("XOR L")); }
 
-// 0xAE
+/// 0xAE   "xor (hl)"
+///     A logical XOR operation is performed between the byte at the
+///     memory address specified by the contents of HL and the byte
+///     contained in A; the result is stored in the Accumulator.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is reset.
+///     P/V is reset if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is reset.
+///     =================================
+///     | 1 | 0 | 1 | 0 | 1 | 1 | 1 | 0 | 0xAE
+///     =================================
+///     T-States: 7
 pub fn xor_OhlO(cpu: &mut CPU) { bas_xor_R(cpu); }
 
 pub fn xor_OhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("XOR(HL)")); }
 
-// 0xAF Xor consigo mismo pone a 0 y modifica flags
+/// 0xAF   "xor a"     Xor consigo mismo pone a 0 y modifica flags
+///     A logical XOR operation is performed between A and the byte contained in A;
+///     the result is stored in the Accumulator.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is reset.
+///     P/V is reset if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is reset.
+///     =================================
+///     | 1 | 0 | 1 | 0 | 1 | 1 | 1 | 1 | 0xAF
+///     =================================
+///     T-States: 4
 pub fn xor_a(cpu: &mut CPU) { bas_xor_R(cpu); }
 
 pub fn xor_a_txt(cpu: &mut CPU) { cpu.texto(&format!("XOR A")); }
 
 // *************************** B ***********************************
-// 0xB0
+/// 0xB0   "or b"
+///     A logical OR operation is performed between B and the byte contained in A;
+///     the result is stored in the Accumulator.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is reset.
+///     P/V is reset if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is reset.
+///     =================================
+///     | 1 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0xB0
+///     =================================
+///     T-States: 4
 pub fn or_b(cpu: &mut CPU) { bas_or_R(cpu); }
 
 pub fn or_b_txt(cpu: &mut CPU) { cpu.texto(&format!("OR B")); }
 
-// 0xB1
+/// 0xB1   "or c"
+///     A logical OR operation is performed between C and the byte contained in A;
+///     the result is stored in the Accumulator.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is reset.
+///     P/V is reset if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is reset.
+///     =================================
+///     | 1 | 0 | 1 | 1 | 0 | 0 | 0 | 1 | 0xB1
+///     =================================
+///     T-States: 4
 pub fn or_c(cpu: &mut CPU) { bas_or_R(cpu); }
 
 pub fn or_c_txt(cpu: &mut CPU) { cpu.texto(&format!("OR C")); }
 
-// 0xB2
+/// 0xB2   "or d"
+///     A logical OR operation is performed between D and the byte contained in A;
+///     the result is stored in the Accumulator.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is reset.
+///     P/V is reset if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is reset.
+///     =================================
+///     | 1 | 0 | 1 | 1 | 0 | 0 | 1 | 0 | 0xB2
+///     =================================
+///     T-States: 4
 pub fn or_d(cpu: &mut CPU) { bas_or_R(cpu); }
 
 pub fn or_d_txt(cpu: &mut CPU) { cpu.texto(&format!("OR D")); }
 
-// 0xB3
+/// 0xB3   "or e"
+///     A logical OR operation is performed between E and the byte contained in A;
+///     the result is stored in the Accumulator.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is reset.
+///     P/V is reset if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is reset.
+///     =================================
+///     | 1 | 0 | 1 | 1 | 0 | 0 | 1 | 1 | 0xB3
+///     =================================
+///     T-States: 4
 pub fn or_e(cpu: &mut CPU) { bas_or_R(cpu); }
 
 pub fn or_e_txt(cpu: &mut CPU) { cpu.texto(&format!("OR E")); }
 
-// 0xB4
+/// 0xB4   "or h"
+///     A logical OR operation is performed between H and the byte contained in A;
+///     the result is stored in the Accumulator.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is reset.
+///     P/V is reset if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is reset.
+///     =================================
+///     | 1 | 0 | 1 | 1 | 0 | 1 | 0 | 0 | 0xB4
+///     =================================
+///     T-States: 4
 pub fn or_h(cpu: &mut CPU) { bas_or_R(cpu); }
 
 pub fn or_h_txt(cpu: &mut CPU) { cpu.texto(&format!("OR H")); }
 
-// 0xB5
+/// 0xB5   "or l"
+///     A logical OR operation is performed between L and the byte contained in A;
+///     the result is stored in the Accumulator.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is reset.
+///     P/V is reset if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is reset.
+///     =================================
+///     | 1 | 0 | 1 | 1 | 0 | 1 | 0 | 1 | 0xB5
+///     =================================
+///     T-States: 4
 pub fn or_l(cpu: &mut CPU) { bas_or_R(cpu); }
 
 pub fn or_l_txt(cpu: &mut CPU) { cpu.texto(&format!("OR L")); }
 
-// 0xB6
+/// 0xB6   "or (hl)"
+///     A logical OR operation is performed between the byte at the
+///     memory address specified by the contents of HL and the byte
+///     contained in A; the result is stored in the Accumulator.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is reset.
+///     P/V is reset if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is reset.
+///     =================================
+///     | 1 | 0 | 1 | 1 | 0 | 1 | 1 | 0 | 0xB6
+///     =================================
+///     T-States: 4, 3 (7)
 pub fn or_OhlO(cpu: &mut CPU) { bas_or_R(cpu); }
 
 pub fn or_OhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("OR(HL)")); }
 
-// 0xB7
+/// 0xB7   "or a"
+///     A logical OR operation is performed between A and the byte contained in A;
+///     the result is stored in the Accumulator.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is reset.
+///     P/V is reset if overflow; otherwise, it is reset.
+///     N is reset.
+///     C is reset.
+///     =================================
+///     | 1 | 0 | 1 | 1 | 0 | 1 | 1 | 1 | 0xB7
+///     =================================
+///     T-States: 4
 pub fn or_a(cpu: &mut CPU) { bas_or_R(cpu); }
 
 pub fn or_a_txt(cpu: &mut CPU) { cpu.texto(&format!("OR A")); }
 
-// 0xB8
+/// 0xB8   "cp b"
+///     The contents of B are compared with the contents of A.
+///     If there is a true compare, the Z flag is set. The execution of
+///     this instruction does not affect A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if borrow from bit 4; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is set.
+///     C is set if borrow; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 1 | 1 | 1 | 0 | 0 | 0 | 0xB8
+///     =================================
+///     T-States: 4
 pub fn cp_b(cpu: &mut CPU) { bas_cp_R(cpu); }
 
-pub fn cp_b_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("CP B"));
-}
+pub fn cp_b_txt(cpu: &mut CPU) { cpu.texto(&format!("CP B")); }
 
-// 0xB9
+/// 0xB9   "cp c"
+///     The contents of C are compared with the contents of A.
+///     If there is a true compare, the Z flag is set. The execution of
+///     this instruction does not affect A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if borrow from bit 4; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is set.
+///     C is set if borrow; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 1 | 1 | 1 | 0 | 0 | 1 | 0xB9
+///     =================================
+///     T-States: 4
 pub fn cp_c(cpu: &mut CPU) { bas_cp_R(cpu); }
 
-pub fn cp_c_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("CP C"));
-}
+pub fn cp_c_txt(cpu: &mut CPU) { cpu.texto(&format!("CP C")); }
 
-// 0xBA
+/// 0xBA   "cp d"
+///     The contents of D are compared with the contents of A.
+///     If there is a true compare, the Z flag is set. The execution of
+///     this instruction does not affect A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if borrow from bit 4; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is set.
+///     C is set if borrow; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 1 | 1 | 1 | 0 | 1 | 0 | 0xBA
+///     =================================
+///     T-States: 4
 pub fn cp_d(cpu: &mut CPU) { bas_cp_R(cpu); }
 
-pub fn cp_d_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("CP D"));
-}
+pub fn cp_d_txt(cpu: &mut CPU) { cpu.texto(&format!("CP D")); }
 
-// 0xBB
+/// 0xBB   "cp e"
+///     The contents of E are compared with the contents of A.
+///     If there is a true compare, the Z flag is set. The execution of
+///     this instruction does not affect A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if borrow from bit 4; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is set.
+///     C is set if borrow; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 1 | 1 | 1 | 0 | 1 | 1 | 0xBB
+///     =================================
+///     T-States: 4
 pub fn cp_e(cpu: &mut CPU) { bas_cp_R(cpu); }
 
-pub fn cp_e_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("CP E"));
-}
+pub fn cp_e_txt(cpu: &mut CPU) { cpu.texto(&format!("CP E")); }
 
-// 0xBC
+/// 0xBC   "cp h"
+///     The contents of H are compared with the contents of A.
+///     If there is a true compare, the Z flag is set. The execution of
+///     this instruction does not affect A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if borrow from bit 4; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is set.
+///     C is set if borrow; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 1 | 1 | 1 | 1 | 0 | 0 | 0xBC
+///     =================================
+///     T-States: 4
 pub fn cp_h(cpu: &mut CPU) { bas_cp_R(cpu); }
 
-pub fn cp_h_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("CP H"));
-}
+pub fn cp_h_txt(cpu: &mut CPU) { cpu.texto(&format!("CP H")); }
 
-// 0xBD
+/// 0xBD   "cp l"
+///     The contents of L are compared with the contents of A.
+///     If there is a true compare, the Z flag is set. The execution of
+///     this instruction does not affect A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if borrow from bit 4; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is set.
+///     C is set if borrow; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 1 | 1 | 1 | 1 | 0 | 1 | 0xBD
+///     =================================
+///     T-States: 4
 pub fn cp_l(cpu: &mut CPU) { bas_cp_R(cpu); }
 
-pub fn cp_l_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("CP L"));
-}
+pub fn cp_l_txt(cpu: &mut CPU) { cpu.texto(&format!("CP L")); }
 
-// 0xBE
+/// 0xBE   "cp (hl)"
+///     The contents of the byte at the memory address specified by
+///     the contents of HL are compared with the contents of A.
+///     If there is a true compare, the Z flag is set. The execution of
+///     this instruction does not affect A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if borrow from bit 4; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is set.
+///     C is set if borrow; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 1 | 1 | 1 | 1 | 1 | 0 | 0xBE
+///     =================================
+///     T-States: 4, 3 (7)
 pub fn cpOhlO(cpu: &mut CPU) { bas_cp_R(cpu); }
 
-pub fn cpOhlO_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("CP (HL)"));
-}
+pub fn cpOhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("CP (HL)")); }
 
-// 0xBF
+/// 0xBF   "cp a"
+///     The contents of A are compared with the contents of A.
+///     If there is a true compare, the Z flag is set. The execution of
+///     this instruction does not affect A.
+///     S is set if result is negative; otherwise, it is reset.
+///     Z is set if result is 0; otherwise, it is reset.
+///     H is set if borrow from bit 4; otherwise, it is reset.
+///     P/V is set if overflow; otherwise, it is reset.
+///     N is set.
+///     C is set if borrow; otherwise, it is reset.
+///     =================================
+///     | 1 | 0 | 1 | 1 | 1 | 1 | 1 | 1 | 0xBF
+///     =================================
+///     T-States: 4
 pub fn cp_a(cpu: &mut CPU) { bas_cp_R(cpu); }
 
-pub fn cp_a_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("CP A"));
-}
+pub fn cp_a_txt(cpu: &mut CPU) { cpu.texto(&format!("CP A")); }
 
 
 // *************************** C ***********************************
-// 0xC0
+/// 0xC0   "ret nz"
+///     If Z flag is not set, the byte at the memory location specified
+///     by the contents of SP is moved to the low-order 8 bits of PC.
+///     SP is incremented and the byte at the memory location specified by
+///     the new contents of the SP are moved to the high-order eight bits of
+///     PC.The SP is incremented again. The next op code following this
+///     instruction is fetched from the memory location specified by the PC.
+///     This instruction is normally used to return to the main line program at
+///     the completion of a routine entered by a CALL instruction.
+///     If condition X is false, PC is simply incremented as usual, and the
+///     program continues with the next sequential instruction.
+///     =================================
+///     | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0xC0
+///     =================================
+///     T-States: If X is true: 11
+///     If X is false: 5
 pub fn ret_nz(cpu: &mut CPU) {
     if !cpu.get_z_flag() {
         cpu.pc = cpu.pop();
@@ -3836,11 +4918,21 @@ pub fn ret_nz(cpu: &mut CPU) {
     }
 }
 
-pub fn ret_nz_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("RET NZ"));
-}
+pub fn ret_nz_txt(cpu: &mut CPU) { cpu.texto(&format!("RET NZ")); }
 
-// 0xC1
+/// 0xC1   "pop bc"
+///     The top two bytes of the external memory last-in, first-out (LIFO)
+///     stack are popped to register pair BC. SP holds the 16-bit address
+///     of the current top of the stack. This instruction first loads to
+///     the low-order portion of RR, the byte at the memory location
+///     corresponding to the contents of SP; then SP is incremented and
+///     the contents of the corresponding adjacent memory location are
+///     loaded to the high-order portion of RR and the SP is now incremented
+///     again.
+///     =================================
+///     | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0xC1
+///     =================================
+///     T-States: 10
 pub fn pop_bc(cpu: &mut CPU) {
     let bc: u16 = cpu.pop();
     cpu.escribe_bc(bc);
@@ -3851,7 +4943,32 @@ pub fn pop_bc(cpu: &mut CPU) {
 
 pub fn pop_bc_txt(cpu: &mut CPU) { cpu.texto(&format!("POP BC")); }
 
-// 0xC3 NN NN
+/// 0xC2   "jp nz,NN"
+///     If Z flag is not set, the instruction loads operand NN
+///     to PC, and the program continues with the instruction
+///     beginning at address NN.
+///     If condition X is false, PC is incremented as usual, and
+///     the program continues with the next sequential instruction.
+///     =================================
+///     | 1 | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0xC2
+///     =================================
+///     |           8-bit L             |
+///     =================================
+///     |           8-bit H             |
+///     =================================
+///     T-States: 10
+
+/// 0xC3   "jp NN"
+///     Operand NN is loaded to PC. The next instruction is fetched
+///     from the location designated by the new contents of the PC.
+///     =================================
+///     | 1 | 1 | 0 | 0 | 0 | 0 | 1 | 1 | 0xC3
+///     =================================
+///     |           8-bit L             |
+///     =================================
+///     |           8-bit H             |
+///     =================================
+///     T-States: 10
 pub fn jp_nn(cpu: &mut CPU) {
     cpu.t += cpu.get_t_instruccion();
     cpu.pc = cpu.r1r2;
@@ -3859,7 +4976,41 @@ pub fn jp_nn(cpu: &mut CPU) {
 
 pub fn jp_nn_txt(cpu: &mut CPU) { cpu.texto(&format!("JP #{:04X}", cpu.r1r2)); }
 
-// 0xC5
+/// 0xC4   "call nz,NN"
+///     If flag Z is not set, this instruction pushes the current
+///     contents of PC onto the top of the external memory stack, then
+///     loads the operands NN to PC to point to the address in memory
+///     at which the first op code of a subroutine is to be fetched.
+///     At the end of the subroutine, a RET instruction can be used to
+///     return to the original program flow by popping the top of the
+///     stack back to PC. If condition X is false, PC is incremented as
+///     usual, and the program continues with the next sequential
+///     instruction. The stack push is accomplished by first decrementing
+///     the current contents of SP, loading the high-order byte of the PC
+///     contents to the memory address now pointed to by SP; then
+///     decrementing SP again, and loading the low-order byte of the PC
+///     contents to the top of the stack.
+///     =================================
+///     | 1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0xC4
+///     =================================
+///     |           8-bit L             |
+///     =================================
+///     |           8-bit H             |
+///     =================================
+///     T-States: 10
+
+/// 0xC5   "push bc"
+///     The contents of the register pair BC are pushed to the external
+///     memory last-in, first-out (LIFO) stack. SP holds the 16-bit
+///     address of the current top of the Stack. This instruction first
+///     decrements SP and loads the high-order byte of register pair RR
+///     to the memory address specified by SP. Then SP is decremented again
+///     and loads the low-order byte of RR to the memory location
+///     corresponding to this new address in SP.
+///     =================================
+///     | 1 | 1 | 0 | 0 | 0 | 1 | 0 | 1 | 0xC5
+///     =================================
+///     T-States: 10
 pub fn push_bc(cpu: &mut CPU) {
     let bc = cpu.lee_bc();
     cpu.push(bc);
@@ -3870,7 +5021,7 @@ pub fn push_bc(cpu: &mut CPU) {
 
 pub fn push_bc_txt(cpu: &mut CPU) { cpu.texto(&format!("PUSH BC")); }
 
-// 0xC6
+/// 0xC6   "add a,n" ??????????????????? TODO: se lo salta
 pub fn add_a_n(cpu: &mut CPU) {
     let kk = cpu.a.wrapping_add(cpu.r1);
     flag_v_u8_en_suma(cpu, cpu.a, cpu.r1, kk);
@@ -3878,22 +5029,34 @@ pub fn add_a_n(cpu: &mut CPU) {
     flag_h_u8_en_suma(cpu, cpu.a, cpu.r1);
     cpu.a = kk;
 
-    //cpu.reset_n_flag();
     cpu.set_flag(FLAG_N, false);
 
-    cpu.flag_s_u8(kk);
-    cpu.flag_z_u8(kk);
-    //cpu.flag_h_u8(kk);
+    //cpu.flag_s_u8(kk);
+    cpu.set_flag(FLAG_S, kk & FLAG_S != 0);
+    //cpu.flag_z_u8(kk);
+    cpu.set_flag(FLAG_Z, kk == 0);
 
     cpu.t += cpu.get_t_instruccion();
     cpu.pc += cpu.get_bytes_instruccion();
 }
 
-pub fn add_a_n_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("ADD A,#{:02X}", cpu.r1));
-}
+pub fn add_a_n_txt(cpu: &mut CPU) { cpu.texto(&format!("ADD A,#{:02X}", cpu.r1)); }
 
-// 0xC7
+/// 0xC7   "rst 00h"
+///     The current PC contents are pushed onto the external memory stack,
+///     and the Page 0 memory location assigned by operand N is loaded to
+///     PC. Program execution then begins with the op code in the address
+///     now pointed to by PC. The push is performed by first decrementing
+///     the contents of SP, loading the high-order byte of PC to the
+///     memory address now pointed to by SP, decrementing SP again, and
+///     loading the low-order byte of PC to the address now pointed to by
+///     SP. The Restart instruction allows for a jump to address 0000H.
+///     Because all addresses are stored in Page 0 of memory, the high-order
+///     byte of PC is loaded with 0x00.
+///     =================================
+///     | 1 | 1 | 0 | 0 | 0 | 1 | 1 | 1 | 0xC7
+///     =================================
+///     T-States: 11
 pub fn rst_00(cpu: &mut CPU) {
     let salto_al_volver = cpu.pc + cpu.get_bytes_instruccion();
     cpu.push(salto_al_volver);
@@ -3902,11 +5065,24 @@ pub fn rst_00(cpu: &mut CPU) {
     cpu.t += cpu.get_t_instruccion();
 }
 
-pub fn rst_00_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("RST #0000"));
-}
+pub fn rst_00_txt(cpu: &mut CPU) { cpu.texto(&format!("RST #0000")); }
 
-// 0xC8
+/// 0xC8   "ret z"
+///     If Z flag is set, the byte at the memory location specified
+///     by the contents of SP is moved to the low-order 8 bits of PC.
+///     SP is incremented and the byte at the memory location specified by
+///     the new contents of the SP are moved to the high-order eight bits of
+///     PC.The SP is incremented again. The next op code following this
+///     instruction is fetched from the memory location specified by the PC.
+///     This instruction is normally used to return to the main line program at
+///     the completion of a routine entered by a CALL instruction.
+///     If condition X is false, PC is simply incremented as usual, and the
+///     program continues with the next sequential instruction.
+///     =================================
+///     | 1 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 0xC8
+///     =================================
+///     T-States: If X is true: 11
+///     If X is false: 5
 pub fn ret_z(cpu: &mut CPU) {
     if cpu.get_z_flag() {
         cpu.pc = cpu.pop();
@@ -3919,19 +5095,42 @@ pub fn ret_z(cpu: &mut CPU) {
 
 pub fn ret_z_txt(cpu: &mut CPU) { cpu.texto(&format!("RET Z")); }
 
-
-// 0xC9
+/// 0xC9   "ret"
+///     The byte at the memory location specified by the contents of SP
+///     is moved to the low-order eight bits of PC. SP is now incremented
+///     and the byte at the memory location specified by the new contents
+///     of this instruction is fetched from the memory location specified
+///     by PC.
+///     This instruction is normally used to return to the main line
+///     program at the completion of a routine entered by a CALL
+///     instruction.
+///     =================================
+///     | 1 | 1 | 0 | 0 | 1 | 0 | 0 | 1 | 0xC9
+///     =================================
+///     T-States: 10
 pub fn ret(cpu: &mut CPU) {
     cpu.pc = cpu.pop();
-
     cpu.t += cpu.get_t_instruccion();
 }
 
-pub fn ret_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("RET"));
-}
+pub fn ret_txt(cpu: &mut CPU) { cpu.texto(&format!("RET")); }
 
-// 0xCB   -----EXTENSION--------------------------------------------------------
+/// 0xCA   "jp z,NN"
+///     If Z flag is set, the instruction loads operand NN
+///     to PC, and the program continues with the instruction
+///     beginning at address NN.
+///     If condition X is false, PC is incremented as usual, and
+///     the program continues with the next sequential instruction.
+///     =================================
+///     | 1 | 1 | 0 | 0 | 1 | 0 | 1 | 0 | 0xCA
+///     =================================
+///     |           8-bit L             |
+///     =================================
+///     |           8-bit H             |
+///     =================================
+///     T-States: 4, 3, 3 (10)
+
+/// 0xCB   -----EXTENSION--------------------------------------------------------
 pub fn CB(cpu: &mut CPU) {
     /*
      self.obtiene_intruccion_y_bytes_posteriores();
@@ -3943,24 +5142,44 @@ pub fn CB(cpu: &mut CPU) {
         ff(self);
         //self.funciones[self.r0 as usize](self);
     */
-// Ejecuta instruccion
+    // Ejecuta instruccion
     let f: Funcion = cpu.funciones_cb[cpu.r1 as usize];
     let ff = f.get_puntero_a_funcion();
     ff(cpu);
-//cpu.funciones_cb[cpu.r1 as usize](cpu);
+    //cpu.funciones_cb[cpu.r1 as usize](cpu);
 }
 
 pub fn CB_txt(cpu: &mut CPU) {
-// Ejecuta instruccion
+    // Ejecuta instruccion
     let f: Funcion = cpu.funciones_cb[cpu.r1 as usize];
     let ff = f.get_puntero_txt_a_funcion();
     ff(cpu);
 
-
-//cpu.funciones_cb_txt[cpu.r1 as usize](cpu);
+    //cpu.funciones_cb_txt[cpu.r1 as usize](cpu);
 }
 
-// 0xCC
+/// 0xCC   "call z,NN"
+///     If flag Z is set, this instruction pushes the current
+///     contents of PC onto the top of the external memory stack, then
+///     loads the operands NN to PC to point to the address in memory
+///     at which the first op code of a subroutine is to be fetched.
+///     At the end of the subroutine, a RET instruction can be used to
+///     return to the original program flow by popping the top of the
+///     stack back to PC. If condition X is false, PC is incremented as
+///     usual, and the program continues with the next sequential
+///     instruction. The stack push is accomplished by first decrementing
+///     the current contents of SP, loading the high-order byte of the PC
+///     contents to the memory address now pointed to by SP; then
+///     decrementing SP again, and loading the low-order byte of the PC
+///     contents to the top of the stack.
+///     =================================
+///     | 1 | 1 | 0 | 0 | 1 | 1 | 0 | 0 | 0xCC
+///     =================================
+///     |           8-bit L             |
+///     =================================
+///     |           8-bit H             |
+///     =================================
+///     T-States: 10
 pub fn call_z_nn(cpu: &mut CPU) {
     if cpu.get_z_flag() {
         cpu.pc = cpu.r1r2;
@@ -3973,7 +5192,25 @@ pub fn call_z_nn(cpu: &mut CPU) {
 
 pub fn call_z_nn_txt(cpu: &mut CPU) { cpu.texto(&format!("CALL Z #{:04X}", cpu.r1r2)); }
 
-// 0xCD
+/// 0xCD   "call NN"
+///     The current contents of PC are pushed onto the top of the
+///     external memory stack. The operands NN are then loaded to PC to
+///     point to the address in memory at which the first op code of a
+///     subroutine is to be fetched. At the end of the subroutine, a RET
+///     instruction can be used to return to the original program flow by
+///     popping the top of the stack back to PC. The push is accomplished
+///     by first decrementing the current contents of SP, loading the
+///     high-order byte of the PC contents to the memory address now pointed
+///     to by SP; then decrementing SP again, and loading the low-order
+///     byte of the PC contents to the top of stack.
+///     =================================
+///     | 1 | 1 | 0 | 0 | 1 | 1 | 0 | 1 | 0xCD
+///     =================================
+///     |           8-bit L             |
+///     =================================
+///     |           8-bit H             |
+///     =================================
+///     T-States: 17
 pub fn call_nn(cpu: &mut CPU) {
     let salto_al_volver = cpu.pc + cpu.get_bytes_instruccion();
     cpu.push(salto_al_volver);
@@ -3982,11 +5219,25 @@ pub fn call_nn(cpu: &mut CPU) {
     cpu.t += cpu.get_t_instruccion();
 }
 
-pub fn call_nn_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("CALL #{:04X}", cpu.r1r2));
-}
+pub fn call_nn_txt(cpu: &mut CPU) { cpu.texto(&format!("CALL #{:04X}", cpu.r1r2)); }
 
+/// 0xCE   "adc a,n" ???????? TODO: se lo salta
 
+/// 0xCF   "rst 08h"
+///     The current PC contents are pushed onto the external memory stack,
+///     and the Page 0 memory location assigned by operand N is loaded to
+///     PC. Program execution then begins with the op code in the address
+///     now pointed to by PC. The push is performed by first decrementing
+///     the contents of SP, loading the high-order byte of PC to the
+///     memory address now pointed to by SP, decrementing SP again, and
+///     loading the low-order byte of PC to the address now pointed to by
+///     SP. The Restart instruction allows for a jump to address 0008H.
+///     Because all addresses are stored in Page 0 of memory, the high-order
+///     byte of PC is loaded with 0x00.
+///     =================================
+///     | 1 | 1 | 0 | 0 | 1 | 1 | 1 | 1 | 0xCF
+///     =================================
+///     T-States: 11
 pub fn rst_08(cpu: &mut CPU) {
     let salto_al_volver = cpu.pc + cpu.get_bytes_instruccion();
     cpu.push(salto_al_volver);
@@ -3995,12 +5246,25 @@ pub fn rst_08(cpu: &mut CPU) {
     cpu.t += cpu.get_t_instruccion();
 }
 
-pub fn rst_08_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("RST 08"));
-}
+pub fn rst_08_txt(cpu: &mut CPU) { cpu.texto(&format!("RST 08")); }
 
 // *************************** D ***********************************
-// 0xD0
+/// 0xD0   "ret nc"
+///     If C flag is not set, the byte at the memory location specified
+///     by the contents of SP is moved to the low-order 8 bits of PC.
+///     SP is incremented and the byte at the memory location specified by
+///     the new contents of the SP are moved to the high-order eight bits of
+///     PC.The SP is incremented again. The next op code following this
+///     instruction is fetched from the memory location specified by the PC.
+///     This instruction is normally used to return to the main line program at
+///     the completion of a routine entered by a CALL instruction.
+///     If condition X is false, PC is simply incremented as usual, and the
+///     program continues with the next sequential instruction.
+///     =================================
+///     | 1 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0xD0
+///     =================================
+///     T-States: If X is true: 11
+///     If X is false: 5
 pub fn ret_nc(cpu: &mut CPU) {
     if !cpu.get_c_flag() {
         cpu.pc = cpu.pop();
@@ -4013,7 +5277,34 @@ pub fn ret_nc(cpu: &mut CPU) {
 
 pub fn ret_nc_txt(cpu: &mut CPU) { cpu.texto(&format!("RET NC")); }
 
-// 0xD2
+/// 0xD1   "pop de"
+///     The top two bytes of the external memory last-in, first-out (LIFO)
+///     stack are popped to register pair DE. SP holds the 16-bit address
+///     of the current top of the stack. This instruction first loads to
+///     the low-order portion of RR, the byte at the memory location
+///     corresponding to the contents of SP; then SP is incremented and
+///     the contents of the corresponding adjacent memory location are
+///     loaded to the high-order portion of RR and the SP is now incremented
+///     again.
+///     =================================
+///     | 1 | 1 | 0 | 1 | 0 | 0 | 0 | 1 | 0xD1
+///     =================================
+///     T-States: 10
+
+/// 0xD2   "jp nc,NN"
+///     If C flag is not set, the instruction loads operand NN
+///     to PC, and the program continues with the instruction
+///     beginning at address NN.
+///     If condition X is false, PC is incremented as usual, and
+///     the program continues with the next sequential instruction.
+///     =================================
+///     | 1 | 1 | 0 | 1 | 0 | 0 | 1 | 0 | 0xD2
+///     =================================
+///     |           8-bit L             |
+///     =================================
+///     |           8-bit H             |
+///     =================================
+///     T-States: 10
 pub fn jp_nc_nn(cpu: &mut CPU) {
     if !cpu.get_c_flag() {
         cpu.pc = cpu.r1r2;
@@ -4026,7 +5317,19 @@ pub fn jp_nc_nn(cpu: &mut CPU) {
 
 pub fn jp_nc_nn_txt(cpu: &mut CPU) { cpu.texto(&format!("JP NC#{:04X}", cpu.r1r2)); }
 
-// 0xD3
+/// 0xD3   "out (N),a"
+///     The operand N is placed on the bottom half (A0 through A7) of
+///     the address bus to select the I/O device at one of 256 possible
+///     ports. The contents of A also appear on the top half(A8 through
+///     A15) of the address bus at this time. Then the byte contained
+///     in A is placed on the data bus and written to the selected
+///     peripheral device.
+///     =================================
+///     | 1 | 1 | 0 | 1 | 0 | 0 | 1 | 1 | 0xD3
+///     =================================
+///     |            8-bit              |
+///     =================================
+///     T-States: 11
 pub fn out_OnO_a(cpu: &mut CPU) {
     cpu.mem.escribe_byte_en_port(cpu.r1, cpu.a);
 
@@ -4034,11 +5337,44 @@ pub fn out_OnO_a(cpu: &mut CPU) {
     cpu.pc += cpu.get_bytes_instruccion();
 }
 
-pub fn out_OnO_a_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("OUT(#{:02X}),A", cpu.r1));
-}
+pub fn out_OnO_a_txt(cpu: &mut CPU) { cpu.texto(&format!("OUT(#{:02X}),A", cpu.r1)); }
 
-// 0xD5
+/// 0xD4"call nc,NN"
+///     If flag C is not set, this instruction pushes the current
+///     contents of PC onto the top of the external memory stack, then
+///     loads the operands NN to PC to point to the address in memory
+///     at which the first op code of a subroutine is to be fetched.
+///     At the end of the subroutine, a RET instruction can be used to
+///     return to the original program flow by popping the top of the
+///     stack back to PC. If condition X is false, PC is incremented as
+///     usual, and the program continues with the next sequential
+///     instruction. The stack push is accomplished by first decrementing
+///     the current contents of SP, loading the high-order byte of the PC
+///     contents to the memory address now pointed to by SP; then
+///     decrementing SP again, and loading the low-order byte of the PC
+///     contents to the top of the stack.
+///     =================================
+///     | 1 | 1 | 0 | 1 | 0 | 1 | 0 | 0 | 0xD4
+///     =================================
+///     |           8-bit L             |
+///     =================================
+///     |           8-bit H             |
+///     =================================
+///     T-States: 10
+
+
+/// 0xD5   "push de"
+///     The contents of the register pair DE are pushed to the external
+///     memory last-in, first-out (LIFO) stack. SP holds the 16-bit
+///     address of the current top of the Stack. This instruction first
+///     decrements SP and loads the high-order byte of register pair RR
+///     to the memory address specified by SP. Then SP is decremented again
+///     and loads the low-order byte of RR to the memory location
+///     corresponding to this new address in SP.
+///     =================================
+///     | 1 | 1 | 0 | 1 | 0 | 1 | 0 | 1 | 0xD5
+///     =================================
+///     T-States: 10
 pub fn push_de(cpu: &mut CPU) {
     let de = cpu.lee_de();
     cpu.push(de);
@@ -4049,7 +5385,7 @@ pub fn push_de(cpu: &mut CPU) {
 
 pub fn push_de_txt(cpu: &mut CPU) { cpu.texto(&format!("PUSH DE")); }
 
-// 0xD6
+/// 0xD6 TODO: No esta
 pub fn sub_n(cpu: &mut CPU) {
     let kk = cpu.a.wrapping_sub(cpu.r1);
     flag_v_u8_en_resta(cpu, cpu.a, cpu.r1, kk);
@@ -4057,10 +5393,11 @@ pub fn sub_n(cpu: &mut CPU) {
     flag_h_u8_en_resta(cpu, cpu.a, cpu.r1);
     cpu.a = kk;
 
-    //cpu.set_n_flag();
     cpu.set_flag(FLAG_N, true);
-    cpu.flag_s_u8(kk);
-    cpu.flag_z_u8(kk);
+    //cpu.flag_s_u8(kk);
+    cpu.set_flag(FLAG_S, kk & FLAG_S != 0);
+    //cpu.flag_z_u8(kk);
+    cpu.set_flag(FLAG_Z, kk == 0);
 
 
     cpu.t += cpu.get_t_instruccion();
@@ -4069,7 +5406,21 @@ pub fn sub_n(cpu: &mut CPU) {
 
 pub fn sub_n_txt(cpu: &mut CPU) { cpu.texto(&format!("SUB(#{:02X})", cpu.r1)); }
 
-// 0xD7
+/// 0xD7   "rst 10h"
+///     The current PC contents are pushed onto the external memory stack,
+///     and the Page 0 memory location assigned by operand N is loaded to
+///     PC. Program execution then begins with the op code in the address
+///     now pointed to by PC. The push is performed by first decrementing
+///     the contents of SP, loading the high-order byte of PC to the
+///     memory address now pointed to by SP, decrementing SP again, and
+///     loading the low-order byte of PC to the address now pointed to by
+///     SP. The Restart instruction allows for a jump to address 0010H.
+///     Because all addresses are stored in Page 0 of memory, the high-order
+///     byte of PC is loaded with 0x00.
+///     =================================
+///     | 1 | 1 | 0 | 1 | 0 | 1 | 1 | 1 | 0xD7
+///     =================================
+///     T-States: 11
 pub fn rst_10(cpu: &mut CPU) {
     let salto_al_volver = cpu.pc + cpu.get_bytes_instruccion();
     cpu.push(salto_al_volver);
@@ -4078,11 +5429,24 @@ pub fn rst_10(cpu: &mut CPU) {
     cpu.t += cpu.get_t_instruccion();
 }
 
-pub fn rst_10_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("RST #0010"));
-}
+pub fn rst_10_txt(cpu: &mut CPU) { cpu.texto(&format!("RST #0010")); }
 
-// 0xD8
+/// 0xD8   "ret c"
+///     If C flag is set, the byte at the memory location specified
+///     by the contents of SP is moved to the low-order 8 bits of PC.
+///     SP is incremented and the byte at the memory location specified by
+///     the new contents of the SP are moved to the high-order eight bits of
+///     PC.The SP is incremented again. The next op code following this
+///     instruction is fetched from the memory location specified by the PC.
+///     This instruction is normally used to return to the main line program at
+///     the completion of a routine entered by a CALL instruction.
+///     If condition X is false, PC is simply incremented as usual, and the
+///     program continues with the next sequential instruction.
+///     =================================
+///     | 1 | 1 | 0 | 1 | 1 | 0 | 0 | 0 | 0xD8
+///     =================================
+///     T-States: If X is true: 11
+///     If X is false: 5
 pub fn ret_c(cpu: &mut CPU) {
     if cpu.get_c_flag() {
         cpu.pc = cpu.pop();
@@ -4095,12 +5459,19 @@ pub fn ret_c(cpu: &mut CPU) {
 
 pub fn ret_c_txt(cpu: &mut CPU) { cpu.texto(&format!("RET C")); }
 
-// 0xD9 Difiere según procesador (LR35902->RETI)
+/// 0xD9 Difiere según procesador (LR35902->RETI)
 pub fn retiGB(cpu: &mut CPU) { fn_no_impl(cpu); }
 
 pub fn retiGB_txt(cpu: &mut CPU) { fn_no_impl(cpu); }
 
-// 0xD9 Difiere según procesador (Z80->EXX)
+/// 0xD9 Difiere según procesador (Z80->EXX)
+///   "exx"
+///     Each 2-byte value in register pairs BC, DE, and HL is exchanged
+///     with the 2-byte value in BC', DE', and HL', respectively.
+///     =================================
+///     | 1 | 1 | 0 | 1 | 1 | 0 | 0 | 1 | 0xD9
+///     =================================
+///     T-States: 4
 pub fn exx(cpu: &mut CPU) {
     let btemp = cpu.b;
     let ctemp = cpu.c;
@@ -4129,8 +5500,79 @@ pub fn exx(cpu: &mut CPU) {
 
 pub fn exx_txt(cpu: &mut CPU) { cpu.texto(&format!("EXX")); }
 
+/// 0xDA   "jp c,NN"
+///     If C flag is not set, the instruction loads operand NN
+///     to PC, and the program continues with the instruction
+///     beginning at address NN.
+///     If condition X is false, PC is incremented as usual, and
+///     the program continues with the next sequential instruction.
+///     =================================
+///     | 1 | 1 | 0 | 1 | 0 | 0 | 1 | 0 | 0xDA
+///     =================================
+///     |           8-bit L             |
+///     =================================
+///     |           8-bit H             |
+///     =================================
+///     T-States: 10
+
+/// 0xDB   "in a,(N)"
+///     The operand N is placed on the bottom half (A0 through A7) of
+///     the address bus to select the I/O device at one of 256 possible
+///     ports. The contents of A also appear on the top half (A8 through
+///     A15) of the address bus at this time. Then one byte from the
+///     selected port is placed on the data bus and written to A
+///     in the CPU.
+///     =================================
+///     | 1 | 1 | 0 | 1 | 0 | 0 | 1 | 1 | 0xDB
+///     =================================
+///     |            8-bit              |
+///     =================================
+///     T-States: 11
+
+/// 0xDC   "call c,NN"
+///     If flag C is set, this instruction pushes the current
+///     contents of PC onto the top of the external memory stack, then
+///     loads the operands NN to PC to point to the address in memory
+///     at which the first op code of a subroutine is to be fetched.
+///     At the end of the subroutine, a RET instruction can be used to
+///     return to the original program flow by popping the top of the
+///     stack back to PC. If condition X is false, PC is incremented as
+///     usual, and the program continues with the next sequential
+///     instruction. The stack push is accomplished by first decrementing
+///     the current contents of SP, loading the high-order byte of the PC
+///     contents to the memory address now pointed to by SP; then
+///     decrementing SP again, and loading the low-order byte of the PC
+///     contents to the top of the stack.
+///     =================================
+///     | 1 | 1 | 0 | 1 | 0 | 1 | 0 | 0 | 0xDC
+///     =================================
+///     |           8-bit L             |
+///     =================================
+///     |           8-bit H             |
+///     =================================
+///     T-States: 4, 3, 3 (10) / 4, 3, 4, 3, 3 (17)
+
+/// 0xDD
+/// 0xDE
+/// 0xDF   "rst 18h"
+
+///     The current PC contents are pushed onto the external memory stack,
+///     and the Page 0 memory location assigned by operand N is loaded to
+///     PC. Program execution then begins with the op code in the address
+///     now pointed to by PC. The push is performed by first decrementing
+///     the contents of SP, loading the high-order byte of PC to the
+///     memory address now pointed to by SP, decrementing SP again, and
+///     loading the low-order byte of PC to the address now pointed to by
+///     SP. The Restart instruction allows for a jump to address 0018H.
+///     Because all addresses are stored in Page 0 of memory, the high-order
+///     byte of PC is loaded with 0x00.
+///     =================================
+///     | 1 | 1 | 0 | 1 | 1 | 1 | 1 | 1 | 0xDF
+///     =================================
+///     T-States: 11
+
 // *************************** E ***********************************
-// 0xE0 Difiere según procesador (LR35902->LD(#FF00+N),A)
+/// 0xE0 Difiere según procesador (LR35902->LD(#FF00+N),A)
 pub fn ldOff00_m_nO_aGB(cpu: &mut CPU) {
     let direccion: u16 = 0xFF00 + (cpu.r1 as u16);
     cpu.mem.escribe_byte_en_mem(direccion, cpu.a);
@@ -4143,16 +5585,40 @@ pub fn ldOff00_m_nO_aGB_txt(cpu: &mut CPU) {
     cpu.texto(&format!("LD ($FF00+#{:02X}),A", cpu.r1));
 }
 
-// 0xE0 Difiere según procesador (Z80->RET NV)
-pub fn ret_po(cpu: &mut CPU) {
-    fn_no_impl(cpu);
-}
+/// 0xE0 Difiere según procesador (Z80->RET NV)
+///   "ret po"
+///     If PV flag is not set, the byte at the memory location specified
+///     by the contents of SP is moved to the low-order 8 bits of PC.
+///     SP is incremented and the byte at the memory location specified by
+///     the new contents of the SP are moved to the high-order eight bits of
+///     PC.The SP is incremented again. The next op code following this
+///     instruction is fetched from the memory location specified by the PC.
+///     This instruction is normally used to return to the main line program at
+///     the completion of a routine entered by a CALL instruction.
+///     If condition X is false, PC is simply incremented as usual, and the
+///     program continues with the next sequential instruction.
+///     =================================
+///     | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0xE0
+///     =================================
+///     T-States: If X is true: 11
+///     If X is false: 5
+pub fn ret_po(cpu: &mut CPU) { fn_no_impl(cpu); }
 
-pub fn ret_po_txt(cpu: &mut CPU) {
-    fn_no_impl(cpu);
-}
+pub fn ret_po_txt(cpu: &mut CPU) { fn_no_impl(cpu); }
 
-// 0xE1
+/// 0xE1   "pop hl"
+///     The top two bytes of the external memory last-in, first-out (LIFO)
+///     stack are popped to register pair HL. SP holds the 16-bit address
+///     of the current top of the stack. This instruction first loads to
+///     the low-order portion of RR, the byte at the memory location
+///     corresponding to the contents of SP; then SP is incremented and
+///     the contents of the corresponding adjacent memory location are
+///     loaded to the high-order portion of RR and the SP is now incremented
+///     again.
+///     =================================
+///     | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 1 | 0xE1
+///     =================================
+///     T-States: 10
 pub fn pop_hl(cpu: &mut CPU) {
     let hl = cpu.pop();
     cpu.escribe_hl(hl);
@@ -4163,7 +5629,7 @@ pub fn pop_hl(cpu: &mut CPU) {
 
 pub fn pop_hl_txt(cpu: &mut CPU) { cpu.texto(&format!("POP HL")); }
 
-// 0xE2 Difiere según procesador (LR35902->LD(#FF00+C),A)
+/// 0xE2 Difiere según procesador (LR35902->LD(#FF00+C),A)
 pub fn ldOff00_m_cO_aGB(cpu: &mut CPU) {
     let direccion: u16 = 0xFF00 + (cpu.c as u16);
     cpu.mem.escribe_byte_en_mem(direccion, cpu.a);
@@ -4172,20 +5638,36 @@ pub fn ldOff00_m_cO_aGB(cpu: &mut CPU) {
     cpu.pc += cpu.get_bytes_instruccion();
 }
 
-pub fn ldOff00_m_cO_aGB_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD ($FF00+C),A"));
-}
+pub fn ldOff00_m_cO_aGB_txt(cpu: &mut CPU) { cpu.texto(&format!("LD ($FF00+C),A")); }
 
-// 0xE2 Difiere según procesador (Z80->JP PO,NN)
-pub fn jp_po_nn(cpu: &mut CPU) {
-    fn_no_impl(cpu);
-}
+/// 0xE2 Difiere según procesador (Z80->JP PO,NN)
+/// "jp po,NN"
+///     If PV flag is not set, the instruction loads operand NN
+///     to PC, and the program continues with the instruction
+///     beginning at address NN.
+///     If condition X is false, PC is incremented as usual, and
+///     the program continues with the next sequential instruction.
+///     =================================
+///     | 1 | 1 | 1 | 0 | 0 | 0 | 1 | 0 | 0xE2
+///     =================================
+///     |           8-bit L             |
+///     =================================
+///     |           8-bit H             |
+///     =================================
+///     T-States: 10
+pub fn jp_po_nn(cpu: &mut CPU) { fn_no_impl(cpu); }
 
-pub fn jp_po_nn_txt(cpu: &mut CPU) {
-    fn_no_impl(cpu);
-}
+pub fn jp_po_nn_txt(cpu: &mut CPU) { fn_no_impl(cpu); }
 
-// 0xE3
+/// 0xE3   "ex (sp),hl"
+///     The low-order byte contained in HL is exchanged with the contents
+///     of the memory address specified by the contents of SP, and the
+///     high-order byte of HL is exchanged with the next highest memory
+///     address (SP+1).
+///     =================================
+///     | 1 | 1 | 1 | 0 | 0 | 0 | 1 | 1 | 0xE3
+///     =================================
+///     T-States: 4, 3, 4, 3, 5 (19)
 pub fn exOspO_hl(cpu: &mut CPU) {
     let l = cpu.mem.lee_byte_de_mem(cpu.sp);
     let h = cpu.mem.lee_byte_de_mem(cpu.sp + 1);
@@ -4198,11 +5680,43 @@ pub fn exOspO_hl(cpu: &mut CPU) {
     cpu.pc += cpu.get_bytes_instruccion();
 }
 
-pub fn exOspO_hl_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("EX(SP),HL"));
-}
+pub fn exOspO_hl_txt(cpu: &mut CPU) { cpu.texto(&format!("EX(SP),HL")); }
 
-// 0xE5
+/// 0xE4   "call po,NN"
+///     If flag PV is not set, this instruction pushes the current
+///     contents of PC onto the top of the external memory stack, then
+///     loads the operands NN to PC to point to the address in memory
+///     at which the first op code of a subroutine is to be fetched.
+///     At the end of the subroutine, a RET instruction can be used to
+///     return to the original program flow by popping the top of the
+///     stack back to PC. If condition X is false, PC is incremented as
+///     usual, and the program continues with the next sequential
+///     instruction. The stack push is accomplished by first decrementing
+///     the current contents of SP, loading the high-order byte of the PC
+///     contents to the memory address now pointed to by SP; then
+///     decrementing SP again, and loading the low-order byte of the PC
+///     contents to the top of the stack.
+///     =================================
+///     | 1 | 1 | 1 | 0 | 0 | 1 | 0 | 0 | 0xE4
+///     =================================
+///     |           8-bit L             |
+///     =================================
+///     |           8-bit H             |
+///     =================================
+///     T-States: 10
+
+/// 0xE5   "push hl"
+///     The contents of the register pair HL are pushed to the external
+///     memory last-in, first-out (LIFO) stack. SP holds the 16-bit
+///     address of the current top of the Stack. This instruction first
+///     decrements SP and loads the high-order byte of register pair RR
+///     to the memory address specified by SP. Then SP is decremented again
+///     and loads the low-order byte of RR to the memory location
+///     corresponding to this new address in SP.
+///     =================================
+///     | 1 | 1 | 1 | 0 | 0 | 1 | 0 | 1 | 0xE5
+///     =================================
+///     T-States: 10
 pub fn push_hl(cpu: &mut CPU) {
     let hl = cpu.lee_hl();
     cpu.push(hl);
@@ -4214,29 +5728,43 @@ pub fn push_hl(cpu: &mut CPU) {
 pub fn push_hl_txt(cpu: &mut CPU) { cpu.texto(&format!("PUSH HL")); }
 
 
-// 0xE6
+// 0xE6   TODO: No sale
 pub fn and_n(cpu: &mut CPU) {
     cpu.a = cpu.a & cpu.r1;
 
-    cpu.flag_s_u8(cpu.a);
-    cpu.flag_z_u8(cpu.a);
+    //cpu.flag_s_u8(cpu.a);
+    cpu.set_flag(FLAG_S, cpu.a & FLAG_S != 0);
+    //cpu.flag_z_u8(cpu.a);
+    cpu.set_flag(FLAG_Z, cpu.a == 0);
     flag_p_u8(cpu, cpu.a); // Como paridad
-    //cpu.set_h_flag();
+
     cpu.set_flag(FLAG_H, true);
-    //cpu.reset_c_flag();
+
     cpu.set_flag(FLAG_C, false);
-    //cpu.reset_n_flag();
+
     cpu.set_flag(FLAG_N, false);
 
     cpu.pc += cpu.get_bytes_instruccion();
     cpu.t = cpu.get_t_instruccion();
 }
 
-pub fn and_n_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("AND #{:02X}", cpu.r1));
-}
+pub fn and_n_txt(cpu: &mut CPU) { cpu.texto(&format!("AND #{:02X}", cpu.r1)); }
 
-// 0xE7
+/// 0xE7   "rst 20h"
+///     The current PC contents are pushed onto the external memory stack,
+///     and the Page 0 memory location assigned by operand N is loaded to
+///     PC. Program execution then begins with the op code in the address
+///     now pointed to by PC. The push is performed by first decrementing
+///     the contents of SP, loading the high-order byte of PC to the
+///     memory address now pointed to by SP, decrementing SP again, and
+///     loading the low-order byte of PC to the address now pointed to by
+///     SP. The Restart instruction allows for a jump to address 0020H.
+///     Because all addresses are stored in Page 0 of memory, the high-order
+///     byte of PC is loaded with 0x00.
+///     =================================
+///     | 1 | 1 | 1 | 0 | 0 | 1 | 1 | 1 | 0xE7
+///     =================================
+///     T-States: 11
 pub fn rst_20(cpu: &mut CPU) {
     let salto_al_volver = cpu.pc + cpu.get_bytes_instruccion();
     cpu.push(salto_al_volver);
@@ -4245,11 +5773,32 @@ pub fn rst_20(cpu: &mut CPU) {
     cpu.t += cpu.get_t_instruccion();
 }
 
-pub fn rst_20_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("RST #0020"));
-}
+pub fn rst_20_txt(cpu: &mut CPU) { cpu.texto(&format!("RST #0020")); }
 
-// 0xE9
+/// 0xE8   "ret pe"
+///     If PV flag is not set, the byte at the memory location specified
+///     by the contents of SP is moved to the low-order 8 bits of PC.
+///     SP is incremented and the byte at the memory location specified by
+///     the new contents of the SP are moved to the high-order eight bits of
+///     PC.The SP is incremented again. The next op code following this
+///     instruction is fetched from the memory location specified by the PC.
+///     This instruction is normally used to return to the main line program at
+///     the completion of a routine entered by a CALL instruction.
+///     If condition X is false, PC is simply incremented as usual, and the
+///     program continues with the next sequential instruction.
+///     =================================
+///     | 1 | 1 | 1 | 0 | 1 | 0 | 0 | 0 | 0xE8
+///     =================================
+///     T-States: If X is true: 11
+///     If X is false: 5
+
+/// 0xE9   "jp (hl)"
+///     PC is loaded with the contents of HL. The next instruction is
+///     fetched from the location designated by the new contents of PC.
+///     =================================
+///     | 1 | 1 | 1 | 0 | 1 | 0 | 0 | 1 | 0xE9
+///     =================================
+///     T-States: 4
 pub fn jpOhlO(cpu: &mut CPU) {
     cpu.pc = cpu.lee_hl();
 
@@ -4258,7 +5807,7 @@ pub fn jpOhlO(cpu: &mut CPU) {
 
 pub fn jpOhlO_txt(cpu: &mut CPU) { cpu.texto(&format!("JP(HL)")); }
 
-// 0xEA  Difiere según procesador (LR35902->LD (nn),A)
+/// 0xEA  Difiere según procesador (LR35902->LD (nn),A)
 pub fn ldOnnO_aGB(cpu: &mut CPU) {
     cpu.mem.escribe_byte_en_mem(cpu.r1r2, cpu.a);
 
@@ -4266,20 +5815,33 @@ pub fn ldOnnO_aGB(cpu: &mut CPU) {
     cpu.pc += cpu.get_bytes_instruccion();
 }
 
-pub fn ldOnnO_aGB_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD (#{:04X}),A", cpu.r1r2));
-}
+pub fn ldOnnO_aGB_txt(cpu: &mut CPU) { cpu.texto(&format!("LD (#{:04X}),A", cpu.r1r2)); }
 
-// 0xEA  Difiere según procesador (Z80->JP  V,nn)
-pub fn jp_pe_nn(cpu: &mut CPU) {
-    fn_no_impl(cpu);
-}
+/// 0xEA  Difiere según procesador (Z80->JP  V,nn)
+///   "jp pe,NN"
+///     If PV flag is set, the instruction loads operand NN
+///     to PC, and the program continues with the instruction
+///     beginning at address NN.
+///     If condition X is false, PC is incremented as usual, and
+///     the program continues with the next sequential instruction.
+///     =================================
+///     | 1 | 1 | 1 | 0 | 0 | 0 | 1 | 0 | 0xEA
+///     =================================
+///     |           8-bit L             |
+///     =================================
+///     |           8-bit H             |
+///     =================================
+///     T-States: 10
+pub fn jp_pe_nn(cpu: &mut CPU) { fn_no_impl(cpu); }
 
-pub fn jp_pe_nn_txt(cpu: &mut CPU) {
-    fn_no_impl(cpu);
-}
+pub fn jp_pe_nn_txt(cpu: &mut CPU) { fn_no_impl(cpu); }
 
-// 0xEB
+/// 0xEB   "ex de,hl"
+///     The 2-byte contents of register pairs DE and HL are exchanged.
+///     =================================
+///     | 1 | 1 | 1 | 0 | 1 | 0 | 1 | 1 | 0xEB
+///     =================================
+///     T-States: 4
 pub fn ex_de_hl(cpu: &mut CPU) {
     let dtemp = cpu.d;
     let etemp = cpu.e;
@@ -4292,9 +5854,8 @@ pub fn ex_de_hl(cpu: &mut CPU) {
     cpu.pc += cpu.get_bytes_instruccion();
 }
 
-pub fn ex_de_hl_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("EX DE,HL"));
-}
+pub fn ex_de_hl_txt(cpu: &mut CPU) { cpu.texto(&format!("EX DE,HL")); }
+
 
 // 0xED   -----EXTENSION--------------------------------------------------------
 pub fn ED(cpu: &mut CPU) {
@@ -4308,14 +5869,13 @@ pub fn ED(cpu: &mut CPU) {
         ff(self);
         //self.funciones[self.r0 as usize](self);
     */
-// Ejecuta instruccion
+    // Ejecuta instruccion
     let f: Funcion = cpu.funciones_ed[cpu.r1 as usize];
 
     let ff = f.get_puntero_a_funcion();
     ff(cpu);
 
-
-//cpu.funciones_ed[cpu.r1 as usize](cpu);
+    //cpu.funciones_ed[cpu.r1 as usize](cpu);
 }
 
 pub fn ED_txt(cpu: &mut CPU) {
@@ -4326,8 +5886,24 @@ pub fn ED_txt(cpu: &mut CPU) {
 //cpu.funciones_ed_txt[cpu.r1 as usize](cpu);
 }
 
+/// 0xEF   "rst 28h"
+///     The current PC contents are pushed onto the external memory stack,
+///     and the Page 0 memory location assigned by operand N is loaded to
+///     PC. Program execution then begins with the op code in the address
+///     now pointed to by PC. The push is performed by first decrementing
+///     the contents of SP, loading the high-order byte of PC to the
+///     memory address now pointed to by SP, decrementing SP again, and
+///     loading the low-order byte of PC to the address now pointed to by
+///     SP. The Restart instruction allows for a jump to address 0028H.
+///     Because all addresses are stored in Page 0 of memory, the high-order
+///     byte of PC is loaded with 0x00.
+///     =================================
+///     | 1 | 1 | 1 | 0 | 1 | 1 | 1 | 1 | 0xEF
+///     =================================
+///     T-States: 11
+
 // *************************** F ***********************************
-// 0xF0 Difiere según procesador (LR35902->LDH  A,(n))
+/// 0xF0 Difiere según procesador (LR35902->LDH  A,(n))
 pub fn ld_a_Off00_m_nOGB(cpu: &mut CPU) {
     let direccion: u16 = 0xFF00 + (cpu.r1 as u16);
     cpu.a = cpu.mem.lee_byte_de_mem(direccion);
@@ -4336,11 +5912,25 @@ pub fn ld_a_Off00_m_nOGB(cpu: &mut CPU) {
     cpu.pc += cpu.get_bytes_instruccion();
 }
 
-pub fn ld_a_Off00_m_nOGB_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD A,($FF00+#{:02X})", cpu.r1));
-}
+pub fn ld_a_Off00_m_nOGB_txt(cpu: &mut CPU) { cpu.texto(&format!("LD A,($FF00+#{:02X})", cpu.r1)); }
 
-// 0xF0 Difiere según procesador (Z80->RET P)
+/// 0xF0 Difiere según procesador (Z80->RET P)
+///     "ret p"
+///     If S flag is not set, the byte at the memory location specified
+///     by the contents of SP is moved to the low-order 8 bits of PC.
+///     SP is incremented and the byte at the memory location specified by
+///     the new contents of the SP are moved to the high-order eight bits of
+///     PC.The SP is incremented again. The next op code following this
+///     instruction is fetched from the memory location specified by the PC.
+///     This instruction is normally used to return to the main line program at
+///     the completion of a routine entered by a CALL instruction.
+///     If condition X is false, PC is simply incremented as usual, and the
+///     program continues with the next sequential instruction.
+///     =================================
+///     | 1 | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 0xF0
+///     =================================
+///     T-States: If X is true: 11
+///     If X is false: 5
 pub fn ret_p(cpu: &mut CPU) {
     if cpu.get_pv_flag() {
         cpu.pc = cpu.pop();
@@ -4351,11 +5941,21 @@ pub fn ret_p(cpu: &mut CPU) {
     }
 }
 
-pub fn ret_p_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("RET P"));
-}
+pub fn ret_p_txt(cpu: &mut CPU) { cpu.texto(&format!("RET P")); }
 
-// 0xF1
+/// 0xF1   "pop af"
+///     The top two bytes of the external memory last-in, first-out (LIFO)
+///     stack are popped to register pair AF. SP holds the 16-bit address
+///     of the current top of the stack. This instruction first loads to
+///     the low-order portion of RR, the byte at the memory location
+///     corresponding to the contents of SP; then SP is incremented and
+///     the contents of the corresponding adjacent memory location are
+///     loaded to the high-order portion of RR and the SP is now incremented
+///     again.
+///     =================================
+///     | 1 | 1 | 1 | 1 | 0 | 0 | 0 | 1 | 0xF1
+///     =================================
+///     T-States: 10
 pub fn pop_af(cpu: &mut CPU) {
     let af = cpu.pop();
     cpu.escribe_af(af);
@@ -4364,11 +5964,30 @@ pub fn pop_af(cpu: &mut CPU) {
     cpu.pc += cpu.get_bytes_instruccion();
 }
 
-pub fn pop_af_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("POP AF"));
-}
+pub fn pop_af_txt(cpu: &mut CPU) { cpu.texto(&format!("POP AF")); }
 
-// 0xF3
+/// 0xF2   "jp p,NN"
+///     If S flag is not set, the instruction loads operand NN
+///     to PC, and the program continues with the instruction
+///     beginning at address NN.
+///     If condition X is false, PC is incremented as usual, and
+///     the program continues with the next sequential instruction.
+///     =================================
+///     | 1 | 1 | 1 | 1 | 0 | 0 | 1 | 0 | 0xF2
+///     =================================
+///     |           8-bit L             |
+///     =================================
+///     |           8-bit H             |
+///     =================================
+///     T-States: 10
+
+/// 0xF3   "di"
+///     Disables the maskable interrupt by resetting the interrupt
+///     enable flip-flops (IFF1 and IFF2).
+///     =================================
+///     | 1 | 1 | 1 | 1 | 0 | 0 | 1 | 1 | 0xF3
+///     =================================
+///     T-States: 4
 pub fn di(cpu: &mut CPU) {
     cpu.permitida_interrupcion = false;
 
@@ -4376,11 +5995,43 @@ pub fn di(cpu: &mut CPU) {
     cpu.pc += cpu.get_bytes_instruccion();
 }
 
-pub fn di_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("DI"));
-}
+pub fn di_txt(cpu: &mut CPU) { cpu.texto(&format!("DI")); }
 
-// 0xF5
+/// 0xF4   "call p,NN"
+///     If flag S is not set, this instruction pushes the current
+///     contents of PC onto the top of the external memory stack, then
+///     loads the operands NN to PC to point to the address in memory
+///     at which the first op code of a subroutine is to be fetched.
+///     At the end of the subroutine, a RET instruction can be used to
+///     return to the original program flow by popping the top of the
+///     stack back to PC. If condition X is false, PC is incremented as
+///     usual, and the program continues with the next sequential
+///     instruction. The stack push is accomplished by first decrementing
+///     the current contents of SP, loading the high-order byte of the PC
+///     contents to the memory address now pointed to by SP; then
+///     decrementing SP again, and loading the low-order byte of the PC
+///     contents to the top of the stack.
+///     =================================
+///     | 1 | 1 | 1 | 1 | 0 | 1 | 0 | 0 | 0xF4
+///     =================================
+///     |           8-bit L             |
+///     =================================
+///     |           8-bit H             |
+///     =================================
+///     T-States: 10
+
+/// 0xF5   "push af"
+///     The contents of the register pair BC are pushed to the external
+///     memory last-in, first-out (LIFO) stack. SP holds the 16-bit
+///     address of the current top of the Stack. This instruction first
+///     decrements SP and loads the high-order byte of register pair RR
+///     to the memory address specified by SP. Then SP is decremented again
+///     and loads the low-order byte of RR to the memory location
+///     corresponding to this new address in SP.
+///     =================================
+///     | 1 | 1 | 1 | 1 | 0 | 1 | 0 | 1 | 0xF5
+///     =================================
+///     T-States: 10
 pub fn push_af(cpu: &mut CPU) {
     let af = cpu.lee_af();
     cpu.push(af);
@@ -4389,23 +6040,20 @@ pub fn push_af(cpu: &mut CPU) {
     cpu.pc += cpu.get_bytes_instruccion();
 }
 
-pub fn push_af_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("PUSH AF"));
-}
+pub fn push_af_txt(cpu: &mut CPU) { cpu.texto(&format!("PUSH AF")); }
 
-// 0xF6
+/// 0xF6   TODO: No esta
 pub fn or_n(cpu: &mut CPU) {
     cpu.a = cpu.a | cpu.r1;
 
-    cpu.flag_s_u8(cpu.a);
-    cpu.flag_z_u8(cpu.a);
+    //cpu.flag_s_u8(cpu.a);
+    cpu.set_flag(FLAG_S, cpu.a & FLAG_S != 0);
+    //cpu.flag_z_u8(cpu.a);
+    cpu.set_flag(FLAG_Z, cpu.a == 0);
     flag_p_u8(cpu, cpu.a); // Como paridad
-    //cpu.reset_h_flag();
-    cpu.set_flag(FLAG_H, false);
 
-    //cpu.reset_c_flag();
+    cpu.set_flag(FLAG_H, false);
     cpu.set_flag(FLAG_C, false);
-    //cpu.reset_n_flag();
     cpu.set_flag(FLAG_N, false);
 
     cpu.t += cpu.get_t_instruccion();
@@ -4414,7 +6062,21 @@ pub fn or_n(cpu: &mut CPU) {
 
 pub fn or_n_txt(cpu: &mut CPU) { cpu.texto(&format!("OR #{:02X}", cpu.r1)); }
 
-// 0xF7
+/// 0xF7   "rst 30h"
+///     The current PC contents are pushed onto the external memory stack,
+///     and the Page 0 memory location assigned by operand N is loaded to
+///     PC. Program execution then begins with the op code in the address
+///     now pointed to by PC. The push is performed by first decrementing
+///     the contents of SP, loading the high-order byte of PC to the
+///     memory address now pointed to by SP, decrementing SP again, and
+///     loading the low-order byte of PC to the address now pointed to by
+///     SP. The Restart instruction allows for a jump to address 0030H.
+///     Because all addresses are stored in Page 0 of memory, the high-order
+///     byte of PC is loaded with 0x00.
+///     =================================
+///     | 1 | 1 | 1 | 1 | 0 | 1 | 1 | 1 | 0xF7
+///     =================================
+///     T-States: 11
 pub fn rst_30(cpu: &mut CPU) {
     let salto_al_volver = cpu.pc + cpu.get_bytes_instruccion();
     cpu.push(salto_al_volver);
@@ -4423,11 +6085,31 @@ pub fn rst_30(cpu: &mut CPU) {
     cpu.t += cpu.get_t_instruccion();
 }
 
-pub fn rst_30_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("RST #0030"));
-}
+pub fn rst_30_txt(cpu: &mut CPU) { cpu.texto(&format!("RST #0030")); }
 
-// 0xF9
+/// 0xF8   "ret m"
+///     If S flag is set, the byte at the memory location specified
+///     by the contents of SP is moved to the low-order 8 bits of PC.
+///     SP is incremented and the byte at the memory location specified by
+///     the new contents of the SP are moved to the high-order eight bits of
+///     PC.The SP is incremented again. The next op code following this
+///     instruction is fetched from the memory location specified by the PC.
+///     This instruction is normally used to return to the main line program at
+///     the completion of a routine entered by a CALL instruction.
+///     If condition X is false, PC is simply incremented as usual, and the
+///     program continues with the next sequential instruction.
+///     =================================
+///     | 1 | 1 | 1 | 1 | 1 | 0 | 0 | 0 | 0xF8
+///     =================================
+///     T-States: If X is true: 11
+///     If X is false: 5
+
+/// 0xF9   "ld sp,hl"
+///     The contents of HL are loaded to SP.
+///     =================================
+///     | 1 | 1 | 1 | 1 | 1 | 0 | 0 | 1 | 0xF9
+///     =================================
+///     T-States: 4
 pub fn ld_sp_hl(cpu: &mut CPU) {
     let hl = cpu.lee_hl();
     cpu.sp = hl;
@@ -4436,11 +6118,30 @@ pub fn ld_sp_hl(cpu: &mut CPU) {
     cpu.pc += cpu.get_bytes_instruccion();
 }
 
-pub fn ld_sp_hl_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("LD SP,HL"));
-}
+pub fn ld_sp_hl_txt(cpu: &mut CPU) { cpu.texto(&format!("LD SP,HL")); }
 
-// 0xFB
+/// 0xFA   "jp m,NN"
+///     If S flag is set, the instruction loads operand NN
+///     to PC, and the program continues with the instruction
+///     beginning at address NN.
+///     If condition X is false, PC is incremented as usual, and
+///     the program continues with the next sequential instruction.
+///     =================================
+///     | 1 | 1 | 1 | 1 | 1 | 0 | 1 | 0 | 0xFA
+///     =================================
+///     |           8-bit L             |
+///     =================================
+///     |           8-bit H             |
+///     =================================
+///     T-States: 10
+
+/// 0xFB   "ei"
+///     Sets both interrupt enable flip flops (IFFI and IFF2) to a
+///     logic 1 value, allowing recognition of any maskable interrupt.
+///     =================================
+///     | 1 | 1 | 1 | 1 | 1 | 0 | 1 | 1 | 0xFB
+///     =================================
+///     T-States: 4
 pub fn ei(cpu: &mut CPU) {
     cpu.permitida_interrupcion = true;
 
@@ -4450,30 +6151,31 @@ pub fn ei(cpu: &mut CPU) {
 
 pub fn ei_txt(cpu: &mut CPU) { cpu.texto(&format!("EI")); }
 
-// 0xFE
-pub fn cp_n(cpu: &mut CPU) {
-    let kk = cpu.a.wrapping_sub(cpu.r1);
+/// 0xFC   "call m,NN"
+///     If flag S is set, this instruction pushes the current
+///     contents of PC onto the top of the external memory stack, then
+///     loads the operands NN to PC to point to the address in memory
+///     at which the first op code of a subroutine is to be fetched.
+///     At the end of the subroutine, a RET instruction can be used to
+///     return to the original program flow by popping the top of the
+///     stack back to PC. If condition X is false, PC is incremented as
+///     usual, and the program continues with the next sequential
+///     instruction. The stack push is accomplished by first decrementing
+///     the current contents of SP, loading the high-order byte of the PC
+///     contents to the memory address now pointed to by SP; then
+///     decrementing SP again, and loading the low-order byte of the PC
+///     contents to the top of the stack.
+///     =================================
+///     | 1 | 1 | 1 | 1 | 1 | 1 | 0 | 0 | 0xFC
+///     =================================
+///     |           8-bit L             |
+///     =================================
+///     |           8-bit H             |
+///     =================================
+///     T-States: 10
 
-    flag_v_u8_en_resta(cpu, cpu.a, cpu.r1, kk);
-    flag_c_u8_en_resta(cpu, cpu.a, cpu.r1);
-    flag_h_u8_en_resta(cpu, cpu.a, cpu.r1);
 
-    //cpu.set_n_flag();
-    cpu.set_flag(FLAG_N, true);
-    cpu.flag_s_u8(kk);
-    cpu.flag_z_u8(kk);
-
-
-    cpu.t += cpu.get_t_instruccion();
-    cpu.pc += cpu.get_bytes_instruccion();
-}
-
-pub fn cp_n_txt(cpu: &mut CPU) {
-    cpu.texto(&format!("CP #{:02X}", cpu.r1));
-}
-
-
-// 0xFD   -----EXTENSION--------------------------------------------------------
+/// 0xFD   -----EXTENSION--------------------------------------------------------
 pub fn FD(cpu: &mut CPU) {
     /*
      self.obtiene_intruccion_y_bytes_posteriores();
@@ -4485,11 +6187,11 @@ pub fn FD(cpu: &mut CPU) {
         ff(self);
         //self.funciones[self.r0 as usize](self);
     */
-// Ejecuta instruccion
+    // Ejecuta instruccion
     let f: Funcion = cpu.funciones_fd[cpu.r1 as usize];
     let ff = f.get_puntero_a_funcion();
     ff(cpu);
-//cpu.funciones_cb[cpu.r1 as usize](cpu);
+    //cpu.funciones_cb[cpu.r1 as usize](cpu);
 }
 
 pub fn FD_txt(cpu: &mut CPU) {
@@ -4503,4 +6205,44 @@ pub fn FD_txt(cpu: &mut CPU) {
 
 //cpu.funciones_cb_txt[cpu.r1 as usize](cpu);
 }
+
+/// 0xFE
+pub fn cp_n(cpu: &mut CPU) {
+    let kk = cpu.a.wrapping_sub(cpu.r1);
+
+    flag_v_u8_en_resta(cpu, cpu.a, cpu.r1, kk);
+    flag_c_u8_en_resta(cpu, cpu.a, cpu.r1);
+    flag_h_u8_en_resta(cpu, cpu.a, cpu.r1);
+
+    cpu.set_flag(FLAG_N, true);
+    //cpu.flag_s_u8(kk);
+    cpu.set_flag(FLAG_S, kk & FLAG_S != 0);
+    //cpu.flag_z_u8(kk);
+    cpu.set_flag(FLAG_Z, kk == 0);
+
+    cpu.t += cpu.get_t_instruccion();
+    cpu.pc += cpu.get_bytes_instruccion();
+}
+
+pub fn cp_n_txt(cpu: &mut CPU) { cpu.texto(&format!("CP #{:02X}", cpu.r1)); }
+
+
+/// 0xFF   "rst 38h"
+///     The current PC contents are pushed onto the external memory stack,
+///     and the Page 0 memory location assigned by operand N is loaded to
+///     PC. Program execution then begins with the op code in the address
+///     now pointed to by PC. The push is performed by first decrementing
+///     the contents of SP, loading the high-order byte of PC to the
+///     memory address now pointed to by SP, decrementing SP again, and
+///     loading the low-order byte of PC to the address now pointed to by
+///     SP. The Restart instruction allows for a jump to address 0038H.
+///     Because all addresses are stored in Page 0 of memory, the high-order
+///     byte of PC is loaded with 0x00.
+///     =================================
+///     | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 0xFF
+///     =================================
+///     T-States: 5, 3, 3 (11)
+pub fn rst_38(cpu: &mut CPU) { fn_no_impl(cpu); }
+
+pub fn rst_38_txt(cpu: &mut CPU) { fn_no_impl(cpu); }
 

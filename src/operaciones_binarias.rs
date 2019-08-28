@@ -229,3 +229,15 @@ pub fn suma_compl2_a_un_u16(valoru16: u16, valorcomp2: u8) -> u16 {
 
     valorcomp2_u16
 }
+
+
+pub fn concatena_dos_u8_en_un_u16(hight: u8, low: u8) -> u16 {
+    ((hight as u16) << 8) | (low as u16)
+}
+
+pub fn desconcatena_un_u16_en_dos_u8(valor: u16) -> (u8, u8) {
+    let hight = ((valor & 0b1111_1111_0000_0000) >> 8) as u8;
+    let low = (valor & 0b0000_0000_1111_1111) as u8;
+    (hight, low)
+}
+
