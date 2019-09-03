@@ -25,8 +25,10 @@ D9      RETI               EXX
 // O = ()     p = '    m = +       n = valor hex de 8 bits
 // *************************** 0 ***********************************
 
+use crate::constantes::*;
 use crate::cpu::{CPU, Funcion};
 use crate::operaciones_binarias::*;
+
 //use crate::instrucciones_normales::di;
 
 
@@ -236,7 +238,7 @@ pub fn mete_funciones_fd(cpu: &mut CPU) {
     cpu.funciones_fd[0xBB as usize].set_punt_y_val_a_fn(fnFD_no_impl, fnFD_no_impl, 0, 0);
     cpu.funciones_fd[0xBC as usize].set_punt_y_val_a_fn(fnFD_no_impl, fnFD_no_impl, 0, 0);
     cpu.funciones_fd[0xBD as usize].set_punt_y_val_a_fn(fnFD_no_impl, fnFD_no_impl, 0, 0);
-    cpu.funciones_fd[0xBE as usize].set_punt_y_val_a_fn(fnFD_no_impl, fnFD_no_impl, 0, 0);
+    cpu.funciones_fd[0xBE as usize].set_punt_y_val_a_fn(cp_OiymnO, cp_OiymnO_txt, 3, 19);
     cpu.funciones_fd[0xBF as usize].set_punt_y_val_a_fn(fnFD_no_impl, fnFD_no_impl, 0, 0);
     // *************************** C ***********************************
     cpu.funciones_fd[0xC0 as usize].set_punt_y_val_a_fn(fnFD_no_impl, fnFD_no_impl, 0, 0);
@@ -341,11 +343,27 @@ pub fn ld_iy_nn_txt(cpu: &mut CPU) {
 // *************************** 3 ***********************************
 // 0xFD35 Ojo N es complemento a 2 (tiene signo)
 // dec (I+D) 	11i11101 00110101 dddddddd 	19 	+ 	+ 	+ 	+ 	+ 	V 	1 	- 	(I+D) -= 1
+// Condition Bits Affected
+// S is set if result is negative; otherwise, it is reset.
+// Z is set if result is 0; otherwise, it is reset.
+// H is set if borrow from bit 4, otherwise, it is reset.
+// P/V is set if m was  80h before operation; otherwise, it is reset.
+// N is set.
+// C is not affected.
+
 pub fn decOiymnO(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
     let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
-    let datodec = dec_8bits(cpu, cpu.mem.lee_byte_de_mem(direccion));
-    cpu.mem.escribe_byte_en_mem(direccion, datodec);
+    let dato = cpu.mem.lee_byte_de_mem(direccion);
+    let resultado = dato.wrapping_sub(1);
+
+    cpu.set_flag(FLAG_S, (resultado & FLAG_S) != 0);
+    cpu.set_flag(FLAG_Z, resultado == 0);
+    cpu.set_flag(FLAG_H, (dato & 0x0F) < (1 & 0x0F));
+    cpu.set_flag(FLAG_PV, overflow_en_resta_u8(dato, 1, resultado));
+    cpu.set_flag(FLAG_N, true);
+
+    cpu.mem.escribe_byte_en_mem(direccion, resultado);
 
     cpu.t += cpu.get_t_instruccion();
     cpu.pc += cpu.get_bytes_instruccion();
@@ -517,7 +535,6 @@ pub fn ldOiymnO_l(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
     let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
 
-
     cpu.mem.escribe_byte_en_mem(direccion, cpu.l);
 
     cpu.t += cpu.get_t_instruccion();
@@ -551,9 +568,19 @@ pub fn add_aOiymnO(cpu: &mut CPU) {
     let iy = cpu.lee_iy();
     let direccion = suma_compl2_a_un_u16(iy, cpu.r2);
     let dato = cpu.mem.lee_byte_de_mem(direccion);
-    let resultado = suma_u8_mas_u8(cpu, cpu.a, dato);
-    cpu.mem.escribe_byte_en_mem(direccion, resultado);
+    //let resultado = suma_u8_mas_u8(cpu, cpu.a, dato);
+    let resultado = cpu.a.wrapping_add(dato);
 
+    let resultado16 = cpu.a as u16 + dato as u16;
+
+    cpu.set_flag(FLAG_S, resultado & FLAG_S != 0);
+    cpu.set_flag(FLAG_Z, resultado == 0);
+    cpu.set_flag(FLAG_H, ((cpu.a & 0xF) + (dato & 0xF)) > 0xF);
+    cpu.set_flag(FLAG_PV, overflow_en_suma_u8(cpu.a, dato, resultado));
+    cpu.set_flag(FLAG_N, false);
+    cpu.set_flag(FLAG_C, (0b1_0000_0000 & resultado16) != 0);
+
+    cpu.a = resultado;
 
     cpu.t += cpu.get_t_instruccion();
     cpu.pc += cpu.get_bytes_instruccion();
@@ -564,6 +591,28 @@ pub fn add_aOiymnO_txt(cpu: &mut CPU) { cpu.texto(&format!("ADD A(IY+#{:02X})", 
 // *************************** 9 ***********************************
 // *************************** A ***********************************
 // *************************** B ***********************************
+// 0xFDBENN
+pub fn cp_OiymnO(cpu: &mut CPU) {
+    let direccion = suma_compl2_a_un_u16(cpu.lee_iy(), cpu.r2);
+    let dato = cpu.mem.lee_byte_de_mem(direccion);
+    let resultado = (cpu.a).wrapping_sub(dato);
+
+    cpu.set_flag(FLAG_S, resultado & FLAG_S != 0);
+    cpu.set_flag(FLAG_Z, resultado == 0);
+    cpu.set_flag(FLAG_PV, overflow_en_resta_u8(cpu.a, dato, resultado));
+    cpu.set_flag(FLAG_C, (((cpu.a as u16).wrapping_sub(dato as u16)) & 0x100) != 0);
+    cpu.set_flag(FLAG_H, half_carry_en_resta_u8_sub(cpu.a, dato));
+    cpu.set_flag(FLAG_N, true);
+
+    cpu.t += cpu.get_t_instruccion();
+    cpu.pc += cpu.get_bytes_instruccion();
+}
+
+pub fn cp_OiymnO_txt(cpu: &mut CPU) {
+    let direccion = suma_compl2_a_un_u16(cpu.lee_iy(), cpu.r2);
+    cpu.texto(&format!("CP(IY+{:02X} = CP({:04X}))", cpu.r2, direccion));
+}
+
 // *************************** C ***********************************
 // 0xFDCB -----EXTENSION (2a vez)  ojo la funcion la dice el cuarto byte
 pub fn FDCB(cpu: &mut CPU) {

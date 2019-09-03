@@ -24,6 +24,8 @@ use main::procesador::PROCESADOR;
 use main::hardware::Hardware;
 use std::{thread, time};
 
+use std::io::Write;
+
 fn main() {
     let procesador = PROCESADOR::Z80; // <---------------- OJO ------
 
@@ -46,6 +48,12 @@ fn main() {
     //cpu.limpia_consola();
 
     let mut hardware = Hardware::new(&cpu);
+
+
+    // Crea fichero de salida
+    let mut file = std::fs::File::create("salida.txt").expect("fallo al crear salida.txt");
+
+
     // Crea screen y ventana
 
 
@@ -64,9 +72,13 @@ fn main() {
     //let viewport: Vec<u32> = vec![VERDE_ILUMINADO; ANCHO_PANTALLA * ALTO_PANTALLA];
     //while window.is_open() && !window.is_key_down(Key::Escape) {
 
+
     loop {
         //if window.is_open() && window.is_key_down(Key::T) {
-        if cpu.pc == 0x0EDF { // BreakPoint
+        if cpu.pc >= 0x11EF {  // Imprimir al llegar a
+            cpu.habilita_imprimir_en_fichero();
+        }
+        if cpu.pc == 0xFFFF { // BreakPoint
             cpu.establece_debug();
 
 
@@ -78,9 +90,10 @@ fn main() {
                 cpu.imprime_cpu();
                 cpu.imprime_opcode();
                 cpu.imprime_stack();
-                cpu.imprime_ports();
-                cpu.imprime_memoria(0x0134);
+                //cpu.imprime_ports();
+                //cpu.imprime_memoria(0x0134);
                 // }
+
 
                 cpu.ejecuta_instruccion();
                 hardware.ejecuta_hardware(&mut cpu);
@@ -92,7 +105,13 @@ fn main() {
 
             //thread::sleep(tiempo_retardo);
         } else {
+//            if cpu.file_salida {
+//                cpu.imprime_en_fichero1(&mut file);
+//            }
             cpu.ejecuta_instruccion();
+//            if cpu.file_salida {
+//                cpu.imprime_en_fichero2(&mut file);
+//            }
             hardware.ejecuta_hardware(&mut cpu);
         }
     }

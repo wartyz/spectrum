@@ -15,6 +15,8 @@ use crate::operaciones_binarias::*;
 use super::constantes::*;
 
 
+use std::io::Write;
+
 #[derive(Copy, Clone)]
 pub struct Funcion {
     pub puntero_a_funcion: fn(&mut CPU),
@@ -49,10 +51,6 @@ impl Funcion {
         self.t
     }
 
-    // Habra que quitarla
-//    pub fn set_puntero_a_funcion(&mut self, puntero_a_funcion: fn(&mut CPU)) {
-//        self.puntero_a_funcion = puntero_a_funcion;
-//    }
     pub fn set_punt_y_val_a_fn(
         &mut self,
         puntero_a_funcion: fn(&mut CPU),
@@ -124,6 +122,9 @@ pub struct CPU {
     // Habilita debug
     pub debug: bool,
 
+    // Habilita escribir en fichero de salida
+    pub file_salida: bool,
+
     // Memória
     pub mem: MEM,
 }
@@ -146,12 +147,12 @@ impl CPU {
         let mut cpu = CPU {
 // OJO Cambiar si se usa otro procesador!
             procesador: procesador,
-            a: 0,
+            a: 0xFF,
             b: 0,
             c: 0,
             d: 0,
             e: 0,
-            f: 0,
+            f: 0xFF,
             h: 0,
             l: 0,
             ap: 0,
@@ -169,7 +170,7 @@ impl CPU {
             i: 0,
             r: 0,
             pc: 0,
-            sp: 0,
+            sp: 0xFFFF,
             t: 0,
             funciones: funciones,
             funciones_ed: funcionesED,
@@ -185,6 +186,7 @@ impl CPU {
             im: 0,
             permitida_interrupcion: false,
             debug: false,
+            file_salida: false,
             mem: mem,
 
         };
@@ -210,7 +212,6 @@ impl CPU {
     /// Función general que usan las demás funciones de flag
     /// Recibe una máscara indicando el flag a leer y devuelve true o false segun sea 1 o 0
     ///
-
 
     pub fn get_flag(&self, bit_mask: u8) -> bool {
         (self.f & bit_mask) != 0
@@ -308,8 +309,8 @@ impl CPU {
     // Recibe un u16 de registros en pareja y escribe en cada uno de ellos
     pub fn escribe_af(&mut self, af: u16) {
         let hltupla = desconcatena_un_u16_en_dos_u8(af);
-        self.a = hltupla.1;
-        self.f = hltupla.0;
+        self.f = hltupla.1;
+        self.a = hltupla.0;
     }
 
     pub fn escribe_afp(&mut self, afp: u16) {
@@ -369,58 +370,37 @@ impl CPU {
     // FUNCIONES DE STACK ********************************************************
     /// Pone en el stack un valor de 16 bits y modifica el puntero
     pub fn push(&mut self, addr: u16) {
-        println!("push pc = {:04X}  sp = {:04X}", self.pc, self.sp);
         let addr_tupla = desconcatena_un_u16_en_dos_u8(addr);
 
+//        println!("push pc = {:04X}  sp = {:04X}  spL->{:02X}  spH->{:02X}",
+//                 self.pc, self.sp,
+//                 addr_tupla.1,
+//                 addr_tupla.0);
+
+        self.sp -= 1;
         self.mem.escribe_byte_en_mem(self.sp, addr_tupla.0);
         self.sp -= 1;
         self.mem.escribe_byte_en_mem(self.sp, addr_tupla.1);
-        self.sp -= 1;
     }
 
     /// Saca del stack un valor de 16 bits y modifica el puntero
     pub fn pop(&mut self) -> u16 {
-        println!("pop pc = {:04X}  sp = {:04X}", self.pc, self.sp);
+        let addr_bajo = self.mem.lee_byte_de_mem(self.sp);
         self.sp += 1;
-        let addr_0 = self.mem.lee_byte_de_mem(self.sp);
+        let addr_alto = self.mem.lee_byte_de_mem(self.sp);
         self.sp += 1;
-        let addr_1 = self.mem.lee_byte_de_mem(self.sp);
+//        println!("pop pc = {:04X}  sp = {:04X}  spL->{:02X}  spH->{:02X} ",
+//                 self.pc, self.sp,
+//                 addr_bajo,
+//                 addr_alto);
 
-        let addr = concatena_dos_u8_en_un_u16(addr_1, addr_0);
+
+        let addr = concatena_dos_u8_en_un_u16(addr_alto, addr_bajo);
         addr
     }
 
 // FIN de FUNCIONES DE STACK **********************************
 
-
-// FUNCIONES DE ROTACION DE BITS *******************************************
-//    pub fn do_rl_n(&mut self, register_value: u8) -> u8 {
-//        let old_c_flag = self.get_c_flag();
-//        let c_flag: bool = (0b1000_0000 & register_value) != 0;
-//        if c_flag {
-//            self.set_c_flag();
-//        } else {
-//            self.reset_c_flag();
-//        }
-//
-//        // Rotación
-//        let mut new_register_value = register_value << 1;
-//        new_register_value = new_register_value & 0b1111_1110;
-//        if old_c_flag {
-//            new_register_value |= 0b0000_0001;
-//        }
-//
-//        //maneja flags
-//        if new_register_value == 0 {
-//            self.set_z_flag();
-//        } else {
-//            self.reset_z_flag();
-//        }
-//        self.reset_n_flag();
-//        self.reset_h_flag();
-//
-//        new_register_value
-//    }
 
     // FUNCIONES DE DEBUG *******************************************
     pub fn establece_debug(&mut self) {
@@ -468,8 +448,8 @@ impl CPU {
     pub fn ejecuta_instruccion(&mut self) {
         self.obtiene_intruccion_y_bytes_posteriores();
 
-// Ejecuta instruccion
-//self.funciones[self.r0 as usize](self);
+        // Ejecuta instruccion
+        //self.funciones[self.r0 as usize](self);
         let f: Funcion = self.funciones[self.r0 as usize];
         let ff = f.get_puntero_a_funcion();
         //DESCOMENTAR ESTA LINEA PARA VER EL DEBUG DE LAS INSTRUCCIONES
@@ -477,7 +457,7 @@ impl CPU {
 //                 self.pc, self.r0, self.r1, self.r2, self.r3);
 
         ff(self);
-//self.funciones[self.r0 as usize](self);
+        //self.funciones[self.r0 as usize](self);
     }
     /// Lee de memoria el opcode y los bytes posteriores
     pub fn obtiene_intruccion_y_bytes_posteriores(&mut self) {
@@ -486,7 +466,7 @@ impl CPU {
         self.r2 = self.mem.lee_byte_de_mem(self.pc + 2);
         self.r3 = self.mem.lee_byte_de_mem(self.pc + 3);
 
-// Invirtiendo posición de 16 bits ya que es BIG ENDIAN
+        // Invirtiendo posición de 16 bits ya que es BIG ENDIAN
         self.r1r2 = ((self.r2 as u16) << 8) | self.r1 as u16;
         self.r2r3 = ((self.r3 as u16) << 8) | self.r2 as u16;
 
@@ -502,13 +482,14 @@ impl CPU {
 
     pub fn limpia_consola(&self) {
         if self.debug {
-// Crea terminal
+            // Crea terminal
             let mut terminal = terminal();
 
-// Borra todas las lineas del terminal;
+            // Borra todas las lineas del terminal;
             terminal.clear(ClearType::All);
         }
     }
+
 
     pub fn texto(&self, txt: &String) {
         if self.debug {
@@ -517,6 +498,7 @@ impl CPU {
             print!("|  |-> ");
             println!("{}", txt);
         }
+        cursor().goto(100, 20);
     }
 
     pub fn imprime_opcode(&mut self) {
@@ -537,6 +519,7 @@ impl CPU {
                 }
             }
         }
+        cursor().goto(100, 20);
     }
 
     pub fn imprime_stack(&mut self) {
@@ -552,6 +535,7 @@ impl CPU {
                 print!("->{:04X} ", 0x0000);
             }
         }
+        cursor().goto(100, 20);
     }
 
     pub fn imprime_memoria(&mut self, inicio: u16) {
@@ -678,10 +662,87 @@ impl CPU {
 
             self.obtiene_intruccion_y_bytes_posteriores();
 
-// Ejecuta instruccion _txt
+            // Ejecuta instruccion _txt
             self.get_objeto_funcion_segun_arreglo().get_puntero_txt_a_funcion()(self);
 
             cursor.goto(10, 10);
         }
+        cursor().goto(100, 20);
+    }
+
+    // IMPRIMIR EN FICHERO *************************************
+    pub fn habilita_imprimir_en_fichero(&mut self) {
+        self.file_salida = true;
+    }
+    pub fn deshabilita_imprimir_en_fichero(&mut self) {
+        self.file_salida = false;
+    }
+
+    pub fn imprime_en_fichero1(&mut self, file: &mut std::fs::File) {
+        //let bytes = self.get_objeto_funcion_segun_arreglo().get_bytes_de_instruccion();
+
+        let opcode0 = format!("{:02X}", self.mem.lee_byte_de_mem(self.pc));
+        let opcode1 = format!("{:02X}", self.mem.lee_byte_de_mem(self.pc + 1));
+        let opcode2 = format!("{:02X}", self.mem.lee_byte_de_mem(self.pc + 2));
+        let opcode3 = format!("{:02X} ", self.mem.lee_byte_de_mem(self.pc + 3));
+
+        //let f: Funcion = self.funciones[self.mem.lee_byte_de_mem(self.pc) as usize];
+        let f: Funcion = self.get_objeto_funcion_segun_arreglo();
+        let bytes = f.get_bytes_de_instruccion();
+//        let opcode = match bytes {
+//            1 => format!("{}", opcode0),
+//            2 => format!("{} {}", opcode0, opcode1),
+//            3 => format!("{} {} {}", opcode0, opcode1, opcode2),
+//            4 => format!("{} {} {} {}", opcode0, opcode1, opcode2, opcode3),
+//            _ => format!("Error en imprime fichero r0={:02X} r1={:02X} bytes={}", self.r0, self.r1,
+//                         bytes),
+//        };
+        let opcode = format!("{} {} {} {}", opcode0, opcode1, opcode2, opcode3);
+        let texto = format!("0/{:04X}   {}\n", self.pc, opcode);
+        file.write_all(texto.as_bytes()).expect("fallo al escribir");
+    }
+
+    pub fn imprime_en_fichero2(&mut self, file: &mut std::fs::File) {
+        let mut s = 0;
+        if self.get_s_flag() { s = 1; } else { s = 0; };
+        let mut z = 0;
+        if self.get_z_flag() { z = 1; } else { z = 0; };
+        let mut h = 0;
+        if self.get_h_flag() { h = 1; } else { h = 0; };
+        let mut p = 0;
+        if self.get_pv_flag() { p = 1; } else { p = 0; };
+        let mut n = 0;
+        if self.get_n_flag() { n = 1; } else { n = 0; };
+        let mut c = 0;
+        if self.get_c_flag() { c = 1; } else { c = 0; };
+
+        let flags = format!("S={} Z={} H={} P/O={} N={} C={}", s, z, h, p, n, c);
+        let registros =
+            format!(
+                "A={:02X} BC={:02X}{:02X} DE={:02X}{:02X} HL={:02X}{:02X} SP={:04X} PC={:04X}",
+                self.a,
+                self.b,
+                self.c,
+                self.d,
+                self.e,
+                self.h,
+                self.l,
+                self.sp,
+                self.pc);
+
+        let texto = format!("{} {}
+   PSW=3C      PSW=00     A=00 BC=0000 DE=0000 HL=0000 IX={:02X}{:02X} IY={:02X}{:02X}\n",
+                            flags,
+                            registros,
+                            self.ixh, self.ixl,
+                            self.iyh, self.iyl,
+        );
+
+
+//        let texto = "0 / 11E2   A7    and    a
+//S=0 Z=0 H=1 P/O=1 N=0 C=0 A=3F BC=0000 DE=FFFF HL=3FFF SP=FFFF PC=11E3
+//   PSW=3C      PSW=00     A=00 BC=0000 DE=0000 HL=0000 IX=0000 IY=0000\n";
+        file.write_all(texto.as_bytes()).expect("fallo al escribir");
+        //file.write_all("\nSegunda parte".as_bytes()).expect("fallo al escribir");
     }
 }
